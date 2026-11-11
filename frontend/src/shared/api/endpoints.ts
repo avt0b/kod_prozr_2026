@@ -3,6 +3,14 @@
  * Одна функция = один эндпоинт. Хуки TanStack Query живут в src/features/<фича>/api.ts.
  */
 import { request } from './client';
+import {
+  normalizeFlag,
+  normalizeOfficial,
+  normalizeProfile,
+  type WireFlag,
+  type WireListItem,
+  type WireProfile,
+} from './officialAdapters';
 import type {
   Appeal,
   AppealDetails,
@@ -10,14 +18,11 @@ import type {
   AssistantAnswer,
   CreateAppealPayload,
   OfficialGraph,
-  OfficialListItem,
-  OfficialProfile,
   OfficialsQuery,
   Organ,
   Paginated,
   RecomputeResult,
   ReportDraft,
-  RiskFlag,
   StatsOverview,
   UUID,
 } from './types';
@@ -32,12 +37,25 @@ export const api = {
   },
 
   officials: {
-    list: (query: OfficialsQuery) =>
-      request<Paginated<OfficialListItem>>('GET', '/officials', { query: { ...query } }),
-    get: (id: UUID) => request<OfficialProfile>('GET', `/officials/${id}`),
+    list: async (query: OfficialsQuery) => {
+      const result = await request<Paginated<WireListItem>>('GET', '/officials', {
+        query: { ...query },
+      });
+      return { ...result, items: result.items.map(normalizeOfficial) };
+    },
+    get: async (id: UUID) => {
+      const [profile, flags] = await Promise.all([
+        request<WireProfile>('GET', `/officials/${id}`),
+        request<Paginated<WireFlag>>('GET', `/officials/${id}/flags`),
+      ]);
+      return normalizeProfile(profile, flags.items);
+    },
     graph: (id: UUID, depth = 2) =>
       request<OfficialGraph>('GET', `/officials/${id}/graph`, { query: { depth } }),
-    flags: (id: UUID) => request<Paginated<RiskFlag>>('GET', `/officials/${id}/flags`),
+    flags: async (id: UUID) => {
+      const result = await request<Paginated<WireFlag>>('GET', `/officials/${id}/flags`);
+      return { ...result, items: result.items.map(normalizeFlag) };
+    },
   },
 
   risk: {
@@ -49,8 +67,9 @@ export const api = {
       request<Paginated<Appeal>>('GET', '/appeals', { query: { ...query } }),
     get: (id: UUID) => request<AppealDetails>('GET', `/appeals/${id}`),
     create: (payload: CreateAppealPayload) =>
-      request<Appeal>('POST', '/appeals', { body: payload }),
-    reanalyze: (id: UUID) => request<Appeal>('POST', `/appeals/${id}/reanalyze`),
+      request<Appeal>('POST', '/appeals', { body: payload, timeoutMs: 150_000 }),
+    reanalyze: (id: UUID) =>
+      request<Appeal>('POST', `/appeals/${id}/reanalyze`, { timeoutMs: 150_000 }),
   },
 
   reports: {

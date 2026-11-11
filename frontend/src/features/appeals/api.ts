@@ -30,6 +30,7 @@ export function useCreateAppeal() {
   const invalidate = useInvalidateAfterAppealChange();
   return useMutation({
     mutationFn: (payload: CreateAppealPayload) => api.appeals.create(payload),
+    retry: false,
     onSuccess: invalidate,
   });
 }
@@ -38,6 +39,7 @@ export function useReanalyzeAppeal() {
   const invalidate = useInvalidateAfterAppealChange();
   return useMutation({
     mutationFn: (id: string) => api.appeals.reanalyze(id),
+    retry: false,
     onSuccess: invalidate,
   });
 }

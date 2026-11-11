@@ -7,6 +7,7 @@ export interface RequestOptions {
   query?: QueryParams;
   body?: unknown;
   signal?: AbortSignal;
+  timeoutMs?: number;
 }
 
 /** Ошибка API. Формат тела ошибки бэка — см. docs/backend.md; поддерживаем {detail} и {error:{message}}. */
@@ -49,7 +50,12 @@ async function httpRequest<T>(method: HttpMethod, path: string, opts: RequestOpt
 
   const res = await fetch(url, {
     method,
-    signal: opts.signal,
+    signal: opts.timeoutMs
+      ? AbortSignal.any([
+          AbortSignal.timeout(opts.timeoutMs),
+          ...(opts.signal ? [opts.signal] : []),
+        ])
+      : opts.signal,
     headers: {
       Accept: 'application/json',
       ...(opts.body !== undefined ? { 'Content-Type': 'application/json' } : {}),
@@ -86,5 +92,15 @@ export async function request<T>(
     const { mockRequest } = await import('./mocks');
     return mockRequest<T>(method, path, opts);
   }
-  return httpRequest<T>(method, path, opts);
+  try {
+    return await httpRequest<T>(method, path, opts);
+  } catch (error) {
+    if (error instanceof Error && error.name === 'TimeoutError') {
+      throw new ApiError(
+        408,
+        'Время ожидания анализа истекло. Проверьте список обращений перед повторной отправкой: сервер мог сохранить обращение.',
+      );
+    }
+    throw error;
+  }
 }

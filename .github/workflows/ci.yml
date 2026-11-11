@@ -104,5 +104,11 @@ jobs:
       - name: Lint
         run: npm run lint --if-present
 
+      - name: Frontend formatting
+        run: npm run format:check
+
+      - name: Frontend unit tests
+        run: npm test
+
       - name: Build
         run: npm run build

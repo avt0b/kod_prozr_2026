@@ -61,3 +61,10 @@ desktop.ini
 .omc
 .claude/settings.local.json
 .claude/worktrees/
+
+# Browser test artifacts
+frontend/test-results/
+
+# Local authoring and verification workspace
+.codex-build/
+/egor-test-fixture/
