@@ -3,11 +3,26 @@
 
 from collections import defaultdict
 from collections.abc import Sequence
+from datetime import datetime
 from typing import Protocol
 from uuid import UUID
 
-from src.modules.officials.application.dto.officials_dto import OfficialRiskDTO, RiskFlagView
+from src.modules.officials.application.dto.officials_dto import (
+    EvidenceView,
+    OfficialRiskDTO,
+    RiskFlagView,
+    RiskScoreView,
+)
 from src.modules.officials.application.interfaces.risk_source import RiskSourceInterface
+
+
+class ExternalEvidence(Protocol):
+    @property
+    def id(self) -> UUID: ...
+    @property
+    def type(self) -> str: ...
+    @property
+    def label(self) -> str: ...
 
 
 class ExternalRiskFlag(Protocol):
@@ -27,6 +42,10 @@ class ExternalRiskFlag(Protocol):
     def explanation(self) -> str: ...
     @property
     def legal_ref(self) -> str | None: ...
+    @property
+    def evidence(self) -> Sequence[ExternalEvidence]: ...
+    @property
+    def computed_at(self) -> datetime: ...
 
 
 class ExternalRiskScore(Protocol):
@@ -34,6 +53,10 @@ class ExternalRiskScore(Protocol):
     def person_id(self) -> UUID: ...
     @property
     def score(self) -> float: ...
+    @property
+    def flags_count(self) -> int: ...
+    @property
+    def computed_at(self) -> datetime: ...
 
 
 class ExternalRiskSource(Protocol):
@@ -45,12 +68,17 @@ class ExternalRiskSource(Protocol):
 def _to_view(flag: ExternalRiskFlag) -> RiskFlagView:
     return RiskFlagView(
         id=flag.id,
+        person_id=flag.person_id,
         rule_code=flag.rule_code,
         rule_name=flag.rule_name,
         severity=flag.severity,
         weight=flag.weight,
         explanation=flag.explanation,
+        evidence=tuple(
+            EvidenceView(node_id=e.id, type=e.type, label=e.label) for e in flag.evidence
+        ),
         legal_ref=flag.legal_ref,
+        computed_at=flag.computed_at,
     )
 
 
@@ -62,8 +90,11 @@ class RiskACLAdapter(RiskSourceInterface):
     def __init__(self, external_source: ExternalRiskSource) -> None:
         self._source = external_source
 
-    async def get_scores(self, person_ids: Sequence[UUID]) -> dict[UUID, float]:
-        return {s.person_id: s.score for s in await self._source.get_scores(person_ids)}
+    async def get_scores(self, person_ids: Sequence[UUID]) -> dict[UUID, RiskScoreView]:
+        return {
+            s.person_id: RiskScoreView(score=s.score, flags_count=s.flags_count)
+            for s in await self._source.get_scores(person_ids)
+        }
 
     async def get_top_flags(
         self, person_ids: Sequence[UUID], per_person: int
@@ -81,5 +112,6 @@ class RiskACLAdapter(RiskSourceInterface):
         flags = await self._source.get_flags([person_id])
         return OfficialRiskDTO(
             score=scores[0].score if scores else 0.0,
+            computed_at=scores[0].computed_at if scores else None,
             flags=tuple(_to_view(f) for f in _by_weight(flags)),
         )

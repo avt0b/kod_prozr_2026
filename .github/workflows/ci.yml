@@ -52,6 +52,7 @@ jobs:
           --health-timeout 5s
           --health-retries 10
     env:
+      CI: "true"
       DATABASE_URL: postgresql+asyncpg://kodprozr:kodprozr@localhost:5432/kodprozr
       CORS_ORIGINS: http://localhost:5173
       LLM_BASE_URL: http://localhost:11434/v1
@@ -75,6 +76,12 @@ jobs:
 
       - name: Ruff format
         run: uv run ruff format --check .
+
+      - name: Mypy
+        run: uv run mypy src tests
+
+      - name: Import boundaries
+        run: uv run lint-imports
 
       # Код 5 = «тестов не найдено» — на старте каркаса это не ошибка.
       - name: Pytest

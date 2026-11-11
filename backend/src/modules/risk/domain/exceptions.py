@@ -5,9 +5,9 @@ from src.core.exceptions import DomainValidationError, NotFoundError
 
 class RiskSubjectNotFoundError(NotFoundError):
     def __init__(self, person_id: UUID) -> None:
-        super().__init__(f"Official {person_id} not found")
+        super().__init__("Служащий не найден")
 
 
 class InvalidGraphDepthError(DomainValidationError):
     def __init__(self, depth: int, max_depth: int) -> None:
-        super().__init__(f"depth must be within 1..{max_depth}, got {depth}")
+        super().__init__(f"Глубина графа должна быть от 1 до {max_depth}, передано {depth}")

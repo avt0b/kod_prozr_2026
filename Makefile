@@ -22,7 +22,7 @@ SEED_CMD ?= python -m src.seed
 # Выполняются НА ХОСТЕ в backend/ через uv (dev-зависимости в образ не попадают).
 UV ?= uv run
 BACK_TEST_CMD ?= $(UV) pytest
-BACK_LINT_CMD ?= $(UV) ruff check . && $(UV) ruff format --check .
+BACK_LINT_CMD ?= $(UV) ruff check . && $(UV) ruff format --check . && $(UV) mypy src tests && $(UV) lint-imports
 
 # Выполняется на хосте в frontend/ (нужен npm ci).
 FRONT_LINT_CMD ?= npm run lint

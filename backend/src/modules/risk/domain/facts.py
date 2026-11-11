@@ -73,6 +73,9 @@ class EmploymentFacts:
     started_at: date
     ended_at: date | None = None
 
+    def active_on(self, day: date) -> bool:
+        return self.started_at <= day and (self.ended_at is None or day <= self.ended_at)
+
 
 @dataclass(frozen=True)
 class OfficialFacts:
@@ -153,3 +156,28 @@ class RelativeLinkFacts:
     person_id: UUID
     relative: PersonFacts
     kind: str
+
+
+@dataclass(frozen=True)
+class FeatureDeviation:
+    """Признак R08 и его отклонение от группы коллег (ai.md §4)."""
+
+    name: str  # share_near_threshold, related_companies_cnt, ...
+    label: str  # «доля закупок чуть ниже порога»
+    value: float
+    peer_median: float
+    z: float
+
+    @property
+    def is_share(self) -> bool:
+        return self.name.startswith("share_") or self.name.endswith("_share")
+
+
+@dataclass(frozen=True)
+class PeerAnomalyFacts:
+    """Результат ML-детектора (R08) по одному служащему: он аномален относительно коллег."""
+
+    person_id: UUID
+    severity: str  # low | medium — решает детектор (ai.md §4)
+    peers_count: int
+    features: tuple[FeatureDeviation, ...]

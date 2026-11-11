@@ -1,7 +1,14 @@
+from dataclasses import replace
 from datetime import date
 
 from src.modules.risk.domain.enums import NodeType, RuleCode, Severity
-from src.modules.risk.domain.facts import AuthorityFacts
+from src.modules.risk.domain.facts import (
+    AuthorityFacts,
+    CompanyRoleFacts,
+    ContractFacts,
+    OfficialFacts,
+)
+from src.modules.risk.domain.flag import RiskFlag
 from src.modules.risk.domain.rules.r01_relative_supplier import RelativeSupplierRule
 from src.modules.risk.domain.world import RiskWorld
 from tests.unit.risk.conftest import (
@@ -10,10 +17,16 @@ from tests.unit.risk.conftest import (
     make_contract,
     make_official,
     make_role,
+    uid,
 )
 
 
-def _evaluate(official, roles, contracts, today):  # type: ignore[no-untyped-def]
+def _evaluate(
+    official: OfficialFacts,
+    roles: list[CompanyRoleFacts],
+    contracts: list[ContractFacts],
+    today: date,
+) -> list[RiskFlag]:
     world = RiskWorld(
         today=today,
         officials=[official],
@@ -91,3 +104,38 @@ def test_r01_requires_procurement_authority(today: date) -> None:
     )
 
     assert flags == []
+
+
+def test_r01_ignores_namesake_of_relative(today: date) -> None:
+    """Полный тёзка супруги — учредитель: связь строится по person_id, а не по ФИО."""
+    official = make_official()
+    namesake = CompanyRoleFacts(
+        company_id=make_company().id,
+        person_id=uid("namesake"),
+        role="founder",
+        started_at=date(2018, 5, 14),
+    )
+
+    flags = _evaluate(official, [namesake], [make_contract("c1", date(2023, 4, 18))], today)
+
+    assert flags == []
+
+
+def test_r01_ignores_role_that_ended_before_contract(today: date) -> None:
+    official = make_official()
+    role = replace(make_role("spouse"), ended_at=date(2022, 12, 31))
+
+    flags = _evaluate(official, [role], [make_contract("c1", date(2023, 4, 18))], today)
+
+    assert flags == []
+
+
+def test_r01_explanation_is_hedged_and_has_amount(today: date) -> None:
+    official = make_official()
+
+    flags = _evaluate(
+        official, [make_role("spouse")], [make_contract("c1", date(2023, 4, 18))], today
+    )
+
+    assert "может свидетельствовать" in flags[0].explanation
+    assert "8,4 млн" in flags[0].explanation

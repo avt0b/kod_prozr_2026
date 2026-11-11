@@ -32,8 +32,9 @@ class EdgeType(StrEnum):
     KINSHIP = "kinship"
     FOUNDER = "founder"
     DIRECTOR = "director"
-    APPOINTMENT = "appointment"
+    APPOINTMENT = "works_in"  # служащий -> орган, label — должность (contracts.md)
     EMPLOYMENT = "employment"
     SUPPLIER = "supplier"
     CUSTOMER = "customer"
     MENTIONS = "mentions"
+    SHARED_CONTACT = "shared_contact"  # человек <-> компания с тем же адресом/телефоном (R05)

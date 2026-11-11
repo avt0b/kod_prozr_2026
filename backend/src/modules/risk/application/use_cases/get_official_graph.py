@@ -8,7 +8,7 @@ from src.modules.risk.application.interfaces.counterparties_source import (
 )
 from src.modules.risk.application.interfaces.officials_source import OfficialsSourceInterface
 from src.modules.risk.application.interfaces.risk_repository import RiskRepositoryInterface
-from src.modules.risk.domain.enums import EdgeType, NodeType
+from src.modules.risk.domain.enums import EdgeType, NodeType, RuleCode
 from src.modules.risk.domain.exceptions import InvalidGraphDepthError, RiskSubjectNotFoundError
 from src.modules.risk.domain.facts import KINSHIP_LABELS, ROLE_LABELS
 from src.modules.risk.domain.graph import ConnectionsGraph, GraphEdge, GraphNode
@@ -70,6 +70,7 @@ class GetOfficialGraphUseCase:
             if graph.truncated or not (frontier_persons or frontier_companies):
                 break
 
+        await self._attach_flag_evidence(graph, person_id)
         await self._attach_contracts(graph)
         scores = await self._repository.get_scores(graph.ids_of(NodeType.PERSON))
         graph.set_risk({s.person_id: s.score for s in scores})
@@ -175,6 +176,28 @@ class GetOfficialGraphUseCase:
                 )
             )
         return new_persons
+
+    async def _attach_flag_evidence(self, graph: ConnectionsGraph, person_id: UUID) -> None:
+        """Узлы из evidence флагов служащего всегда есть в графе: фронт подсвечивает цепочку.
+
+        Связь R05 (общий адрес или телефон) в данных не ребро, поэтому добавляем ребро
+        shared_contact от человека из цепочки к компании.
+        """
+        for flag in await self._repository.get_flags([person_id]):
+            for node in flag.evidence:
+                graph.add_node(GraphNode(node.id, node.type, node.label))
+            if flag.rule_code is RuleCode.R05:
+                persons = [n for n in flag.evidence if n.type is NodeType.PERSON]
+                companies = [n for n in flag.evidence if n.type is NodeType.COMPANY]
+                if persons and companies:
+                    graph.add_edge(
+                        GraphEdge(
+                            persons[-1].id,
+                            companies[0].id,
+                            EdgeType.SHARED_CONTACT,
+                            "общий адрес или телефон",
+                        )
+                    )
 
     async def _attach_contracts(self, graph: ConnectionsGraph) -> None:
         company_ids = graph.ids_of(NodeType.COMPANY)

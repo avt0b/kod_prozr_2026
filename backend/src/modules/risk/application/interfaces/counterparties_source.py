@@ -12,6 +12,8 @@ class CounterpartiesSourceInterface(Protocol):
 
     async def companies(self, company_ids: Sequence[UUID]) -> list[CompanyFacts]: ...
 
+    async def all_companies(self, limit: int) -> list[CompanyFacts]: ...
+
     async def contracts(
         self,
         *,

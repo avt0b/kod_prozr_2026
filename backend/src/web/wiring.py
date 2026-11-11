@@ -47,6 +47,7 @@ from src.modules.risk.infrastructure.adapters.counterparties_acl import (
 )
 from src.modules.risk.infrastructure.adapters.officials_acl import OfficialsACLAdapter
 from src.modules.risk.infrastructure.repositories.risk_repository import RiskRepository
+from src.modules.risk.presentation.dependencies import get_peer_anomaly_detector
 from src.modules.stats.infrastructure.adapters.acl import (
     AppealsCounterACLAdapter,
     OfficialsCounterACLAdapter,
@@ -107,7 +108,11 @@ def recompute_risk_use_case(session: AsyncSession) -> RecomputeRiskUseCase:
         risk_appeals_source(session),
     )
     return RecomputeRiskUseCase(
-        loader, RiskEngine(default_rules()), RiskRepository(session), SqlAlchemyUnitOfWork(session)
+        loader,
+        RiskEngine(default_rules()),
+        RiskRepository(session),
+        SqlAlchemyUnitOfWork(session),
+        get_peer_anomaly_detector(),
     )
 
 
