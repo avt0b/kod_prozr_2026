@@ -5,24 +5,24 @@ from src.core.exceptions import ConflictError, DomainValidationError, NotFoundEr
 
 class AppealNotFoundError(NotFoundError):
     def __init__(self, appeal_id: UUID) -> None:
-        super().__init__(f"Appeal {appeal_id} not found")
+        super().__init__("Обращение не найдено")
 
 
 class AppealClosedError(ConflictError):
     def __init__(self, appeal_id: UUID) -> None:
-        super().__init__(f"Appeal {appeal_id} is closed and cannot be changed")
+        super().__init__("Обращение закрыто, изменить его нельзя")
 
 
 class InvalidAppealStatusTransitionError(ConflictError):
     def __init__(self, current: str, target: str) -> None:
-        super().__init__(f"Appeal status cannot change from {current} to {target}")
+        super().__init__(f"Недопустимый переход статуса обращения: {current} → {target}")
 
 
 class EmptyAppealTextError(DomainValidationError):
     def __init__(self) -> None:
-        super().__init__("Appeal text must not be empty")
+        super().__init__("Текст обращения не может быть пустым")
 
 
 class InvalidAnalysisError(DomainValidationError):
     def __init__(self, message: str) -> None:
-        super().__init__(f"Invalid appeal analysis: {message}")
+        super().__init__(f"Некорректный анализ обращения: {message}")

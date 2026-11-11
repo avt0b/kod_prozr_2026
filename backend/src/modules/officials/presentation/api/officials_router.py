@@ -51,7 +51,7 @@ async def list_officials(
         PageRequest(limit=limit, offset=offset),
     )
     return PageResponse(
-        items=[OfficialListItemResponse.model_validate(i) for i in page.items], total=page.total
+        items=[OfficialListItemResponse.from_dto(i) for i in page.items], total=page.total
     )
 
 
@@ -67,6 +67,8 @@ async def get_official(
         appointments=[
             AppointmentResponse(
                 id=a.id,
+                person_id=a.person_id,
+                position_id=a.position.id,
                 started_at=a.started_at,
                 ended_at=a.ended_at,
                 is_active=a.is_active,

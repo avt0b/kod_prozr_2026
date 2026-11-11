@@ -7,11 +7,7 @@ from src.core.config import BASE_DIR, get_settings_from_env
 from src.core.infrastructure.database.database import get_async_session_maker, get_engine
 from src.core.infrastructure.llm import OpenAICompatibleLLMClient
 from src.core.infrastructure.logger import configure_logging, get_logger
-from src.modules.appeals.presentation.dependencies import build_appeal_analyzer
-from src.modules.appeals.presentation.seed import seed_appeals
-from src.modules.counterparties.presentation.seed import seed_counterparties
-from src.modules.officials.presentation.seed import seed_officials
-from src.web import wiring
+from src.seed.loader import load_seed
 
 logger = get_logger("seed")
 
@@ -47,25 +43,7 @@ async def run(data_dir: Path, analyze: bool, recompute: bool) -> None:
     )
     try:
         async with session_maker() as session:
-            logger.info("Seed from {}", data_dir)
-            logger.info("officials: {}", await seed_officials(session, data_dir))
-            logger.info("counterparties: {}", await seed_counterparties(session, data_dir))
-            appeals = await seed_appeals(
-                session,
-                data_dir,
-                analyzer=build_appeal_analyzer(settings, llm),
-                directory=wiring.appeals_person_directory(session),
-                analyze=analyze,
-            )
-            logger.info("appeals: {}", appeals)
-            if recompute:
-                result = await wiring.recompute_risk_use_case(session).execute()
-                logger.info(
-                    "risk: {} officials, {} flags {}",
-                    result.officials_processed,
-                    result.flags_total,
-                    result.flags_by_rule,
-                )
+            await load_seed(session, data_dir, settings, llm, analyze=analyze, recompute=recompute)
     finally:
         await engine.dispose()
 

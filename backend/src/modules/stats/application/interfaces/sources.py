@@ -1,6 +1,15 @@
 """Порты read-side модуля stats к трём контекстам. Реализации — ACL в infrastructure/adapters."""
 
+from dataclasses import dataclass
+from datetime import datetime
 from typing import Protocol
+
+
+@dataclass(frozen=True)
+class RiskSummary:
+    flags_by_severity: dict[str, int]
+    flagged_officials: int
+    computed_at: datetime | None
 
 
 class OfficialsCounterInterface(Protocol):
@@ -8,9 +17,7 @@ class OfficialsCounterInterface(Protocol):
 
 
 class RiskCounterInterface(Protocol):
-    async def flags_by_severity(self) -> dict[str, int]: ...
-
-    async def flagged_officials(self) -> int: ...
+    async def summary(self) -> RiskSummary: ...
 
 
 class AppealsCounterInterface(Protocol):

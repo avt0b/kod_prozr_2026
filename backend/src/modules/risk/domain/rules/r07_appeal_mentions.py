@@ -1,4 +1,4 @@
-from src.core.utils.text import short_name
+from src.core.utils.text import normalize_spaces, short_name
 from src.modules.risk.domain.enums import NodeType, RuleCode, Severity
 from src.modules.risk.domain.facts import AppealMentionFacts, OfficialFacts
 from src.modules.risk.domain.flag import EvidenceNode, RiskFlag
@@ -26,7 +26,9 @@ class AppealMentionsRule(RiskRule):
     s = Σ confidence · specificity; s < 0.8 -> low, 0.8 ≤ s < 1.6 -> medium, s ≥ 1.6 -> high.
     Одно расплывчатое обращение даёт только low: ложный донос не выводит служащего в топ.
 
-    TODO: дедупликация «один заявитель / дубль текста» (в Appeal пока нет заявителя).
+    Дубли считаются один раз: одно обращение (appeal_id) и обращения с одинаковым кратким
+    содержанием (повторная отправка того же текста). Заявителя в Appeal нет, поэтому
+    «один заявитель» пока не учитывается.
     """
 
     code = RuleCode.R07
@@ -38,8 +40,7 @@ class AppealMentionsRule(RiskRule):
         mentions = [m for m in world.mentions_of(official.person.id) if m.is_corruption]
         if not mentions:
             return []
-        unique = list({m.appeal_id: m for m in mentions}.values())
-        unique.sort(key=lambda m: m.received_at, reverse=True)
+        unique = _deduplicate(mentions)
 
         s = sum(m.confidence * m.specificity for m in unique)
         level = self.severity_for(s)
@@ -67,6 +68,16 @@ class AppealMentionsRule(RiskRule):
         if s >= MEDIUM_THRESHOLD:
             return Severity.MEDIUM
         return Severity.LOW
+
+
+def _deduplicate(mentions: list[AppealMentionFacts]) -> list[AppealMentionFacts]:
+    """Свежие сначала; из дублей остаётся самое раннее обращение."""
+    by_id = {m.appeal_id: m for m in mentions}
+    by_text: dict[str, AppealMentionFacts] = {}
+    for mention in sorted(by_id.values(), key=lambda m: m.received_at):
+        key = normalize_spaces(mention.summary or "").lower() or str(mention.appeal_id)
+        by_text.setdefault(key, mention)
+    return sorted(by_text.values(), key=lambda m: m.received_at, reverse=True)
 
 
 def _describe(mention: AppealMentionFacts) -> str:

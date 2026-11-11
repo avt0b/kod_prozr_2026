@@ -14,6 +14,7 @@ from src.modules.counterparties.application.interfaces.contract_repository impor
 )
 
 MAX_CONTRACTS = 100_000
+MAX_COMPANIES = 100_000
 
 
 class QueryCounterpartiesUseCase:
@@ -32,6 +33,10 @@ class QueryCounterpartiesUseCase:
 
     async def companies(self, company_ids: Sequence[UUID]) -> list[CompanyDTO]:
         return [CompanyDTO.from_entity(c) for c in await self._companies.get_many(company_ids)]
+
+    async def all_companies(self, limit: int = MAX_COMPANIES) -> list[CompanyDTO]:
+        found = await self._companies.list_all(min(limit, MAX_COMPANIES))
+        return [CompanyDTO.from_entity(c) for c in found]
 
     async def roles_for_persons(self, person_ids: Sequence[UUID]) -> list[CompanyRoleDTO]:
         roles = await self._companies.roles_for_persons(person_ids)

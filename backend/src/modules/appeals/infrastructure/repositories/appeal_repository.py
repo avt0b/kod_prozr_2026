@@ -72,5 +72,5 @@ class AppealRepository(AppealRepositoryInterface):
             select(AppealModel.status, func.count()).group_by(AppealModel.status)
         )
         counts = {status.value: 0 for status in AppealStatus}
-        counts.update({status: count for status, count in rows.tuples()})
+        counts.update({status: count for status, count in rows})
         return counts

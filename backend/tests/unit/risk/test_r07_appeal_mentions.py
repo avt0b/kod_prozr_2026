@@ -1,3 +1,4 @@
+from dataclasses import replace
 from datetime import date
 
 import pytest
@@ -57,3 +58,19 @@ def test_r07_ignores_appeals_without_corruption(today: date) -> None:
     )
 
     assert AppealMentionsRule().evaluate(official, world) == []
+
+
+def test_r07_counts_duplicate_text_once(today: date) -> None:
+    official = make_official()
+    first = replace(_mention("a1", confidence=0.9, specificity=0.9), summary="Взятка 2 млн")
+    duplicate = replace(
+        _mention("a2", confidence=0.9, specificity=0.9),
+        summary="  взятка   2 млн ",
+        received_at=date(2026, 10, 5),
+    )
+    world = RiskWorld(today=today, officials=[official], appeal_mentions=[first, duplicate])
+
+    flags = AppealMentionsRule().evaluate(official, world)
+
+    assert flags[0].severity is Severity.MEDIUM  # s = 0.81, а не 1.62
+    assert [n.id for n in flags[0].evidence if n.type is NodeType.APPEAL] == [uid("a1")]

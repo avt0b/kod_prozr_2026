@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from datetime import datetime
 
 from src.modules.stats.application.interfaces.sources import (
     AppealsCounterInterface,
@@ -6,13 +7,18 @@ from src.modules.stats.application.interfaces.sources import (
     RiskCounterInterface,
 )
 
+SEVERITIES = ("high", "medium", "low")
+APPEAL_STATUSES = ("new", "analyzed", "routed", "closed")
+
 
 @dataclass(frozen=True)
 class OverviewDTO:
     officials_total: int
-    officials_flagged: int
+    officials_with_flags: int
     flags_by_severity: dict[str, int]
+    appeals_total: int
     appeals_by_status: dict[str, int]
+    computed_at: datetime | None
 
 
 class GetOverviewUseCase:
@@ -29,9 +35,14 @@ class GetOverviewUseCase:
         self._appeals = appeals
 
     async def execute(self) -> OverviewDTO:
+        risk = await self._risk.summary()
+        appeals = await self._appeals.appeals_by_status()
+        # Все ключи всегда на месте: фронт рисует счётчик и для нуля.
         return OverviewDTO(
             officials_total=await self._officials.count_officials(),
-            officials_flagged=await self._risk.flagged_officials(),
-            flags_by_severity=await self._risk.flags_by_severity(),
-            appeals_by_status=await self._appeals.appeals_by_status(),
+            officials_with_flags=risk.flagged_officials,
+            flags_by_severity={s: risk.flags_by_severity.get(s, 0) for s in SEVERITIES},
+            appeals_total=sum(appeals.values()),
+            appeals_by_status={s: appeals.get(s, 0) for s in APPEAL_STATUSES},
+            computed_at=risk.computed_at,
         )

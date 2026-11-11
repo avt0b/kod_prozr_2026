@@ -105,3 +105,4 @@ class GraphDTO:
 class RiskStatsDTO:
     flags_by_severity: dict[str, int] = field(default_factory=dict)
     flagged_officials: int = 0
+    computed_at: datetime | None = None

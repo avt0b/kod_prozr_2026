@@ -70,7 +70,7 @@ async def handle_validation_error(request: Request, exc: Exception) -> JSONRespo
         for err in exc.errors()
     ]
     return problem_response(
-        request, 422, "ValidationError", "Request validation failed", errors=errors
+        request, 422, "RequestValidationError", "Некорректные параметры запроса", errors=errors
     )
 
 
@@ -83,7 +83,7 @@ async def handle_http_exception(request: Request, exc: Exception) -> JSONRespons
 
 async def handle_generic_exception(request: Request, exc: Exception) -> JSONResponse:
     logger.exception("Unexpected error on {} {}", request.method, request.url.path)
-    return problem_response(request, 500, "InternalServerError")
+    return problem_response(request, 500, "Internal Server Error")
 
 
 # Базовые классы: исключение модуля, унаследованное от NotFoundError, само станет 404 —
