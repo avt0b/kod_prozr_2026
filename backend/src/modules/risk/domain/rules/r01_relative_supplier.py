@@ -136,4 +136,3 @@ def _plural_contracts(count: int) -> str:
     if count % 10 in (2, 3, 4) and count % 100 not in (12, 13, 14):
         return "контракта"
     return "контрактов"
-

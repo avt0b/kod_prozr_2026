@@ -1,5 +1,9 @@
 # Егор — фронтенд: граф, обращения, слайды
 
+Общий порядок: [workflow.md](../workflow.md). Перед реализацией — GitHub issue,
+метка зоны и assignee; ветка от `dev`, рабочий PR в `dev`.
+Для разделения работы между людьми — [/task-handoff](../../.agents/skills/task-handoff/SKILL.md).
+
 Ты отвечаешь за самый зрелищный экран (граф связей), за раздел обращений и за презентацию. Типы и API-клиент берёшь у Влада Г. из `src/shared/api`.
 
 Читать перед стартом: [contracts.md](../contracts.md), [frontend.md](../frontend.md), [demo.md](../demo.md).

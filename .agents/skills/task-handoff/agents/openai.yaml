@@ -1,0 +1,4 @@
+interface:
+  display_name: "Task handoff"
+  short_description: "Разделить задачу и подготовить MD для команды"
+  default_prompt: "Используй $task-handoff: уточни число участников и подготовь задания с issues, границами файлов и порядком интеграции."

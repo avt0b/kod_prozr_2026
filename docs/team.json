@@ -1,0 +1,46 @@
+{
+  "roman": {
+    "name": "Роман",
+    "github": "avt0b",
+    "areas": [
+      "back"
+    ]
+  },
+  "misha": {
+    "name": "Миша",
+    "github": "1nsanexeEZ",
+    "areas": [
+      "back"
+    ]
+  },
+  "vlad-g": {
+    "name": "Влад Гуселетов",
+    "github": "Soerxq",
+    "areas": [
+      "front"
+    ]
+  },
+  "egor": {
+    "name": "Егор",
+    "github": "durnoi-chel",
+    "areas": [
+      "front",
+      "docs"
+    ]
+  },
+  "vlad-o": {
+    "name": "Влад Остриков",
+    "github": "ostrix05",
+    "areas": [
+      "ai",
+      "data"
+    ]
+  },
+  "kirill": {
+    "name": "Кирилл",
+    "github": "Shvarts999",
+    "areas": [
+      "devops"
+    ]
+  }
+}
