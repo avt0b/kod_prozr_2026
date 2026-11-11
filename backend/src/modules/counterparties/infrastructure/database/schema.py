@@ -1,0 +1,1 @@
+COUNTERPARTIES_SCHEMA = "counterparties"

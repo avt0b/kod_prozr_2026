@@ -1,0 +1,23 @@
+[
+  {
+    "id": "be41f779-ff28-5538-abe5-05a9bb328232",
+    "organ_id": "92904ca1-9be8-5b19-befc-8d8f725e914d",
+    "title": "Начальник отдела",
+    "department": "Отдел муниципальных закупок",
+    "is_corruption_risky": true
+  },
+  {
+    "id": "0bbaa578-88e3-5564-acd6-caa94ef97356",
+    "organ_id": "04931095-62d2-5a09-85b2-5991657301ea",
+    "title": "Заместитель министра",
+    "department": "Руководство",
+    "is_corruption_risky": true
+  },
+  {
+    "id": "5e9f86bf-91f8-54f3-938f-58aa95eb08f3",
+    "organ_id": "92904ca1-9be8-5b19-befc-8d8f725e914d",
+    "title": "Главный специалист",
+    "department": "Отдел кадров",
+    "is_corruption_risky": false
+  }
+]

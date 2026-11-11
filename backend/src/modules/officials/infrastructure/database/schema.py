@@ -1,0 +1,1 @@
+OFFICIALS_SCHEMA = "officials"

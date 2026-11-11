@@ -1,0 +1,76 @@
+from collections.abc import Sequence
+from datetime import date
+from uuid import UUID
+
+from src.core.utils.iterables import chunked
+from src.modules.risk.application.interfaces.appeals_source import AppealsSourceInterface
+from src.modules.risk.application.interfaces.counterparties_source import (
+    CounterpartiesSourceInterface,
+)
+from src.modules.risk.application.interfaces.officials_source import OfficialsSourceInterface
+from src.modules.risk.domain.facts import (
+    AppealMentionFacts,
+    CompanyFacts,
+    CompanyRoleFacts,
+    ContractFacts,
+)
+from src.modules.risk.domain.world import RiskWorld
+
+MAX_CONTRACTS = 500_000
+
+
+class RiskWorldLoader:
+    """Собирает RiskWorld из трёх контекстов через порты. Запросы пачками, без N+1.
+
+    Новое правило требует новых фактов -> добавь их загрузку здесь и поле в RiskWorld.
+    """
+
+    def __init__(
+        self,
+        officials: OfficialsSourceInterface,
+        counterparties: CounterpartiesSourceInterface,
+        appeals: AppealsSourceInterface,
+    ) -> None:
+        self._officials = officials
+        self._counterparties = counterparties
+        self._appeals = appeals
+
+    async def load(
+        self, person_ids: Sequence[UUID] | None = None, today: date | None = None
+    ) -> RiskWorld:
+        ids = list(person_ids) if person_ids is not None else await self._officials.official_ids()
+        officials = await self._officials.officials(ids)
+
+        linked_person_ids = list(
+            {o.person.id for o in officials} | {r.person.id for o in officials for r in o.relatives}
+        )
+        roles: list[CompanyRoleFacts] = []
+        for batch in chunked(linked_person_ids):
+            roles.extend(await self._counterparties.roles_for_persons(batch))
+
+        company_ids = list(
+            {r.company_id for r in roles} | {e.company_id for o in officials for e in o.employments}
+        )
+        companies: list[CompanyFacts] = []
+        for batch in chunked(company_ids):
+            companies.extend(await self._counterparties.companies(batch))
+
+        organ_ids = list({a.organ_id for o in officials for a in o.appointments})
+        contracts: list[ContractFacts] = []
+        for batch in chunked(organ_ids):
+            contracts.extend(
+                await self._counterparties.contracts(customer_organ_ids=batch, limit=MAX_CONTRACTS)
+            )
+
+        mentions: list[AppealMentionFacts] = []
+        for batch in chunked([o.person.id for o in officials]):
+            mentions.extend(await self._appeals.mentions(batch))
+
+        return RiskWorld(
+            today=today or date.today(),
+            officials=officials,
+            companies=companies,
+            company_roles=roles,
+            contracts=contracts,
+            appeal_mentions=mentions,
+        )

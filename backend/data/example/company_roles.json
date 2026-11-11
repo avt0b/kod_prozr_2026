@@ -1,0 +1,29 @@
+[
+  {
+    "id": "b3024f0f-dcbd-5ebc-87a1-21f1a0b2a16f",
+    "company_id": "749cc21a-1319-57ed-b4d4-39f5e519c7a8",
+    "person_id": "30ad380e-6a1c-5635-98fa-f16d09b2e431",
+    "role": "founder",
+    "share": 100,
+    "started_at": "2018-05-14",
+    "ended_at": null
+  },
+  {
+    "id": "26fdec3d-0ff0-5cc2-868f-0b3fa26058e3",
+    "company_id": "e4224478-3681-5b28-a5ae-cc603af3345a",
+    "person_id": "ca0f5d74-36ee-5cd1-9b10-fd0cec3423d1",
+    "role": "director",
+    "share": null,
+    "started_at": "2012-03-01",
+    "ended_at": null
+  },
+  {
+    "id": "08fe5304-58aa-5a97-bb4d-f6bffd7c2568",
+    "company_id": "eda005f9-63bd-59e5-9db4-cb20ae8fbffe",
+    "person_id": "ca0f5d74-36ee-5cd1-9b10-fd0cec3423d1",
+    "role": "founder",
+    "share": 50,
+    "started_at": "2008-01-10",
+    "ended_at": null
+  }
+]

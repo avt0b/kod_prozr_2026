@@ -1,0 +1,43 @@
+# Установка: uv tool install pre-commit && pre-commit install
+# Прогнать по всем файлам: pre-commit run --all-files
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+        # --unsafe: только синтаксис, иначе падает на тегах !reset/!override
+        # в docker-compose.override.example.yml.
+        args: [--unsafe]
+      - id: check-added-large-files
+        args: [--maxkb=1024]
+      - id: check-merge-conflict
+      - id: detect-private-key
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.16.10
+    hooks:
+      - id: ruff
+        args: [--fix]
+        files: ^backend/
+      - id: ruff-format
+        files: ^backend/
+
+  # Фронт: инструменты из frontend/node_modules (нужен `cd frontend && npm ci`),
+  # чтобы версии совпадали с package.json, а не жили отдельно в pre-commit.
+  - repo: local
+    hooks:
+      - id: prettier
+        name: prettier (frontend)
+        # Пути приходят от корня репо — срезаем префикс frontend/.
+        entry: bash -c 'cd frontend && npx --no-install prettier --write --ignore-unknown "${@#frontend/}"' --
+        language: system
+        files: ^frontend/.*\.(ts|tsx|js|jsx|css|json|md|html)$
+        exclude: ^frontend/package-lock\.json$
+
+      - id: eslint
+        name: eslint (frontend)
+        entry: bash -c 'cd frontend && npx --no-install eslint --fix "${@#frontend/}"' --
+        language: system
+        files: ^frontend/.*\.(ts|tsx|js|jsx)$

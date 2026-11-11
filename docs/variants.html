@@ -1,0 +1,361 @@
+<title>Направление 04: варианты решения</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: одна колонка-досье ~960px; варианты — карточки 2×2, сравнение — таблица, рекомендация — выделенная полоса */
+:root {
+  --bg: #EDF1F7;
+  --surface: #FFFFFF;
+  --fg: #1A2747;
+  --muted: #5B6A86;
+  --line: #D4DCE9;
+  --accent: #1D3F9E;
+  --accent-soft: #E1E8F7;
+  --ok: #1F7A4D;   --ok-bg: #E2F3EA;
+  --warn: #9A6200; --warn-bg: #FBF0DA;
+  --bad: #A8322B;  --bad-bg: #F9E4E2;
+  --font-display: "Onest", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Onest", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0D1320; --surface: #151D2D; --fg: #E3E8F2; --muted: #94A2BC; --line: #27324A;
+    --accent: #93AEF5; --accent-soft: #1C2A4A;
+    --ok: #6FD3A0; --ok-bg: #133326; --warn: #F0C064; --warn-bg: #3A2C10; --bad: #F2908A; --bad-bg: #3D1A18;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0D1320; --surface: #151D2D; --fg: #E3E8F2; --muted: #94A2BC; --line: #27324A;
+  --accent: #93AEF5; --accent-soft: #1C2A4A;
+  --ok: #6FD3A0; --ok-bg: #133326; --warn: #F0C064; --warn-bg: #3A2C10; --bad: #F2908A; --bad-bg: #3D1A18;
+  color-scheme: dark;
+}
+
+body { background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: 15px; line-height: 1.55; }
+.wrap {
+  max-width: 960px; margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 40px 64px;
+  display: grid; gap: 48px;
+}
+h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; margin: 0; line-height: 1.2; }
+h1 { font-size: clamp(26px, 4.2vw, 36px); font-weight: 700; }
+h2 { font-size: 22px; font-weight: 600; }
+h3 { font-size: 18px; font-weight: 600; }
+p { margin: 0; max-width: 68ch; }
+ul { margin: 0; padding-left: 1.2em; display: grid; gap: 4px; }
+.mono { font-family: var(--font-mono); }
+.eyebrow { font-family: var(--font-mono); font-size: 13px; font-weight: 600; color: var(--accent); letter-spacing: 0.04em; }
+.muted { color: var(--muted); }
+section { display: grid; gap: 16px; }
+section > header { display: grid; gap: 6px; }
+
+/* hero */
+.hero { display: grid; gap: 14px; border-bottom: 1px solid var(--line); padding-bottom: 32px; }
+.hero p { font-size: 17px; color: var(--muted); }
+
+/* задание */
+.tracks { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
+.track { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 18px; display: grid; gap: 8px; align-content: start; }
+.track .eyebrow { color: var(--muted); }
+.done { display: grid; gap: 8px; border-left: 3px solid var(--bad); padding: 4px 0 4px 14px; }
+.done strong { color: var(--bad); font-weight: 600; }
+
+/* опора из статьи */
+.facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; }
+.facts > div { display: grid; gap: 6px; align-content: start; }
+.facts b { font-weight: 600; }
+
+/* варианты */
+.variants { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); gap: 14px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 20px; display: grid; gap: 12px; align-content: start; min-width: 0; }
+.card.rec { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+.card-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
+.tag { font-family: var(--font-mono); font-size: 11.5px; font-weight: 600; letter-spacing: 0.03em; padding: 3px 8px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); white-space: nowrap; }
+.card dl { margin: 0; display: grid; grid-template-columns: 92px 1fr; gap: 8px 12px; font-size: 14px; }
+.card dt { color: var(--muted); font-family: var(--font-mono); font-size: 12px; padding-top: 2px; }
+.card dd { margin: 0; min-width: 0; }
+.example { font-size: 13.5px; background: var(--bg); border-radius: 8px; padding: 10px 12px; color: var(--muted); }
+.example b { color: var(--fg); font-weight: 600; }
+
+/* шкала */
+.lvl { display: inline-flex; gap: 3px; vertical-align: middle; margin-right: 6px; }
+.lvl i { width: 14px; height: 6px; border-radius: 2px; background: var(--line); }
+.lvl[data-v="1"] i:nth-child(-n+1),
+.lvl[data-v="2"] i:nth-child(-n+2),
+.lvl[data-v="3"] i:nth-child(-n+3) { background: var(--accent); }
+
+/* таблица */
+.table-scroll { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; }
+table { border-collapse: collapse; width: 100%; min-width: 640px; font-size: 14px; }
+th, td { text-align: left; padding: 11px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+thead th { font-family: var(--font-mono); font-size: 12px; font-weight: 600; color: var(--muted); background: var(--bg); }
+tbody tr:last-child td { border-bottom: 0; }
+tbody th { font-weight: 600; white-space: nowrap; }
+.pill { display: inline-block; font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 999px; white-space: nowrap; }
+.pill.ok { background: var(--ok-bg); color: var(--ok); }
+.pill.warn { background: var(--warn-bg); color: var(--warn); }
+.pill.bad { background: var(--bad-bg); color: var(--bad); }
+tr.rec-row { background: var(--accent-soft); }
+
+/* рекомендация */
+.verdict { background: var(--accent-soft); border-radius: 14px; padding: 24px; display: grid; gap: 16px; }
+.verdict h2 { color: var(--accent); }
+.verdict-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+.verdict-grid > div { display: grid; gap: 6px; align-content: start; min-width: 0; }
+.diagram { background: var(--surface); border-radius: 10px; padding: 12px; overflow-x: auto; }
+.diagram pre { margin: 0; }
+
+/* план */
+.plan { display: grid; gap: 0; counter-reset: step; }
+.plan > div { display: grid; grid-template-columns: 110px 1fr; gap: 14px; padding: 12px 0; border-bottom: 1px solid var(--line); }
+.plan > div:last-child { border-bottom: 0; }
+.plan .when { font-family: var(--font-mono); font-size: 13px; color: var(--accent); font-weight: 600; padding-top: 1px; }
+
+.qs { display: grid; gap: 8px; }
+.qs li::marker { color: var(--accent); }
+
+footer { font-size: 13px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 16px; }
+
+@media (max-width: 520px) {
+  .card dl { grid-template-columns: 1fr; gap: 2px; }
+  .card dd { margin-bottom: 8px; }
+  .plan > div { grid-template-columns: 1fr; gap: 4px; }
+}
+</style>
+
+<div class="wrap">
+
+  <div class="hero">
+    <span class="eyebrow">НАПРАВЛЕНИЕ 04 · ХАКАТОН · ВАРИАНТЫ РЕШЕНИЯ</span>
+    <h1>Автоматизация информационно-аналитического обеспечения профилактики коррупции</h1>
+    <p>Разбор задания и статьи Цирина «Цифровой профиль коррупционера» (2026) с четырьмя вариантами реализации и одной рекомендацией.</p>
+  </div>
+
+  <section>
+    <header>
+      <span class="eyebrow">ЗАДАНИЕ</span>
+      <h2>Чего хотят организаторы</h2>
+    </header>
+    <div class="tracks">
+      <div class="track">
+        <span class="eyebrow">ТРЕК 1</span>
+        <h3>Цифровой профиль служащего</h3>
+        <p>Нужен не сборник данных о человеке. Надо сопоставить должность, полномочия и связи, найти потенциальные конфликты интересов и аффилированность. Модель должна быть риск-ориентированной: не контролировать всех подряд, а точечно указывать, куда направить проверку.</p>
+      </div>
+      <div class="track">
+        <span class="eyebrow">ТРЕК 2</span>
+        <h3>NLP по обращениям граждан</h3>
+        <p>Сообщения о коррупционных проявлениях нужно классифицировать, направлять в нужное подразделение и выделять в них риск-сигналы.</p>
+      </div>
+    </div>
+    <div class="done">
+      <p><strong>Уже сделано, не повторять.</strong> ГИС «Посейдон» сверяет доходы, расходы и имущество по декларациям. РАНХиГС разработал маркеры коррупции в контрольно-надзорной деятельности и проверяет их в Правительстве Москвы.</p>
+    </div>
+  </section>
+
+  <section>
+    <header>
+      <span class="eyebrow">ОПОРА ИЗ СТАТЬИ</span>
+      <h2>Что взять из статьи Цирина</h2>
+    </header>
+    <div class="facts">
+      <div>
+        <b>Предиктивный профиль вместо портрета задним числом</b>
+        <p class="muted">Это набор маркеров, которые статистически связаны с риском. Система ищет условия для коррупции, а не уже совершённые правонарушения.</p>
+      </div>
+      <div>
+        <b>13 финансовых маркеров и сетевой анализ</b>
+        <p class="muted">Кольцо родственных счетов, номиналы, «откат» круглой суммой после тендера. Банковских данных у нас нет, поэтому схемы закладываем в синтетику.</p>
+      </div>
+      <div>
+        <b>Сигнал должен объяснять схему</b>
+        <p class="muted">Нужно «комплексное сообщение», раскрывающее логику схемы, а не одиночный флаг. Поэтому каждый вывод системы должен быть объяснимым.</p>
+      </div>
+      <div>
+        <b>Этика и персональные данные</b>
+        <p class="muted">Целевое ограничение, минимизация данных, человек принимает решение. Жюри спросит про 152-ФЗ, поэтому ответ готовим заранее.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <header>
+      <span class="eyebrow">ВАРИАНТЫ</span>
+      <h2>Четыре направления и надстройка</h2>
+    </header>
+    <div class="variants">
+
+      <article class="card rec">
+        <div class="card-top"><span class="eyebrow">ВАРИАНТ A</span><span class="tag">ЯДРО</span></div>
+        <h3>Граф конфликта интересов</h3>
+        <p>Сопоставляем то, что служащий решает по должности, с тем, с кем он связан. «Посейдон» смотрит на деньги, мы смотрим на полномочия.</p>
+        <dl>
+          <dt>Сущности</dt><dd>Служащий → должность → полномочия (закупки по ОКПД2, разрешения, проверки, территория) ↔ родственники → юрлица и ИП → контракты</dd>
+          <dt>Правила</dt><dd>Компания родственника получает контракты своего органа. Бывший работодатель стал подрядчиком. Переход в компанию-подрядчика после увольнения (ст. 12 273-ФЗ). Общий адрес или телефон в ЕГРЮЛ.</dd>
+          <dt>ML</dt><dd>Сравнение с коллегами той же должности и региона, Isolation Forest. У каждого флага есть объяснение и ссылка на норму.</dd>
+          <dt>Демо</dt><dd>Рейтинг риска, карточка профиля с графом связей, автоматический черновик докладной записки</dd>
+          <dt>Данные</dt><dd>Открытые: zakupki.gov.ru, ЕГРЮЛ, declarator.org. Плюс синтетика с заложенными схемами.</dd>
+        </dl>
+        <div class="example"><b>Сценарий для демо:</b> начальник отдела закупок, его супруга учредитель ООО, у ООО 5 контрактов с этим же органом за 2 года. Система поднимает его в начало списка и показывает цепочку связей.</div>
+      </article>
+
+      <article class="card">
+        <div class="card-top"><span class="eyebrow">ВАРИАНТ B</span><span class="tag">БЫСТРОЕ ДЕМО</span></div>
+        <h3>NLP-обработка обращений</h3>
+        <p>Рабочее место для входящих обращений: система читает текст, раскладывает его по полям и предлагает, куда направить.</p>
+        <dl>
+          <dt>Классы</dt><dd>Коррупция или нет. Тип: взятка, конфликт интересов, закупки, превышение полномочий.</dd>
+          <dt>Извлечение</dt><dd>ФИО, должности, организации, суммы, даты, адреса</dd>
+          <dt>Риск-сигнал</dt><dd>Насколько сообщение конкретно (есть ли имя, сумма, дата). Серия обращений на одного человека или организацию важнее одиночного.</dd>
+          <dt>Стек</dt><dd>LLM, для госсектора лучше локальная (Qwen и подобные), либо ruBERT и Natasha. Датасет генерируем с помощью LLM.</dd>
+          <dt>Демо</dt><dd>Входящие с тегами, подсвеченными фрагментами текста и предложенным получателем</dd>
+        </dl>
+        <div class="example"><b>Минус:</b> очевидная идея. Её сделает больше всего команд, выделиться трудно.</div>
+      </article>
+
+      <article class="card rec">
+        <div class="card-top"><span class="eyebrow">ВАРИАНТ C = A + B</span><span class="tag">РЕКОМЕНДУЕМ</span></div>
+        <h3>Единое рабочее место аналитика</h3>
+        <p>Обращение упоминает служащего, система сопоставляет его с профилем из A, и сигнал из обращения повышает риск-балл. Закрывает оба трека задания в одном продукте.</p>
+        <dl>
+          <dt>Как</dt><dd>A делаем полноценно. B упрощаем: LLM с промптом вместо обучения своих моделей.</dd>
+          <dt>Связка</dt><dd>Сопоставление сущностей: ФИО и должность из текста → служащий в графе</dd>
+          <dt>Демо</dt><dd>Пришла жалоба → риск-балл служащего вырос → открыли граф → увидели аффилированное ООО → сформировали докладную</dd>
+          <dt>Риск</dt><dd>Объём работ. Нужен жёсткий приоритет: сначала A, потом B.</dd>
+        </dl>
+      </article>
+
+      <article class="card">
+        <div class="card-top"><span class="eyebrow">ВАРИАНТ D</span><span class="tag">НЕСТАНДАРТНЫЙ</span></div>
+        <h3>Карта коррупционных рисков должностей</h3>
+        <p>Анализируем не людей, а должности. NLP читает должностные регламенты, извлекает полномочия и автоматически строит карту коррупционных рисков и перечень коррупционно-опасных должностей.</p>
+        <dl>
+          <dt>Зачем</dt><dd>Каждый орган обязан вести эти документы, и сейчас их составляют вручную</dd>
+          <dt>Плюсы</dt><dd>Без персональных данных, поэтому нет этических вопросов. Скорее всего, никто из команд такого не сделает.</dd>
+          <dt>Минус</dt><dd>Менее зрелищно на демо</dd>
+          <dt>Связка</dt><dd>Полномочия из D становятся входом для графа A</dd>
+        </dl>
+      </article>
+
+    </div>
+
+    <div class="card">
+      <div class="card-top"><span class="eyebrow">НАДСТРОЙКА К ЛЮБОМУ ВАРИАНТУ</span><span class="tag">ДЛЯ ЭФФЕКТА НА ЗАЩИТЕ</span></div>
+      <h3>LLM-ассистент аналитика</h3>
+      <p>Вопрос на естественном языке, например «покажи служащих, у которых родственники среди подрядчиков их органа», превращается в запрос к графу и даёт ответ со ссылками на источники. Ассистент может написать и черновик служебной записки по найденной схеме.</p>
+    </div>
+  </section>
+
+  <section>
+    <header>
+      <span class="eyebrow">СРАВНЕНИЕ</span>
+      <h2>Варианты рядом</h2>
+    </header>
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr><th>Вариант</th><th>Сложность</th><th>Эффект на демо</th><th>Пересечение с готовым</th><th>Персональные данные</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th>A. Граф конфликта интересов</th>
+            <td><span class="lvl" data-v="2"><i></i><i></i><i></i></span>средняя</td>
+            <td><span class="pill ok">высокий</span></td>
+            <td><span class="pill ok">низкое</span></td>
+            <td><span class="pill warn">есть, нужен ответ про 152-ФЗ</span></td>
+          </tr>
+          <tr>
+            <th>B. NLP обращений</th>
+            <td><span class="lvl" data-v="1"><i></i><i></i><i></i></span>низкая</td>
+            <td><span class="pill warn">средний</span></td>
+            <td><span class="pill bad">много конкурентов</span></td>
+            <td><span class="pill ok">минимум</span></td>
+          </tr>
+          <tr class="rec-row">
+            <th>C. A + B</th>
+            <td><span class="lvl" data-v="3"><i></i><i></i><i></i></span>высокая</td>
+            <td><span class="pill ok">самый высокий</span></td>
+            <td><span class="pill ok">низкое</span></td>
+            <td><span class="pill warn">есть, нужен ответ про 152-ФЗ</span></td>
+          </tr>
+          <tr>
+            <th>D. Карта рисков должностей</th>
+            <td><span class="lvl" data-v="2"><i></i><i></i><i></i></span>средняя</td>
+            <td><span class="pill warn">средний</span></td>
+            <td><span class="pill ok">нет</span></td>
+            <td><span class="pill ok">нет</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="verdict">
+    <header>
+      <span class="eyebrow">РЕКОМЕНДАЦИЯ</span>
+      <h2>Делаем C: ядро A, облегчённый B, D при наличии времени</h2>
+    </header>
+    <div class="verdict-grid">
+      <div>
+        <b>Почему</b>
+        <p>Закрывает оба трека задания, не повторяет «Посейдон» и РАНХиГС. На демо получается понятная история от жалобы до найденной схемы.</p>
+      </div>
+      <div>
+        <b>Стек</b>
+        <p class="mono" style="font-size:13px">FastAPI · Postgres или Neo4j · LLM (API или локально) · React или Streamlit · docker compose</p>
+      </div>
+      <div>
+        <b>Ответ жюри про этику</b>
+        <p>Система только подсвечивает риск, решение принимает человек. Каждый флаг объясним и ссылается на норму. Используем только данные, которые относятся к должности. Соцсети не парсим.</p>
+      </div>
+    </div>
+    <div class="diagram">
+<pre class="mermaid">
+flowchart LR
+  R["Реестры<br/>ЕГРЮЛ · закупки · декларации"] --> G["Граф связей<br/>служащий · родня · юрлица · контракты"]
+  P["Регламенты должностей<br/>(вариант D)"] -. полномочия .-> G
+  O["Обращения граждан"] --> N["LLM / NLP<br/>класс · сущности · сигналы"]
+  N -- сопоставление сущностей --> G
+  G --> S["Правила 273-ФЗ + ML<br/>объяснимый риск-балл"]
+  S --> U["Рабочее место аналитика<br/>рейтинг · профиль · граф"]
+  U --> D["Черновик докладной"]
+</pre>
+    </div>
+  </section>
+
+  <section>
+    <header>
+      <span class="eyebrow">ПОРЯДОК РАБОТЫ</span>
+      <h2>Что делать по очереди</h2>
+    </header>
+    <div class="plan">
+      <div><span class="when">Шаг 1</span><p>Схема данных и генератор синтетики с 4–5 заложенными схемами конфликта интересов. Загрузка кусочка открытых данных о закупках для правдоподобия.</p></div>
+      <div><span class="when">Шаг 2</span><p>Граф и правила, объяснимый риск-балл, API.</p></div>
+      <div><span class="when">Шаг 3</span><p>Интерфейс: рейтинг, карточка профиля, визуализация графа.</p></div>
+      <div><span class="when">Шаг 4</span><p>Обращения через LLM: классификация, извлечение сущностей, привязка к профилю.</p></div>
+      <div><span class="when">Шаг 5</span><p>Черновик докладной, ассистент и вариант D, если остаётся время. Сценарий демо и презентация.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <header>
+      <span class="eyebrow">ОТКРЫТЫЕ ВОПРОСЫ</span>
+      <h2>Что выяснить у команды и организаторов</h2>
+    </header>
+    <ul class="qs">
+      <li>Сколько человек в команде и сколько дней до сдачи?</li>
+      <li>Дают ли организаторы свои данные, или работаем с открытыми и синтетикой?</li>
+      <li>Есть ли требования к стеку и можно ли использовать внешние LLM (YandexGPT, GigaChat, OpenAI)?</li>
+      <li>Как оценивают: работающий прототип, презентация или их сочетание?</li>
+    </ul>
+  </section>
+
+  <footer>Источники: задание направления 04 (docx от организаторов). Цирин А. М., Севальнев В. В., Шао Цзысюань. Цифровой профиль коррупционера // Журн. СФУ. Гуманитарные науки, 2026, 19(4), 888–898.</footer>
+
+</div>

@@ -1,0 +1,1 @@
+APPEALS_SCHEMA = "appeals"

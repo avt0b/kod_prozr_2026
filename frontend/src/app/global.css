@@ -1,0 +1,4 @@
+/* Глобальные стили — минимум. Компонентные стили пишем через props Mantine или *.module.css рядом с компонентом. */
+body {
+  background: var(--mantine-color-body);
+}

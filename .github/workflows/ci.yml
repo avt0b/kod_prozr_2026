@@ -1,0 +1,108 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  # Бэк и фронт появляются в репо не сразу: hashFiles недоступен в job-level `if`,
+  # поэтому наличие каркасов определяем отдельным job и передаём через outputs.
+  detect:
+    runs-on: ubuntu-latest
+    outputs:
+      backend: ${{ steps.check.outputs.backend }}
+      frontend: ${{ steps.check.outputs.frontend }}
+    steps:
+      - uses: actions/checkout@v5
+      - id: check
+        run: |
+          [ -f backend/pyproject.toml ] && echo "backend=true" >> "$GITHUB_OUTPUT" || echo "backend=false" >> "$GITHUB_OUTPUT"
+          [ -f frontend/package.json ] && echo "frontend=true" >> "$GITHUB_OUTPUT" || echo "frontend=false" >> "$GITHUB_OUTPUT"
+
+  backend:
+    needs: detect
+    if: needs.detect.outputs.backend == 'true'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    # Postgres для интеграционных тестов; юнит-тестам не мешает.
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: kodprozr
+          POSTGRES_PASSWORD: kodprozr
+          POSTGRES_DB: kodprozr
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U kodprozr -d kodprozr"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgresql+asyncpg://kodprozr:kodprozr@localhost:5432/kodprozr
+      CORS_ORIGINS: http://localhost:5173
+      LLM_BASE_URL: http://localhost:11434/v1
+      LLM_API_KEY: ci-dummy
+      LLM_MODEL: qwen2.5:7b-instruct
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          cache-dependency-glob: backend/uv.lock
+
+      # Версию Python uv берёт из backend/.python-version / requires-python.
+      - name: Install dependencies
+        run: |
+          if [ -f uv.lock ]; then uv sync --locked; else uv sync; fi
+
+      - name: Ruff check
+        run: uv run ruff check .
+
+      - name: Ruff format
+        run: uv run ruff format --check .
+
+      # Код 5 = «тестов не найдено» — на старте каркаса это не ошибка.
+      - name: Pytest
+        run: uv run pytest || [ $? -eq 5 ]
+
+  frontend:
+    needs: detect
+    if: needs.detect.outputs.frontend == 'true'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    env:
+      VITE_API_URL: http://localhost:8000/api/v1
+    steps:
+      - uses: actions/checkout@v5
+
+      # Кэш npm требует frontend/package-lock.json — он должен быть в git.
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint --if-present
+
+      - name: Build
+        run: npm run build
