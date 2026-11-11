@@ -10,6 +10,10 @@
 >
 > Контракт API и модели — [contracts.md](contracts.md). Решения — [decisions.md](decisions.md).
 
+Правила ведения задач и релиза — [workflow.md](workflow.md): issue → рабочая ветка от `dev`
+→ PR в `dev` → релизный PR `dev → main`. Передача задач нескольким людям —
+[/task-handoff](../.agents/skills/task-handoff/SKILL.md). GitHub-логины — [team.json](team.json).
+
 ## Роли
 
 | Кто | Зона | Основные модули |

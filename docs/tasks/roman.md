@@ -1,5 +1,9 @@
 # Роман — бэкенд: архитектура, API, риск-движок
 
+Общий порядок: [workflow.md](../workflow.md). Перед реализацией — GitHub issue,
+метка зоны и assignee; ветка от `dev`, рабочий PR в `dev`.
+Для разделения работы между людьми — [/task-handoff](../../.agents/skills/task-handoff/SKILL.md).
+
 Ты отвечаешь за скелет бэка, API профилей и риск-движок. Ещё ты ведёшь созвон по контракту и на защите выступаешь спикером.
 
 Читать перед стартом: [contracts.md](../contracts.md), [backend.md](../backend.md), [decisions.md](../decisions.md) (ADR-02, 04, 08, 10).

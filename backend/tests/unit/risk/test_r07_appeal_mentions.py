@@ -9,7 +9,9 @@ from src.modules.risk.domain.world import RiskWorld
 from tests.unit.risk.conftest import make_official, uid
 
 
-def _mention(key: str, *, confidence: float, specificity: float, corrupt: bool = True) -> AppealMentionFacts:
+def _mention(
+    key: str, *, confidence: float, specificity: float, corrupt: bool = True
+) -> AppealMentionFacts:
     return AppealMentionFacts(
         appeal_id=uid(key),
         person_id=uid("official"),

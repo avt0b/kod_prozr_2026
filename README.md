@@ -20,6 +20,13 @@ kod_prozr_2026/
 └── .github/workflows/ci.yml # ruff + pytest, eslint + build
 ```
 
+## Начало работы разработчика
+
+Сначала прочитайте [AGENTS.md](AGENTS.md) и [регламент команды](docs/workflow.md):
+задача начинается с issue и ответственного, рабочие ветки создаются от `dev`, PR идут в `dev`,
+релиз — `dev → main`. Для разделения работы между людьми есть **`/task-handoff`**:
+[инструкция навыка](.agents/skills/task-handoff/SKILL.md).
+
 ## Быстрый старт
 
 Нужны Docker с Compose v2.24+ и make.
@@ -37,6 +44,7 @@ cp .env.example .env && make up
 
 ## Документация
 
+- [docs/workflow.md](docs/workflow.md) — issues, люди, метки, ветки, PR, релизы и `/task-handoff`
 - [docs/contracts.md](docs/contracts.md) — общий контракт: порты, переменные, доменная модель, правила риска, API
 - [docs/devops.md](docs/devops.md) — сервисы, dev-режим, локальная LLM, деплой на VPS
 - [docs/variants.html](docs/variants.html) — варианты решения и выбранный подход

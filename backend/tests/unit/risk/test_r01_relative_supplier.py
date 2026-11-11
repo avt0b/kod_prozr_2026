@@ -50,7 +50,12 @@ def test_r01_fires_when_spouse_company_gets_contracts_of_officials_organ(today: 
 def test_r01_fires_for_officials_own_company(today: date) -> None:
     official = make_official(with_spouse=False)
 
-    flags = _evaluate(official, [make_role("official", "director")], [make_contract("c1", date(2023, 4, 18))], today)
+    flags = _evaluate(
+        official,
+        [make_role("official", "director")],
+        [make_contract("c1", date(2023, 4, 18))],
+        today,
+    )
 
     assert len(flags) == 1
     assert flags[0].evidence[1].type is NodeType.COMPANY
@@ -59,7 +64,9 @@ def test_r01_fires_for_officials_own_company(today: date) -> None:
 def test_r01_ignores_contracts_signed_before_appointment(today: date) -> None:
     official = make_official(started_at=date(2021, 3, 1))
 
-    flags = _evaluate(official, [make_role("spouse")], [make_contract("c1", date(2020, 6, 1))], today)
+    flags = _evaluate(
+        official, [make_role("spouse")], [make_contract("c1", date(2020, 6, 1))], today
+    )
 
     assert flags == []
 
@@ -79,6 +86,8 @@ def test_r01_ignores_okpd2_outside_authority_scope(today: date) -> None:
 def test_r01_requires_procurement_authority(today: date) -> None:
     official = make_official(authorities=(AuthorityFacts("hr"),))
 
-    flags = _evaluate(official, [make_role("spouse")], [make_contract("c1", date(2023, 4, 18))], today)
+    flags = _evaluate(
+        official, [make_role("spouse")], [make_contract("c1", date(2023, 4, 18))], today
+    )
 
     assert flags == []

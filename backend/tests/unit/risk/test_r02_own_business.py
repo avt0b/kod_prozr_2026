@@ -25,7 +25,10 @@ def test_r02_fires_for_director_of_active_company(today: date) -> None:
 def test_r02_founder_explanation_mentions_trust_management(today: date) -> None:
     official = make_official()
     world = RiskWorld(
-        today=today, officials=[official], companies=[make_company()], company_roles=[make_role("official")]
+        today=today,
+        officials=[official],
+        companies=[make_company()],
+        company_roles=[make_role("official")],
     )
 
     flags = OwnBusinessRule().evaluate(official, world)
@@ -49,7 +52,10 @@ def test_r02_ignores_liquidated_company(today: date) -> None:
 def test_r02_ignores_relatives_business(today: date) -> None:
     official = make_official()
     world = RiskWorld(
-        today=today, officials=[official], companies=[make_company()], company_roles=[make_role("spouse")]
+        today=today,
+        officials=[official],
+        companies=[make_company()],
+        company_roles=[make_role("spouse")],
     )
 
     assert OwnBusinessRule().evaluate(official, world) == []

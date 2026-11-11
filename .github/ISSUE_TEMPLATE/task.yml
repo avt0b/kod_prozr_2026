@@ -1,0 +1,48 @@
+name: Задача команды
+description: Реализация, исправление или обслуживание с ответственным и критериями приёмки
+title: "[ID плана]: краткое название"
+body:
+  - type: textarea
+    id: goal
+    attributes:
+      label: Проблема и результат
+      description: Текущее поведение, цель, ID плана и ссылки на документацию.
+    validations:
+      required: true
+  - type: input
+    id: owner
+    attributes:
+      label: Ответственный
+      description: GitHub-логин из docs/team.json. Также назначить этого человека в Assignees.
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Зоны
+      description: Также проставить соответствующие Labels; форма не назначает их автоматически.
+      multiple: true
+      options: [back, front, devops, ai, data, docs]
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Объём и границы
+      description: Что меняем, что исключено, какие файлы принадлежат исполнителю.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Критерии приёмки и проверки
+      description: Наблюдаемый результат, команды проверок, тестовые данные.
+    validations:
+      required: true
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Зависимости и интеграция
+      description: Родительский issue, блокирующие задачи, исходный commit dev, общие файлы и ревьюер.
+    validations:
+      required: true
