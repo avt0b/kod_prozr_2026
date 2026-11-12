@@ -14,5 +14,5 @@ async def ask(
     body: AskRequest,
     use_case: Annotated[AskQuestionUseCase, Depends(get_ask_question_use_case)],
 ) -> AskResponse:
-    """Вопрос ассистенту аналитика. Сейчас — заглушка (FakeAssistant)."""
+    """Вопрос аналитику: фиксированные инструменты чтения и источники из БД."""
     return AskResponse.model_validate(await use_case.execute(body.question))

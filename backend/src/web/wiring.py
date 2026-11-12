@@ -15,6 +15,7 @@ from src.modules.appeals.infrastructure.adapters.officials_acl import (
     OfficialsDirectoryACLAdapter,
 )
 from src.modules.appeals.infrastructure.repositories.appeal_repository import AppealRepository
+from src.modules.assistant.infrastructure.adapters.data_acl import AssistantToolsACL
 from src.modules.counterparties.application.use_cases.query_counterparties import (
     QueryCounterpartiesUseCase,
 )
@@ -139,3 +140,12 @@ def stats_risk_counter(session: AsyncSession) -> RiskCounterACLAdapter:
 
 def stats_appeals_counter(session: AsyncSession) -> AppealsCounterACLAdapter:
     return AppealsCounterACLAdapter(appeals_query(session))
+
+
+def assistant_tools(session: AsyncSession) -> AssistantToolsACL:
+    return AssistantToolsACL(
+        officials_query(session),
+        risk_query(session),
+        appeals_query(session),
+        counterparties_query(session),
+    )
