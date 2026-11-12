@@ -3,7 +3,8 @@ from typing import Annotated
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.core.infrastructure.dependencies import get_session, get_unit_of_work
+from src.core.infrastructure.dependencies import get_audit_log, get_session, get_unit_of_work
+from src.core.infrastructure.interfaces.audit_log import AuditLogInterface
 from src.core.infrastructure.interfaces.unit_of_work import UnitOfWorkInterface
 from src.modules.risk.application.interfaces.appeals_source import AppealsSourceInterface
 from src.modules.risk.application.interfaces.counterparties_source import (
@@ -64,9 +65,10 @@ def get_recompute_risk_use_case(
     repository: Annotated[RiskRepositoryInterface, Depends(get_risk_repository)],
     unit_of_work: Annotated[UnitOfWorkInterface, Depends(get_unit_of_work)],
     peer_anomalies: Annotated[PeerAnomalyDetectorInterface, Depends(get_peer_anomaly_detector)],
+    audit: Annotated[AuditLogInterface, Depends(get_audit_log)],
 ) -> RecomputeRiskUseCase:
     loader = RiskWorldLoader(officials, counterparties, appeals)
-    return RecomputeRiskUseCase(loader, engine, repository, unit_of_work, peer_anomalies)
+    return RecomputeRiskUseCase(loader, engine, repository, unit_of_work, peer_anomalies, audit)
 
 
 def get_official_flags_use_case(

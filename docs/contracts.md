@@ -54,7 +54,7 @@ Healthcheck бэка: `GET /health` → `200 {"status": "ok"}`.
 | `RiskScore`     | person_id, score (0–100), flags_count, computed_at                              |
 | `Appeal`        | id, received_at, channel (`web`/`email`/`letter`/`hotline`/`personal`), text, status (`new`/`analyzed`/`routed`/`closed`), analysis (см. ниже, `null` в статусе `new`), linked_person_ids |
 | `ReportDraft`   | id, person_id, text, created_at                                                  |
-| `AuditLog`      | id, actor, action (`open_profile`/`create_report`/`recompute_risk`/`submit_appeal`), object_type, object_id, at. Аутентификации нет, `actor = "analyst"` (ADR-09) |
+| `AuditLog`      | id, actor, action (`open_profile`/`create_report`/`recompute_risk`/`submit_appeal`), object_type, object_id?, at. `object_id = null` только для общего пересчёта риска. Аутентификации нет, `actor = "analyst"` (ADR-09) |
 
 «Служащий» = `Person`, у которого есть хотя бы одно `Appointment`.
 
@@ -113,6 +113,7 @@ Healthcheck бэка: `GET /health` → `200 {"status": "ok"}`.
 
 | Метод | Путь | Назначение |
 | ----- | ---- | ---------- |
+| GET  | `/audit?object_id=&limit=20&offset=0` | Журнал действий аналитика `{items, total}`, новые сверху |
 | GET  | `/stats/overview` | Счётчики для главной: служащие, флаги по уровням, обращения по статусам |
 | GET  | `/organs` | Список органов |
 | GET  | `/officials?query=&organ_id=&min_score=&sort=-risk_score&limit=20&offset=0` | Рейтинг служащих: `{items: [{id, full_name, position, organ, risk_score, top_flags[]}], total}` |
@@ -193,3 +194,19 @@ Healthcheck бэка: `GET /health` → `200 {"status": "ok"}`.
 **`GET /appeals/{id}`** — `Appeal` плюс `linked_persons: [{id, full_name, position, organ, risk_score}]`.
 
 **`POST /assistant/ask`** — `sources[].type`: `person`, `company`, `organ`, `contract`, `appeal`, `flag`.
+
+
+### Свёртка контрактов и журнал (B-11, B-18)
+
+Граф сворачивает контракты одной пары поставщик/орган в один узел с числом и полной суммой.
+ID: `uuid5(NAMESPACE_URL, f"kodprozr:contracts:{company_id}:{organ_id}")`.
+Риск-движок приводит контрактные `evidence[].node_id` всех правил к тому же ID, сохраняя
+фактические подписи исходных контрактов. Свёртка графа учитывает все контракты пары;
+флаг описывает только контракты, соответствующие условиям правила. Лимит — 150 узлов,
+`truncated=true` при неполноте графа или исчерпании лимита входных контрактов.
+
+`GET /audit` — чтение журнала с фильтром UUID `object_id`, пагинацией до 100 записей.
+Профиль, докладная и упоминания обращения имеют также записи с `object_type=person`
+и `object_id` служащего, чтобы журнал можно было показать в его профиле. Создание обращения
+дополнительно записывается по ID самого обращения; полный пересчёт — с типом `risk` и
+`object_id=null`. Записи сохраняются в транзакции операции, неуспешные операции их не оставляют.

@@ -9,9 +9,6 @@ from src.modules.appeals.domain.name_matching import matches, parse_mention
 
 logger = get_logger(__name__)
 
-# Больше совпадений — упоминание неоднозначно («Иванов»), не привязываем никого.
-MAX_MATCHES_PER_MENTION = 3
-
 
 class AppealAnalysisService:
     """Сценарий «проанализировать и привязать служащих», общий для создания,
@@ -42,6 +39,6 @@ class AppealAnalysisService:
                 continue
             candidates = await self._directory.find_candidates(query.surname_stem)
             found = [c.id for c in candidates if matches(c.full_name, query)]
-            if 1 <= len(found) <= MAX_MATCHES_PER_MENTION:
+            if len(found) == 1:
                 linked.extend(found)
         return tuple(dict.fromkeys(linked))

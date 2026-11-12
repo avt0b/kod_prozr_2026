@@ -9,6 +9,7 @@ ACL-адаптером модуля-потребителя. Использует
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.core.infrastructure.database.unit_of_work import SqlAlchemyUnitOfWork
+from src.core.infrastructure.repositories.audit_log_repository import AuditLogRepository
 from src.modules.appeals.application.use_cases.query_appeals import QueryAppealsUseCase
 from src.modules.appeals.infrastructure.adapters.officials_acl import (
     OfficialsDirectoryACLAdapter,
@@ -113,6 +114,7 @@ def recompute_risk_use_case(session: AsyncSession) -> RecomputeRiskUseCase:
         RiskRepository(session),
         SqlAlchemyUnitOfWork(session),
         get_peer_anomaly_detector(),
+        AuditLogRepository(session),
     )
 
 
@@ -120,11 +122,11 @@ def recompute_risk_use_case(session: AsyncSession) -> RecomputeRiskUseCase:
 
 
 def appeals_person_directory(session: AsyncSession) -> OfficialsDirectoryACLAdapter:
-    return OfficialsDirectoryACLAdapter(officials_query(session))
+    return OfficialsDirectoryACLAdapter(officials_query(session), risk_query(session))
 
 
 def reports_dossier_source(session: AsyncSession) -> DossierACLAdapter:
-    return DossierACLAdapter(officials_query(session), risk_query(session))
+    return DossierACLAdapter(officials_query(session), risk_query(session), appeals_query(session))
 
 
 def stats_officials_counter(session: AsyncSession) -> OfficialsCounterACLAdapter:

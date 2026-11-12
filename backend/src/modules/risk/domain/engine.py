@@ -4,7 +4,9 @@ from dataclasses import dataclass, replace
 from datetime import UTC, datetime
 from uuid import UUID
 
-from src.modules.risk.domain.flag import RiskFlag
+from src.modules.risk.domain.enums import NodeType
+from src.modules.risk.domain.flag import EvidenceNode, RiskFlag
+from src.modules.risk.domain.graph import contract_group_id
 from src.modules.risk.domain.rules.base import RiskRule
 from src.modules.risk.domain.score import RiskScore, ScorePolicy
 from src.modules.risk.domain.world import RiskWorld
@@ -45,6 +47,23 @@ class RiskEngine:
                 for flag in rule.evaluate(official, world)
             ]
             flags += [replace(f, computed_at=computed_at) for f in carried[official.person.id]]
+            flags = [_group_contract_evidence(flag, world) for flag in flags]
             all_flags.extend(flags)
             scores.append(self._policy.score(official.person.id, flags, computed_at))
         return RiskAssessment(flags=all_flags, scores=scores, computed_at=computed_at)
+
+
+def _group_contract_evidence(flag: RiskFlag, world: RiskWorld) -> RiskFlag:
+    """Keep every rule's facts while sharing contract node identities with the graph."""
+    nodes: dict[UUID, EvidenceNode] = {}
+    for node in flag.evidence:
+        contract = world.contracts_by_id.get(node.id) if node.type is NodeType.CONTRACT else None
+        if contract:
+            node = replace(
+                node, id=contract_group_id(contract.supplier_company_id, contract.customer_organ_id)
+            )
+        previous = nodes.get(node.id)
+        if previous and previous.label != node.label:
+            node = replace(node, label=previous.label + "; " + node.label)
+        nodes[node.id] = node
+    return replace(flag, evidence=tuple(nodes.values()))

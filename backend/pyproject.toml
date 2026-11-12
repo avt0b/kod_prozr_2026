@@ -9,6 +9,7 @@ dependencies = [
   "asyncpg>=0.30",
   "fastapi>=0.115",
   "httpx>=0.28",
+  "jsonschema>=4.26.0",
   "loguru>=0.7.3",
   "nh3>=0.2.20",
   "pydantic>=2.10",

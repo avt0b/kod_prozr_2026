@@ -2,6 +2,7 @@ from collections import Counter
 from collections.abc import Sequence
 from uuid import UUID
 
+from src.core.infrastructure.interfaces.audit_log import AuditLogInterface
 from src.core.infrastructure.interfaces.unit_of_work import UnitOfWorkInterface
 from src.core.infrastructure.logger import get_logger
 from src.modules.risk.application.dto.risk_dto import RecomputeResultDTO
@@ -38,11 +39,13 @@ class RecomputeRiskUseCase:
         repository: RiskRepositoryInterface,
         unit_of_work: UnitOfWorkInterface,
         peer_anomalies: PeerAnomalyDetectorInterface,
+        audit: AuditLogInterface | None = None,
     ) -> None:
         self._loader = loader
         self._engine = engine
         self._repository = repository
         self._unit_of_work = unit_of_work
+        self._audit = audit
         self._peer_anomalies = peer_anomalies
 
     async def execute(self, person_ids: Sequence[UUID] | None = None) -> RecomputeResultDTO:
@@ -62,6 +65,10 @@ class RecomputeRiskUseCase:
                 await self._repository.replace_for_persons(
                     list(person_ids), assessment.flags, assessment.scores
                 )
+            if self._audit:
+                await self._audit.record("recompute_risk", "risk", None)
+                for score in assessment.scores:
+                    await self._audit.record("recompute_risk", "person", score.person_id)
             await self._unit_of_work.commit()
 
         by_rule = Counter(flag.rule_code.value for flag in assessment.flags)

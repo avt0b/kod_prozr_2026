@@ -14,6 +14,14 @@ class FlagSummary:
 
 
 @dataclass(frozen=True)
+class AppealSummary:
+    appeal_id: UUID
+    received_at: str
+    summary: str
+    specificity: float
+
+
+@dataclass(frozen=True)
 class Dossier:
     """Всё, что нужно для докладной: кто, где служит, какой риск и почему.
 
@@ -28,6 +36,10 @@ class Dossier:
     appointed_at: date | None
     score: float
     flags: tuple[FlagSummary, ...] = field(default_factory=tuple)
+
+    authorities: tuple[str, ...] = ()
+    appeals: tuple[AppealSummary, ...] = ()
+    ended_at: date | None = None
 
     @property
     def has_flags(self) -> bool:

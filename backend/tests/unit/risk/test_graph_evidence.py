@@ -15,6 +15,7 @@ from src.modules.risk.domain.facts import (
     RelativeLinkFacts,
 )
 from src.modules.risk.domain.flag import EvidenceNode, RiskFlag
+from src.modules.risk.domain.graph import contract_group_id
 from src.modules.risk.domain.score import RiskScore
 from tests.unit.risk.conftest import COMPANY_ID, ORGAN_ID, make_official, uid
 
@@ -101,4 +102,6 @@ async def test_graph_contains_r05_chain_with_shared_contact_edge() -> None:
     edges = {(e.source, e.target, e.type) for e in graph.edges}
     assert (MOTHER.id, COMPANY_ID, "shared_contact") in edges
     assert (OFFICIAL.person.id, ORGAN_ID, "works_in") in edges
-    assert uid("c1") in node_ids  # контракт компании с органом дотянулся до цепочки
+    assert (
+        contract_group_id(COMPANY_ID, ORGAN_ID) in node_ids
+    )  # контракт компании с органом дотянулся до цепочки

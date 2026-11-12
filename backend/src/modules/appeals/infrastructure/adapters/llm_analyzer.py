@@ -5,17 +5,10 @@
 (его перехватывает FallbackAppealAnalyzer и уходит в правила).
 """
 
-from pydantic import ValidationError
-
-from src.core.exceptions import ExternalServiceError
 from src.core.infrastructure.interfaces.llm_client import ChatMessage, LLMClientInterface
-from src.core.infrastructure.logger import get_logger
+from src.core.infrastructure.llm.structured import complete_model
 from src.modules.appeals.domain.analysis import CORRUPTION_ROUTE, GENERAL_ROUTE, AppealAnalysis
 from src.modules.appeals.infrastructure.serialization import AnalysisSchema
-
-logger = get_logger(__name__)
-
-MAX_ATTEMPTS = 2  # ADR-05: один повтор
 
 SYSTEM_PROMPT = f"""Ты — аналитик подразделения по профилактике коррупционных правонарушений.
 Разбери обращение гражданина и верни ТОЛЬКО JSON-объект без пояснений:
@@ -42,29 +35,8 @@ class LLMAppealAnalyzer:
         self._model_name = model_name
 
     async def analyze(self, text: str) -> AppealAnalysis:
-        messages = [
-            ChatMessage(role="system", content=SYSTEM_PROMPT),
-            ChatMessage(role="user", content=f"Обращение:\n{text}"),
-        ]
-        last_error: Exception | None = None
-        for attempt in range(1, MAX_ATTEMPTS + 1):
-            raw = await self._llm.complete(messages, json_mode=True, temperature=0.0)
-            try:
-                schema = AnalysisSchema.model_validate_json(_strip_fences(raw))
-            except (ValidationError, ValueError) as exc:
-                last_error = exc
-                logger.warning("LLM returned invalid analysis JSON (attempt {})", attempt)
-                continue
-            schema.analyzer = f"llm:{self._model_name}"
-            return schema.to_domain(text)
-        raise ExternalServiceError(f"LLM analysis is invalid: {type(last_error).__name__}")
-
-
-def _strip_fences(raw: str) -> str:
-    """Модели любят оборачивать JSON в ```json ... ```."""
-    text = raw.strip()
-    if text.startswith("```"):
-        text = text.strip("`")
-        if text.lower().startswith("json"):
-            text = text[4:]
-    return text.strip()
+        schema = await complete_model(
+            self._llm, SYSTEM_PROMPT, [ChatMessage("user", f"Обращение:\n{text}")], AnalysisSchema
+        )
+        schema.analyzer = f"llm:{self._model_name}"
+        return schema.to_domain(text)

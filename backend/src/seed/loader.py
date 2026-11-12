@@ -4,8 +4,11 @@
 """
 
 from pathlib import Path
+from shutil import copyfile
+from tempfile import TemporaryDirectory
 from typing import Any
 
+from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.core.config import Settings
@@ -15,6 +18,7 @@ from src.modules.appeals.presentation.dependencies import build_appeal_analyzer
 from src.modules.appeals.presentation.seed import seed_appeals
 from src.modules.counterparties.presentation.seed import seed_counterparties
 from src.modules.officials.presentation.seed import seed_officials
+from src.seed.validation import SCHEMAS, validate_snapshot
 from src.web import wiring
 
 logger = get_logger("seed")
@@ -28,6 +32,40 @@ async def load_seed(
     *,
     analyze: bool = True,
     recompute: bool = True,
+) -> dict[str, Any]:
+    with TemporaryDirectory(prefix="kodprozr-seed-") as temp:
+        snapshot = Path(temp)
+        for name in SCHEMAS:
+            source = data_dir / f"{name}.json"
+            if not source.is_file():
+                raise ValueError(f"{source}: required seed file is missing")
+            copyfile(source, snapshot / source.name)
+        validate_snapshot(snapshot)
+        async with session.begin():
+            connection = await session.connection()
+            async with AsyncSession(
+                bind=connection, expire_on_commit=False, join_transaction_mode="create_savepoint"
+            ) as importing:
+                await importing.execute(
+                    text(
+                        "TRUNCATE TABLE core.audit_log, reports.report_drafts, "
+                        "risk.flags, risk.scores, "
+                        "appeals.appeals, counterparties.contracts, counterparties.company_roles, "
+                        "counterparties.companies, officials.appointments, officials.authorities, "
+                        "officials.positions, officials.kinships, officials.employments, "
+                        "officials.persons, officials.organs"
+                    )
+                )
+                return await _import(importing, snapshot, settings, llm, analyze, recompute)
+
+
+async def _import(
+    session: AsyncSession,
+    data_dir: Path,
+    settings: Settings,
+    llm: LLMClientInterface | None,
+    analyze: bool,
+    recompute: bool,
 ) -> dict[str, Any]:
     logger.info("Seed from {}", data_dir)
     report: dict[str, Any] = {

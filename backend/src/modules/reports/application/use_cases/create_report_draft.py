@@ -1,5 +1,6 @@
 from uuid import UUID
 
+from src.core.infrastructure.interfaces.audit_log import AuditLogInterface
 from src.core.infrastructure.interfaces.unit_of_work import UnitOfWorkInterface
 from src.modules.reports.application.dto.report_dto import ReportDraftDTO
 from src.modules.reports.application.interfaces.dossier_source import DossierSourceInterface
@@ -20,11 +21,13 @@ class CreateReportDraftUseCase:
         writer: ReportWriterInterface,
         repository: ReportRepositoryInterface,
         unit_of_work: UnitOfWorkInterface,
+        audit: AuditLogInterface | None = None,
     ) -> None:
         self._dossiers = dossiers
         self._writer = writer
         self._repository = repository
         self._unit_of_work = unit_of_work
+        self._audit = audit
 
     async def execute(self, person_id: UUID) -> ReportDraftDTO:
         dossier = await self._dossiers.get_dossier(person_id)
@@ -35,6 +38,8 @@ class CreateReportDraftUseCase:
         draft = ReportDraft(person_id=person_id, text=written.text, generator=written.generator)
 
         async with self._unit_of_work:
+            if self._audit:
+                await self._audit.record("create_report", "person", person_id)
             await self._repository.add(draft)
             await self._unit_of_work.commit()
         return ReportDraftDTO.from_entity(draft)
