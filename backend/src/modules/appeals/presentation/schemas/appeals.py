@@ -39,6 +39,9 @@ class AnalysisResponse(APIModel):
 class LinkedPersonResponse(APIModel):
     id: UUID
     full_name: str
+    position: str | None = None
+    organ: str | None = None
+    risk_score: float = 0.0
 
 
 class AppealResponse(APIModel):

@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Literal, Protocol
+from typing import Any, Literal, Protocol
 
 
 @dataclass(frozen=True)
@@ -23,3 +23,9 @@ class LLMClientInterface(Protocol):
     ) -> str:
         """Вернуть текст ответа модели. Сбой — ExternalServiceError."""
         ...
+
+    async def complete_json(
+        self, system: str, messages: list[ChatMessage], schema: dict[str, Any]
+    ) -> dict[str, Any]: ...
+
+    async def complete_text(self, system: str, messages: list[ChatMessage]) -> str: ...

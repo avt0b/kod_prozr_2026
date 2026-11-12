@@ -2,6 +2,8 @@ from collections import defaultdict
 from dataclasses import dataclass
 from uuid import UUID
 
+from src.core.infrastructure.interfaces.audit_log import AuditLogInterface
+from src.core.infrastructure.interfaces.unit_of_work import UnitOfWorkInterface
 from src.modules.officials.application.dto.officials_dto import (
     CompanyLinkDTO,
     ContractView,
@@ -43,10 +45,14 @@ class GetOfficialProfileUseCase:
         snapshots: GetOfficialSnapshotsUseCase,
         company_links: CompanyLinksSourceInterface,
         risk_source: RiskSourceInterface,
+        audit: AuditLogInterface | None = None,
+        unit_of_work: UnitOfWorkInterface | None = None,
     ) -> None:
         self._snapshots = snapshots
         self._company_links = company_links
         self._risk = risk_source
+        self._audit = audit
+        self._unit_of_work = unit_of_work
 
     async def execute(self, person_id: UUID) -> OfficialProfileDTO:
         found = await self._snapshots.execute([person_id])
@@ -62,6 +68,10 @@ class GetOfficialProfileUseCase:
             if appointment.is_active
             for authority in appointment.authorities
         )
+        if self._audit and self._unit_of_work:
+            async with self._unit_of_work:
+                await self._audit.record("open_profile", "person", person_id)
+                await self._unit_of_work.commit()
         return OfficialProfileDTO(
             person=snapshot.person,
             appointments=snapshot.appointments,

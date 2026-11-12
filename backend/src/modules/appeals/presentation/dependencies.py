@@ -6,12 +6,14 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from src.core.config import Settings
 from src.core.events.event_bus import EventBus
 from src.core.infrastructure.dependencies import (
+    get_audit_log,
     get_event_bus,
     get_llm_client,
     get_session,
     get_settings,
     get_unit_of_work,
 )
+from src.core.infrastructure.interfaces.audit_log import AuditLogInterface
 from src.core.infrastructure.interfaces.llm_client import LLMClientInterface
 from src.core.infrastructure.interfaces.unit_of_work import UnitOfWorkInterface
 from src.modules.appeals.application.interfaces.appeal_analyzer import AppealAnalyzer
@@ -75,8 +77,9 @@ def get_create_appeal_use_case(
     directory: Annotated[PersonDirectoryInterface, Depends(get_person_directory)],
     unit_of_work: Annotated[UnitOfWorkInterface, Depends(get_unit_of_work)],
     event_bus: Annotated[EventBus, Depends(get_event_bus)],
+    audit: Annotated[AuditLogInterface, Depends(get_audit_log)],
 ) -> CreateAppealUseCase:
-    return CreateAppealUseCase(repository, analysis, directory, unit_of_work, event_bus)
+    return CreateAppealUseCase(repository, analysis, directory, unit_of_work, event_bus, audit)
 
 
 def get_reanalyze_appeal_use_case(

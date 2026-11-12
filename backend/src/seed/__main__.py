@@ -17,14 +17,17 @@ def _parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(prog="python -m src.seed", description=__doc__)
     parser.add_argument(
         "--dir",
-        default=settings.seed_dir,
+        default=None,
         help="каталог с JSON (по умолчанию SEED_DIR или data/generated; пример — data/example)",
     )
     parser.add_argument(
         "--no-analyze", action="store_true", help="не анализировать обращения без analysis"
     )
     parser.add_argument("--no-recompute", action="store_true", help="не пересчитывать риск")
-    return parser.parse_args()
+    parser.add_argument("path", nargs="?", help="каталог JSON (также поддерживается --dir)")
+    args = parser.parse_args()
+    args.dir = args.dir or args.path or settings.seed_dir
+    return args
 
 
 async def run(data_dir: Path, analyze: bool, recompute: bool) -> None:
@@ -45,6 +48,8 @@ async def run(data_dir: Path, analyze: bool, recompute: bool) -> None:
         async with session_maker() as session:
             await load_seed(session, data_dir, settings, llm, analyze=analyze, recompute=recompute)
     finally:
+        if llm is not None:
+            await llm.aclose()
         await engine.dispose()
 
 

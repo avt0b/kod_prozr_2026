@@ -1,4 +1,5 @@
 from src.core.events.event_bus import EventBus
+from src.core.infrastructure.interfaces.audit_log import AuditLogInterface
 from src.core.infrastructure.interfaces.unit_of_work import UnitOfWorkInterface
 from src.modules.appeals.application.dto.appeal_dto import AppealDTO
 from src.modules.appeals.application.interfaces.appeal_repository import (
@@ -23,11 +24,13 @@ class CreateAppealUseCase:
         directory: PersonDirectoryInterface,
         unit_of_work: UnitOfWorkInterface,
         event_bus: EventBus,
+        audit: AuditLogInterface | None = None,
     ) -> None:
         self._repository = repository
         self._analysis = analysis
         self._directory = directory
         self._unit_of_work = unit_of_work
+        self._audit = audit
         self._event_bus = event_bus
 
     async def execute(self, text: str, channel: str) -> AppealDTO:
@@ -35,6 +38,10 @@ class CreateAppealUseCase:
         await self._analysis.analyze(appeal)
 
         async with self._unit_of_work:
+            if self._audit:
+                await self._audit.record("submit_appeal", "appeal", appeal.id)
+                for person_id in appeal.linked_person_ids:
+                    await self._audit.record("submit_appeal", "person", person_id)
             await self._repository.save(appeal)
             await self._unit_of_work.commit()
 

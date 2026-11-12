@@ -1,10 +1,12 @@
 """Докладная по шаблону — без LLM. Фоллбэк для LLM-генератора и режим по умолчанию."""
 
-from datetime import date
+from datetime import date, datetime
+from zoneinfo import ZoneInfo
 
 from src.core.utils.text import short_name
 from src.modules.reports.application.interfaces.report_writer import WrittenReport
 from src.modules.reports.domain.dossier import Dossier
+from src.modules.reports.domain.report_draft import DISCLAIMER
 
 SEVERITY_LABELS = {"high": "высокий", "medium": "средний", "low": "низкий"}
 
@@ -19,11 +21,14 @@ class TemplateReportWriter:
 
 
 def render_report(dossier: Dossier, today: date | None = None) -> str:
-    today = today or date.today()
+    today = today or datetime.now(ZoneInfo("Europe/Moscow")).date()
     position = ", ".join(
         part for part in (dossier.position_title, dossier.department, dossier.organ_name) if part
     )
     lines = [
+        "Начальнику подразделения по профилактике коррупционных и иных правонарушений",
+        "От аналитика подразделения",
+        "",
         "ДОКЛАДНАЯ ЗАПИСКА",
         f"от {today:%d.%m.%Y}",
         "",
@@ -33,6 +38,17 @@ def render_report(dossier: Dossier, today: date | None = None) -> str:
         f"{dossier.full_name}" + (f" ({position})" if position else "") + ".",
         "",
     ]
+    if dossier.appointed_at:
+        end = dossier.ended_at.strftime("%d.%m.%Y") if dossier.ended_at else "настоящее время"
+        lines.append(f"Период замещения должности: {dossier.appointed_at:%d.%m.%Y} — {end}.")
+    lines.append("Полномочия: " + (", ".join(dossier.authorities) or "не указаны") + ".")
+    lines += ["", f"Связанные обращения граждан: {len(dossier.appeals)}."]
+    for appeal in dossier.appeals:
+        lines.append(
+            f"— Обращение {appeal.appeal_id} от {appeal.received_at}: {appeal.summary} "
+            f"(конкретность {appeal.specificity:.0%})."
+        )
+    lines.append("")
     if not dossier.has_flags:
         lines.append(
             "Признаков возможного конфликта интересов по правилам системы не выявлено "
@@ -59,5 +75,7 @@ def render_report(dossier: Dossier, today: date | None = None) -> str:
             "2. Проверить наличие уведомлений о возникновении личной заинтересованности.",
             "3. При подтверждении сведений рассмотреть вопрос на заседании комиссии "
             "по соблюдению требований к служебному поведению и урегулированию конфликта интересов.",
+            "4. Проверить сведения по первичным источникам.",
         ]
+    lines += ["", DISCLAIMER]
     return "\n".join(lines)

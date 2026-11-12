@@ -40,7 +40,9 @@ class RiskWorld:
 
         self._contracts_by_pair: dict[tuple[UUID, UUID], list[ContractFacts]] = defaultdict(list)
         self._contracts_by_organ: dict[UUID, list[ContractFacts]] = defaultdict(list)
+        self.contracts_by_id: dict[UUID, ContractFacts] = {}
         for contract in contracts:
+            self.contracts_by_id[contract.id] = contract
             pair = (contract.customer_organ_id, contract.supplier_company_id)
             self._contracts_by_pair[pair].append(contract)
             self._contracts_by_organ[contract.customer_organ_id].append(contract)

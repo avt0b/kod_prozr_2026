@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from uuid import UUID
+from uuid import NAMESPACE_URL, UUID, uuid5
 
 from src.modules.risk.domain.enums import EdgeType, NodeType
 
@@ -25,7 +25,7 @@ class ConnectionsGraph:
     """Граф связей служащего. Узлы и рёбра без дублей, размер ограничен max_nodes."""
 
     root_id: UUID
-    max_nodes: int = 300
+    max_nodes: int = 150
     _nodes: dict[UUID, GraphNode] = field(default_factory=dict)
     _edges: dict[tuple[UUID, UUID, EdgeType], GraphEdge] = field(default_factory=dict)
     truncated: bool = False
@@ -51,6 +51,10 @@ class ConnectionsGraph:
         self._nodes[node.id] = node
         return True
 
+    def update_node(self, node: GraphNode) -> None:
+        if node.id in self._nodes:
+            self._nodes[node.id] = node
+
     def add_edge(self, edge: GraphEdge) -> None:
         if edge.source in self._nodes and edge.target in self._nodes:
             self._edges.setdefault((edge.source, edge.target, edge.type), edge)
@@ -62,3 +66,8 @@ class ConnectionsGraph:
 
     def ids_of(self, node_type: NodeType) -> list[UUID]:
         return [n.id for n in self._nodes.values() if n.type is node_type]
+
+
+def contract_group_id(company_id: UUID, organ_id: UUID) -> UUID:
+    """Stable node identity shared by graph and risk evidence."""
+    return uuid5(NAMESPACE_URL, f"kodprozr:contracts:{company_id}:{organ_id}")
