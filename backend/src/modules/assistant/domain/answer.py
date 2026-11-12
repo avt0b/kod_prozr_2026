@@ -16,7 +16,7 @@ class Question:
 
 @dataclass(frozen=True)
 class Source:
-    """На что опирается ответ: type — person|company|organ|contract|appeal|rule|norm."""
+    """На что опирается ответ: type — person|company|organ|contract|appeal|flag."""
 
     type: str
     id: str

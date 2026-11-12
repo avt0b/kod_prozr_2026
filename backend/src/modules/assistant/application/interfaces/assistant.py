@@ -7,8 +7,8 @@ class AssistantInterface(Protocol):
     """Порт ассистента аналитика. ADR-11: только ограниченный набор инструментов
     (поиск служащего, флаги, обращения), произвольный SQL не генерируем.
 
-    Сейчас есть только фейк. TODO: LLM-адаптер с tool calling поверх published language
-    модулей (QueryOfficialsUseCase, QueryRiskUseCase, QueryAppealsUseCase) через ACL.
+    ToolAssistant выбирает фиксированный инструмент через LLM или словарную маршрутизацию;
+    данные приходят через AssistantToolsInterface и published language модулей.
     """
 
     async def ask(self, question: Question) -> Answer: ...

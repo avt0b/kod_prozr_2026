@@ -1,11 +1,13 @@
 from collections.abc import Sequence
 from uuid import UUID
 
+from src.core.dto.page import PageRequest
 from src.core.utils.iterables import chunked
-from src.modules.appeals.application.dto.appeal_dto import AppealMentionDTO
+from src.modules.appeals.application.dto.appeal_dto import AppealDTO, AppealMentionDTO
 from src.modules.appeals.application.interfaces.appeal_repository import (
     AppealRepositoryInterface,
 )
+from src.modules.appeals.domain.enums import AppealCategory, AppealStatus
 
 
 class QueryAppealsUseCase:
@@ -41,3 +43,24 @@ class QueryAppealsUseCase:
 
     async def status_counts(self) -> dict[str, int]:
         return await self._repository.status_counts()
+
+    async def search(
+        self, person_id: UUID | None, category: str | None, status: str | None, limit: int
+    ) -> list[AppealDTO]:
+        if not 1 <= limit <= 20:
+            raise ValueError("limit must be 1..20")
+        category_enum = AppealCategory(category) if category else None
+        status_enum = AppealStatus(status) if status else None
+        if person_id is None:
+            page = await self._repository.list_page(
+                PageRequest(limit=min(limit, 20)), status=status_enum, category=category_enum
+            )
+            appeals = page.items
+        else:
+            appeals = [
+                a
+                for a in await self._repository.linked_to([person_id])
+                if (status_enum is None or a.status == status_enum)
+                and (category_enum is None or (a.analysis and a.analysis.category == category_enum))
+            ][:limit]
+        return [AppealDTO.from_entity(a) for a in appeals]
