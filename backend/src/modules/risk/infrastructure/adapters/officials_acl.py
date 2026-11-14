@@ -34,6 +34,8 @@ class ExternalOrgan(Protocol):
     def id(self) -> UUID: ...
     @property
     def name(self) -> str: ...
+    @property
+    def region(self) -> str: ...
 
 
 class ExternalPosition(Protocol):
@@ -121,6 +123,7 @@ def _official(snapshot: ExternalSnapshot) -> OfficialFacts:
                 authorities=tuple(
                     AuthorityFacts(kind=x.kind, okpd2=tuple(x.okpd2)) for x in a.authorities
                 ),
+                organ_region=a.organ.region,
             )
             for a in snapshot.appointments
         ),

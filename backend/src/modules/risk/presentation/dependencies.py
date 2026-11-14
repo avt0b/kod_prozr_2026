@@ -3,6 +3,7 @@ from typing import Annotated
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from src.core.config import get_settings_from_env
 from src.core.infrastructure.dependencies import get_audit_log, get_session, get_unit_of_work
 from src.core.infrastructure.interfaces.audit_log import AuditLogInterface
 from src.core.infrastructure.interfaces.unit_of_work import UnitOfWorkInterface
@@ -21,7 +22,9 @@ from src.modules.risk.application.use_cases.get_official_graph import GetOfficia
 from src.modules.risk.application.use_cases.recompute_risk import RecomputeRiskUseCase
 from src.modules.risk.domain.engine import RiskEngine
 from src.modules.risk.domain.rules import default_rules
-from src.modules.risk.infrastructure.ml.null_detector import NoPeerAnomalyDetector
+from src.modules.risk.infrastructure.ml.isolation_forest_detector import (
+    IsolationForestPeerDetector,
+)
 from src.modules.risk.infrastructure.repositories.risk_repository import RiskRepository
 
 # --- Порты к другим контекстам: реализацию подставляет src/web/create_app.py ---------------
@@ -49,8 +52,8 @@ def get_risk_repository(
 
 
 def get_peer_anomaly_detector() -> PeerAnomalyDetectorInterface:
-    """R08: сюда подключается модель AI-07 (risk/infrastructure/ml/)."""
-    return NoPeerAnomalyDetector()
+    """R08 (AI-07): IsolationForest относительно коллег; порог — PROCUREMENT_THRESHOLD."""
+    return IsolationForestPeerDetector(get_settings_from_env().procurement_threshold)
 
 
 def get_risk_engine() -> RiskEngine:

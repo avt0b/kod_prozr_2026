@@ -34,6 +34,13 @@ class SignalDTO:
 
 
 @dataclass(frozen=True)
+class CandidateDTO:
+    person_id: UUID
+    full_name: str
+    score: float
+
+
+@dataclass(frozen=True)
 class AnalysisDTO:
     is_corruption: bool
     category: str
@@ -44,6 +51,8 @@ class AnalysisDTO:
     route_to: str
     summary: str
     analyzer: str
+    engine: str
+    candidates: tuple[CandidateDTO, ...]
 
     @classmethod
     def from_value(cls, analysis: AppealAnalysis) -> "AnalysisDTO":
@@ -59,6 +68,10 @@ class AnalysisDTO:
             route_to=analysis.route_to,
             summary=analysis.summary,
             analyzer=analysis.analyzer,
+            engine=analysis.engine,
+            candidates=tuple(
+                CandidateDTO(c.person_id, c.full_name, c.score) for c in analysis.candidates
+            ),
         )
 
 

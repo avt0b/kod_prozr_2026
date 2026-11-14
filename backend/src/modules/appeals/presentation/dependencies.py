@@ -21,6 +21,7 @@ from src.modules.appeals.application.interfaces.appeal_repository import (
     AppealRepositoryInterface,
 )
 from src.modules.appeals.application.interfaces.person_directory import PersonDirectoryInterface
+from src.modules.appeals.application.interfaces.person_matcher import PersonMatcherInterface
 from src.modules.appeals.application.services.appeal_analysis import AppealAnalysisService
 from src.modules.appeals.application.use_cases.create_appeal import CreateAppealUseCase
 from src.modules.appeals.application.use_cases.get_appeal import GetAppealUseCase
@@ -28,6 +29,7 @@ from src.modules.appeals.application.use_cases.list_appeals import ListAppealsUs
 from src.modules.appeals.application.use_cases.reanalyze_appeal import ReanalyzeAppealUseCase
 from src.modules.appeals.infrastructure.adapters.fallback_analyzer import FallbackAppealAnalyzer
 from src.modules.appeals.infrastructure.adapters.llm_analyzer import LLMAppealAnalyzer
+from src.modules.appeals.infrastructure.adapters.person_matcher import MorphPersonMatcher
 from src.modules.appeals.infrastructure.adapters.rule_based_analyzer import (
     RuleBasedAppealAnalyzer,
 )
@@ -64,11 +66,20 @@ def get_appeal_repository(
     return AppealRepository(session)
 
 
+_MATCHER = MorphPersonMatcher()
+
+
+def get_person_matcher() -> PersonMatcherInterface:
+    """AI-05: сопоставление лиц без состояния; словарь pymorphy3 грузится один раз."""
+    return _MATCHER
+
+
 def get_appeal_analysis_service(
     analyzer: Annotated[AppealAnalyzer, Depends(get_appeal_analyzer)],
     directory: Annotated[PersonDirectoryInterface, Depends(get_person_directory)],
+    matcher: Annotated[PersonMatcherInterface, Depends(get_person_matcher)],
 ) -> AppealAnalysisService:
-    return AppealAnalysisService(analyzer, directory)
+    return AppealAnalysisService(analyzer, directory, matcher)
 
 
 def get_create_appeal_use_case(

@@ -341,7 +341,7 @@ class AppealsBuilder:
             relative = rng.choice(["жена", "брат", "сын", "тёща", "сестра", "зять"])
             sentence = f"{subject} помогает фирме, где работает {his} родственник"
             if "relative" in facts:
-                sentence = f"{subject} продвигает фирму, которой владеет {his} {relative}"
+                sentence = f"{subject} отдаёт контракты фирме, которой владеет {his} {relative}"
             if "company" in facts and company:
                 sentence += f" — {company}"
             parts.append(sentence + ".")
