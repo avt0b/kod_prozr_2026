@@ -1,4 +1,5 @@
-.PHONY: help env up down build logs ps migrate seed test-back lint-back lint-front llm-up
+.PHONY: help env up down build logs ps migrate seed reset data data-check precompute eval \
+	smoke test-back test-data lint-back lint-front llm-up
 
 .DEFAULT_GOAL := help
 
@@ -12,12 +13,19 @@ COMPOSE_ALL := $(COMPOSE) --profile llm
 LLM_MODEL ?= qwen2.5:7b-instruct
 
 # --- Команды бэка и фронта --------------------------------------------------
-# TODO(Кирилл): сверить с backend/README.md и frontend/package.json, когда каркасы будут готовы.
-# Любую можно переопределить без правки файла: make seed SEED_CMD="python -m app.seed"
+# Любую можно переопределить без правки файла: make seed SEED_CMD="python -m src.seed --dir ..."
 
 # Выполняются ВНУТРИ контейнера backend (venv образа в PATH, DATABASE_URL -> postgres:5432).
 MIGRATE_CMD ?= alembic upgrade head
-SEED_CMD ?= python -m src.seed
+# data/generated монтируется в /app/data/generated (docker-compose.yml): сиды с предрасчётом.
+SEED_CMD ?= python -m src.seed --dir data/generated
+
+PYTHON ?= python3
+API_URL ?= http://localhost:8000
+DATA_DIR ?= data/generated
+# Хост-команды бэка ходят в Postgres из compose на localhost.
+HOST_DB ?= postgresql+asyncpg://$(or $(POSTGRES_USER),kodprozr):$(or $(POSTGRES_PASSWORD),kodprozr)@localhost:5432/$(or $(POSTGRES_DB),kodprozr)
+DEMO_APPEALS = $$($(PYTHON) -c "import json;print(' '.join(json.load(open('$(CURDIR)/$(DATA_DIR)/_truth/meta.json'))['demo_appeal_ids']))")
 
 # Выполняются НА ХОСТЕ в backend/ через uv (dev-зависимости в образ не попадают).
 UV ?= uv run
@@ -56,13 +64,40 @@ ps: ## Состояние контейнеров
 migrate: env ## Применить миграции БД (в контейнере backend)
 	$(COMPOSE) run --rm backend sh -c "$(MIGRATE_CMD)"
 
-seed: env ## Залить синтетические данные (в контейнере backend)
+seed: env ## Залить синтетику с предрасчётом и пересчитать риск (в контейнере backend)
 	$(COMPOSE) run --rm backend sh -c "$(SEED_CMD)"
+
+reset: env ## Снести тома, поднять стек, миграции и сиды — «как перед демо»
+	$(COMPOSE_ALL) down --volumes --remove-orphans
+	$(COMPOSE) up -d --build --wait
+	$(MAKE) seed
+	@echo "Стенд готов: http://localhost:3000"
+
+data: ## Пересоздать синтетику (seed 42); затем make precompute
+	$(PYTHON) -m data.generator --seed 42 --out $(DATA_DIR)
+
+data-check: ## Проверить сгенерированные данные (data.md §7)
+	$(PYTHON) -m data.generator.check $(DATA_DIR)
+	$(PYTHON) -m data.generator.check $(DATA_DIR)/sample --partial
+
+precompute: ## Предрасчёт анализа обращений в сиды (AI-06; LLM — из backend/.env)
+	cd backend && DATABASE_URL=$(HOST_DB) $(UV) python -m src.seed.precompute \
+		--dir $(CURDIR)/$(DATA_DIR) --keep-new $(DEMO_APPEALS)
+
+eval: ## Метрики качества после make seed; с LLM: make eval EVAL_ARGS="--llm --limit 30"
+	cd backend && DATABASE_URL=$(HOST_DB) $(UV) python -m src.eval --dir $(CURDIR)/$(DATA_DIR) \
+		--out $(CURDIR)/eval/report.json $(EVAL_ARGS)
+
+smoke: ## Smoke всех эндпоинтов + демо-обращение (меняет данные: потом make reset)
+	$(PYTHON) scripts/smoke.py --api $(API_URL)
 
 # --- Качество ---------------------------------------------------------------
 
 test-back: ## Тесты бэка (uv, на хосте)
 	cd backend && $(BACK_TEST_CMD)
+
+test-data: ## Тесты генератора синтетики
+	$(PYTHON) -m unittest discover -s data/tests -t .
 
 lint-back: ## Линтер и формат бэка (ruff, на хосте)
 	cd backend && $(BACK_LINT_CMD)
@@ -72,7 +107,8 @@ lint-front: ## Линтер фронта (на хосте)
 
 # --- Локальная LLM ----------------------------------------------------------
 
-llm-up: env ## Поднять ollama и скачать модель LLM_MODEL
+llm-up: env ## Поднять ollama, скачать и прогреть модель LLM_MODEL
 	$(COMPOSE_ALL) up -d --wait ollama
 	$(COMPOSE_ALL) exec ollama ollama pull $(LLM_MODEL)
+	$(COMPOSE_ALL) exec ollama ollama run $(LLM_MODEL) "Ответь: ok" >/dev/null
 	@echo "Готово: в .env LLM_BASE_URL=http://ollama:11434/v1 LLM_MODEL=$(LLM_MODEL), затем make up"

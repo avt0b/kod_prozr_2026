@@ -111,14 +111,14 @@
 | AI-09 | LLM-текст докладной — если успеваем ([#12](https://github.com/avt0b/kod_prozr_2026/issues/12)) | Влад О. | после КТ3 | B-16 | review |
 | AI-10 | Ассистент на инструментах — если успеваем ([#12](https://github.com/avt0b/kod_prozr_2026/issues/12)) | Влад О. | после КТ3 | B-11 | review |
 | AI-11 | Вариант D: карта рисков должности — если успеваем | Влад О. | после КТ4 | — | todo |
-| OPS-01 | Монорепо, compose, Makefile, `.env.example` | Кирилл | КТ0 | — | todo |
-| OPS-02 | Образы бэка и фронта, миграции на старте | Кирилл | КТ1 | B-01, F-01 | todo |
-| OPS-03 | CI: линтеры, тесты, сборка | Кирилл | КТ1 | OPS-01 | todo |
-| OPS-04 | Make-цели `seed`, `reset`, `data-check`, `eval` | Кирилл | КТ1 | B-03, AI-02 | todo |
-| OPS-05 | LLM-сервис для команды | Кирилл | 11.11, 12:00 | — | todo |
-| OPS-06 | Smoke-тест всех эндпоинтов | Кирилл | КТ2 | OPS-02 | todo |
+| OPS-01 | Монорепо, compose, Makefile, `.env.example` ([#15](https://github.com/avt0b/kod_prozr_2026/issues/15)) | Кирилл | КТ0 | — | review |
+| OPS-02 | Образы бэка и фронта, миграции на старте ([#15](https://github.com/avt0b/kod_prozr_2026/issues/15)) | Кирилл | КТ1 | B-01, F-01 | review |
+| OPS-03 | CI: линтеры, тесты, сборка ([#15](https://github.com/avt0b/kod_prozr_2026/issues/15)) | Кирилл | КТ1 | OPS-01 | review |
+| OPS-04 | Make-цели `seed`, `reset`, `data-check`, `eval` ([#15](https://github.com/avt0b/kod_prozr_2026/issues/15)) | Кирилл | КТ1 | B-03, AI-02 | review |
+| OPS-05 | LLM-сервис для команды ([#15](https://github.com/avt0b/kod_prozr_2026/issues/15)) | Кирилл | 11.11, 12:00 | — | wip |
+| OPS-06 | Smoke-тест всех эндпоинтов ([#15](https://github.com/avt0b/kod_prozr_2026/issues/15)) | Кирилл | КТ2 | OPS-02 | review |
 | OPS-07 | Демо-стенд и резервный ноутбук | Кирилл | КТ4 | OPS-02 | todo |
-| OPS-08 | Code freeze: тег, дамп БД, видео-бэкап | Кирилл | КТ5 | КТ4 | todo |
+| OPS-08 | Code freeze: тег, дамп БД, видео-бэкап ([#15](https://github.com/avt0b/kod_prozr_2026/issues/15)) | Кирилл | КТ5 | КТ4 | wip |
 | OPS-09 | Защита dev/main и deploy по тегу ([#2](https://github.com/avt0b/kod_prozr_2026/issues/2)) | Кирилл | до prod | T-03, OPS-03, OPS-07 | todo |
 
 
