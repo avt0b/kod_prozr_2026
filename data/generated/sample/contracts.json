@@ -1,0 +1,152 @@
+[
+ {
+  "id": "31faa367-f69d-5add-8e40-40bfee1eae75",
+  "reg_number": "3771043321025000138",
+  "customer_organ_id": "b1104e41-e62d-5002-80d2-73e40a3ca0be",
+  "supplier_company_id": "9af31fd9-ec57-514c-a271-0023c96da37f",
+  "amount": 7000000,
+  "signed_at": "2025-01-20",
+  "okpd2": "42.11.10.171",
+  "method": "single_supplier"
+ },
+ {
+  "id": "522953d0-b1ce-5b11-9594-04f33a0a131b",
+  "reg_number": "3771043321025000139",
+  "customer_organ_id": "b1104e41-e62d-5002-80d2-73e40a3ca0be",
+  "supplier_company_id": "9af31fd9-ec57-514c-a271-0023c96da37f",
+  "amount": 8000000,
+  "signed_at": "2025-05-14",
+  "okpd2": "42.11.21.180",
+  "method": "auction"
+ },
+ {
+  "id": "4dae5724-3486-59a4-9385-25239ab59b73",
+  "reg_number": "3771043321025000140",
+  "customer_organ_id": "b1104e41-e62d-5002-80d2-73e40a3ca0be",
+  "supplier_company_id": "9af31fd9-ec57-514c-a271-0023c96da37f",
+  "amount": 6000000,
+  "signed_at": "2025-09-03",
+  "okpd2": "42.11.12.170",
+  "method": "single_supplier"
+ },
+ {
+  "id": "0f8bc2af-a3d0-5e6c-8e69-332e90f4f219",
+  "reg_number": "3771043321026000101",
+  "customer_organ_id": "b1104e41-e62d-5002-80d2-73e40a3ca0be",
+  "supplier_company_id": "9af31fd9-ec57-514c-a271-0023c96da37f",
+  "amount": 9500000,
+  "signed_at": "2026-03-17",
+  "okpd2": "42.11.22.133",
+  "method": "single_supplier"
+ },
+ {
+  "id": "f26984fa-c147-5442-ad32-255f7e669170",
+  "reg_number": "3771043321026000102",
+  "customer_organ_id": "b1104e41-e62d-5002-80d2-73e40a3ca0be",
+  "supplier_company_id": "9af31fd9-ec57-514c-a271-0023c96da37f",
+  "amount": 7500000,
+  "signed_at": "2026-07-08",
+  "okpd2": "42.11.10.143",
+  "method": "quotation"
+ },
+ {
+  "id": "65787408-c26c-5536-878b-33ac6de1864e",
+  "reg_number": "3773389083025000146",
+  "customer_organ_id": "1d26701f-1409-56a6-af4f-206fc695f1ca",
+  "supplier_company_id": "b1fc37ba-0cea-5a86-ae59-5b72bad25bc0",
+  "amount": 502348.66,
+  "signed_at": "2025-05-22",
+  "okpd2": "43.22.10.118",
+  "method": "auction"
+ },
+ {
+  "id": "b28dc234-5819-59db-a24d-821d68f92f1a",
+  "reg_number": "3773389083025000147",
+  "customer_organ_id": "1d26701f-1409-56a6-af4f-206fc695f1ca",
+  "supplier_company_id": "b1fc37ba-0cea-5a86-ae59-5b72bad25bc0",
+  "amount": 354740.29,
+  "signed_at": "2025-05-25",
+  "okpd2": "43.22.21.126",
+  "method": "quotation"
+ },
+ {
+  "id": "33ac4511-0411-56eb-926a-f29739ab5e7e",
+  "reg_number": "3773389083024000144",
+  "customer_organ_id": "1d26701f-1409-56a6-af4f-206fc695f1ca",
+  "supplier_company_id": "b1fc37ba-0cea-5a86-ae59-5b72bad25bc0",
+  "amount": 497708.87,
+  "signed_at": "2024-12-02",
+  "okpd2": "43.22.22.117",
+  "method": "auction"
+ },
+ {
+  "id": "3ee417c4-ce35-52c5-a9bd-55065b06f268",
+  "reg_number": "3773389083026000121",
+  "customer_organ_id": "1d26701f-1409-56a6-af4f-206fc695f1ca",
+  "supplier_company_id": "b1fc37ba-0cea-5a86-ae59-5b72bad25bc0",
+  "amount": 273445.71,
+  "signed_at": "2026-07-10",
+  "okpd2": "43.22.12.188",
+  "method": "single_supplier"
+ },
+ {
+  "id": "1bb82d50-f21f-5eb0-aac2-06f90c60f4ad",
+  "reg_number": "3773389083024000145",
+  "customer_organ_id": "1d26701f-1409-56a6-af4f-206fc695f1ca",
+  "supplier_company_id": "b1fc37ba-0cea-5a86-ae59-5b72bad25bc0",
+  "amount": 713978.0,
+  "signed_at": "2024-05-01",
+  "okpd2": "43.22.22.150",
+  "method": "single_supplier"
+ },
+ {
+  "id": "b63ba636-089c-5429-8066-6f3ce719b352",
+  "reg_number": "3773389083024000146",
+  "customer_organ_id": "1d26701f-1409-56a6-af4f-206fc695f1ca",
+  "supplier_company_id": "b1fc37ba-0cea-5a86-ae59-5b72bad25bc0",
+  "amount": 485772.0,
+  "signed_at": "2024-07-14",
+  "okpd2": "43.22.11.167",
+  "method": "quotation"
+ },
+ {
+  "id": "2e40144a-fd5e-50a9-8571-8415c48afc90",
+  "reg_number": "3773389083025000148",
+  "customer_organ_id": "1d26701f-1409-56a6-af4f-206fc695f1ca",
+  "supplier_company_id": "b1fc37ba-0cea-5a86-ae59-5b72bad25bc0",
+  "amount": 733884.13,
+  "signed_at": "2025-02-01",
+  "okpd2": "43.22.11.141",
+  "method": "auction"
+ },
+ {
+  "id": "03be07e3-4ba1-5465-8461-d1d82f472c82",
+  "reg_number": "3773389083026000122",
+  "customer_organ_id": "1d26701f-1409-56a6-af4f-206fc695f1ca",
+  "supplier_company_id": "b1fc37ba-0cea-5a86-ae59-5b72bad25bc0",
+  "amount": 278675.04,
+  "signed_at": "2026-08-06",
+  "okpd2": "43.22.22.172",
+  "method": "single_supplier"
+ },
+ {
+  "id": "1bd285d3-be98-5b61-99a9-aa879e703ce0",
+  "reg_number": "3773389083025000149",
+  "customer_organ_id": "1d26701f-1409-56a6-af4f-206fc695f1ca",
+  "supplier_company_id": "b1fc37ba-0cea-5a86-ae59-5b72bad25bc0",
+  "amount": 812894.48,
+  "signed_at": "2025-05-29",
+  "okpd2": "43.22.21.130",
+  "method": "auction"
+ },
+ {
+  "id": "8a2a21f7-ffb8-5ad9-bc52-bbe493fc8eca",
+  "reg_number": "3773389083025000150",
+  "customer_organ_id": "1d26701f-1409-56a6-af4f-206fc695f1ca",
+  "supplier_company_id": "b1fc37ba-0cea-5a86-ae59-5b72bad25bc0",
+  "amount": 856521.11,
+  "signed_at": "2025-07-12",
+  "okpd2": "43.22.11.118",
+  "method": "tender"
+ }
+]
