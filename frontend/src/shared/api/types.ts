@@ -276,8 +276,8 @@ export interface CompanyLink {
   relation: 'self' | KinshipKind;
   started_at: ISODate;
   ended_at?: ISODate | null;
-  contracts_count: number;
-  contracts_amount: number;
+  contracts_count?: number;
+  contracts_amount?: number;
 }
 
 export interface OfficialProfile {
@@ -324,6 +324,8 @@ export interface GraphEdge {
 export interface OfficialGraph {
   nodes: GraphNode[];
   edges: GraphEdge[];
+  /** Optional server limit marker; does not alter the contract's required fields. */
+  truncated?: boolean;
 }
 
 export interface AppealsQuery {

@@ -6,13 +6,13 @@ import { AppealStatusBadge } from '@/features/appeals/AppealBadges';
 import { EntityLegend } from '@/features/appeals/EntityLegend';
 import { HighlightedText } from '@/features/appeals/HighlightedText';
 import { useAppeal, useReanalyzeAppeal } from '@/features/appeals/api';
-import type { LinkedOfficial } from '@/shared/api';
+import { LinkedOfficialPreview } from '@/features/appeals/LinkedOfficialPreview';
 import { routes } from '@/shared/config/routes';
 import { formatDateTime } from '@/shared/lib/format';
 import { APPEAL_CHANNEL_LABELS } from '@/shared/lib/labels';
-import { QueryState, RiskScoreBadge } from '@/shared/ui';
+import { QueryState } from '@/shared/ui';
 
-function LinkedOfficials({ persons }: { persons: LinkedOfficial[] }) {
+function LinkedOfficials({ persons }: { persons: string[] }) {
   return (
     <Card>
       <Title order={4} mb="sm">
@@ -24,18 +24,8 @@ function LinkedOfficials({ persons }: { persons: LinkedOfficial[] }) {
         </Text>
       ) : (
         <Stack gap="sm">
-          {persons.map((p) => (
-            <Group key={p.id} wrap="nowrap" align="flex-start">
-              <RiskScoreBadge score={p.risk_score} />
-              <div>
-                <Anchor component={Link} to={routes.official(p.id)} fw={500} size="sm">
-                  {p.full_name}
-                </Anchor>
-                <Text size="xs" c="dimmed">
-                  {p.position} · {p.organ}
-                </Text>
-              </div>
-            </Group>
+          {persons.map((id) => (
+            <LinkedOfficialPreview key={id} id={id} />
           ))}
         </Stack>
       )}
@@ -75,6 +65,16 @@ export function AppealPage() {
                 Повторить анализ
               </Button>
             </Group>
+            {reanalyze.isError && (
+              <Alert color="red" mb="md" title="Не удалось повторить анализ">
+                {reanalyze.error.message}
+              </Alert>
+            )}
+            {reanalyze.isPending && (
+              <Alert role="status" mb="md">
+                Повторный анализ обычно занимает 5–15 секунд.
+              </Alert>
+            )}
 
             <Grid gutter="lg">
               <Grid.Col span={{ base: 12, md: 7 }}>
@@ -93,7 +93,7 @@ export function AppealPage() {
                       </Stack>
                     )}
                   </Card>
-                  <LinkedOfficials persons={a.linked_persons} />
+                  <LinkedOfficials persons={a.linked_person_ids} />
                 </Stack>
               </Grid.Col>
               <Grid.Col span={{ base: 12, md: 5 }}>

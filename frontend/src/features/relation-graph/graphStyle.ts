@@ -20,7 +20,7 @@ export function buildStylesheet(dark: boolean): StylesheetJson {
       selector: 'node',
       style: {
         label: 'data(label)',
-        'font-size': 10,
+        'font-size': 13,
         color: text,
         'text-valign': 'bottom',
         'text-margin-y': 4,
@@ -38,8 +38,12 @@ export function buildStylesheet(dark: boolean): StylesheetJson {
       selector: `node[type = "${type}"]`,
       style: { 'background-color': s.color, shape: s.shape },
     })) as StylesheetJson),
-    { selector: 'node[type = "contract"]', style: { width: 18, height: 18, 'font-size': 8 } },
+    { selector: 'node[type = "contract"]', style: { width: 26, height: 26, 'font-size': 12 } },
     { selector: 'node[risk >= 70]', style: { 'border-width': 4, 'border-color': '#E03131' } },
+    {
+      selector: 'node[risk > 0][risk < 40]',
+      style: { 'border-width': 2, 'border-color': '#2F9E44' },
+    },
     {
       selector: 'node[risk >= 40][risk < 70]',
       style: { 'border-width': 3, 'border-color': '#F76707' },
@@ -58,7 +62,7 @@ export function buildStylesheet(dark: boolean): StylesheetJson {
         'arrow-scale': 0.8,
         'curve-style': 'bezier',
         label: 'data(label)',
-        'font-size': 8,
+        'font-size': 10,
         color: dark ? '#94A2BC' : '#5B6A86',
         'text-rotation': 'autorotate',
         'text-background-color': textBg,

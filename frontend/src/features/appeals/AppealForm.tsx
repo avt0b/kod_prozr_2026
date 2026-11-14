@@ -1,10 +1,9 @@
-import { Button, Group, Select, Stack, Textarea } from '@mantine/core';
+import { Alert, Button, Group, Select, Stack, Textarea } from '@mantine/core';
 import { useState } from 'react';
 import type { AppealChannel, CreateAppealPayload } from '@/shared/api';
 import { APPEAL_CHANNEL_LABELS } from '@/shared/lib/labels';
 
-const EXAMPLE =
-  'Начальник отдела закупок Министерства строительства Соколов А.В. 12 ноября 2026 года предложил нашей фирме «помочь» с победой в аукционе за 500 000 рублей.';
+import { DEMO_APPEAL } from './demoAppeal';
 
 interface Props {
   submitting?: boolean;
@@ -15,12 +14,13 @@ export function AppealForm({ submitting, onSubmit }: Props) {
   const [text, setText] = useState('');
   const [channel, setChannel] = useState<AppealChannel>('web');
   const tooShort = text.trim().length < 20;
+  const tooLong = Array.from(text.trim()).length > 20_000;
 
   return (
     <form
       onSubmit={(e) => {
         e.preventDefault();
-        if (!tooShort) onSubmit({ text: text.trim(), channel });
+        if (!tooShort && !tooLong && !submitting) onSubmit({ text: text.trim(), channel });
       }}
     >
       <Stack>
@@ -30,6 +30,7 @@ export function AppealForm({ submitting, onSubmit }: Props) {
           value={channel}
           onChange={(v) => v && setChannel(v as AppealChannel)}
           allowDeselect={false}
+          disabled={submitting}
           w={280}
         />
         <Textarea
@@ -41,12 +42,24 @@ export function AppealForm({ submitting, onSubmit }: Props) {
           value={text}
           onChange={(e) => setText(e.currentTarget.value)}
           required
+          disabled={submitting}
+          error={tooLong ? 'Максимум 20 000 символов' : undefined}
         />
+        {submitting && (
+          <Alert title="Обращение анализируется" role="status">
+            Обычно это занимает 5–15 секунд. Проверяем категорию, сущности и связи со служащими.
+          </Alert>
+        )}
         <Group justify="space-between">
-          <Button variant="subtle" onClick={() => setText(EXAMPLE)}>
+          <Button
+            type="button"
+            variant="subtle"
+            disabled={submitting}
+            onClick={() => setText(DEMO_APPEAL)}
+          >
             Вставить пример
           </Button>
-          <Button type="submit" loading={submitting} disabled={tooShort}>
+          <Button type="submit" loading={submitting} disabled={tooShort || tooLong}>
             Отправить на анализ
           </Button>
         </Group>
