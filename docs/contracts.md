@@ -116,7 +116,7 @@ Healthcheck бэка: `GET /health` → `200 {"status": "ok"}`.
 | GET  | `/audit?object_id=&limit=20&offset=0` | Журнал действий аналитика `{items, total}`, новые сверху |
 | GET  | `/stats/overview` | Счётчики для главной: служащие, флаги по уровням, обращения по статусам |
 | GET  | `/organs` | Список органов |
-| GET  | `/officials?query=&organ_id=&min_score=&sort=-risk_score&limit=20&offset=0` | Рейтинг служащих: `{items: [{id, full_name, position, organ, risk_score, top_flags[]}], total}` |
+| GET  | `/officials?query=&organ_id=&min_score=&rule_code=&sort=-risk_score&limit=20&offset=0` | Рейтинг служащих: `{items: [{id, full_name, position, organ, risk_score, top_flags[]}], total}` |
 | GET  | `/officials/{id}` | Профиль: person, appointments, authorities, relatives, companies, risk `{score, flags[]}` |
 | GET  | `/officials/{id}/graph?depth=2` | `{nodes: [{id, type: person|company|organ|contract|appeal, label, risk?}], edges: [{source, target, type, label}]}` |
 | GET  | `/officials/{id}/flags` | Флаги риска с объяснениями |
@@ -159,7 +159,7 @@ Healthcheck бэка: `GET /health` → `200 {"status": "ok"}`.
 
 `position` и `organ` — названия текущей должности и органа. `top_flags` — до 3 флагов по весу.
 `sort`: `-risk_score` (по умолчанию), `risk_score`, `full_name`, `-full_name`. При равном балле
-выше тот, у кого больше флагов.
+выше тот, у кого больше флагов. `rule_code` (`R01`…`R08`) оставляет служащих с флагом этого правила.
 
 **`GET /officials/{id}`**
 

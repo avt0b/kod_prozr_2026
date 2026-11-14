@@ -262,6 +262,8 @@ export interface OfficialsQuery {
   query?: string;
   organ_id?: UUID;
   min_score?: number;
+  /** Только служащие с флагом этого правила. */
+  rule_code?: RuleCode;
   sort?: OfficialsSort;
   limit?: number;
   offset?: number;
