@@ -68,7 +68,7 @@ Healthcheck бэка: `GET /health` → `200 {"status": "ok"}`.
   "entities": [{"type": "person|organization|position|money|date|address", "text": "...", "start": 10, "end": 25}],
   "signals": [{"code": "named_official", "text": "назван конкретный служащий"}],
   "specificity": 0.7,
-  "route_to": "отдел по профилактике коррупционных правонарушений",
+  "route_to": "Подразделение по профилактике коррупционных правонарушений",
   "summary": "...",
   "engine": "llm | fallback",
   "candidates": [{"person_id": "...", "full_name": "...", "score": 0.82}]

@@ -102,14 +102,14 @@
 | F-17 | Слайды | Егор | КТ4 | КТ3 | todo |
 | AI-01 | Генератор синтетики: структура и образцы ([#11](https://github.com/avt0b/kod_prozr_2026/issues/11)) | Влад О. | КТ0 | T-01 | review |
 | AI-02 | Генератор: полный объём, схемы, `_truth` ([#11](https://github.com/avt0b/kod_prozr_2026/issues/11)) | Влад О. | КТ1 | AI-01 | review |
-| AI-03 | Выбор и проверка LLM | Влад О. | КТ0 | OPS-05 | todo |
-| AI-04 | Анализ обращения `analyze_appeal` | Влад О. | КТ2 | AI-03 | todo |
-| AI-05 | Сопоставление лиц `match_persons` | Влад О. | КТ2 | AI-02 | todo |
-| AI-06 | Предрасчёт анализа 100 обращений в сиды | Влад О. | КТ3 | AI-04, AI-05 | todo |
-| AI-07 | R08: ML-аномалии относительно коллег | Влад О. | КТ4 | AI-02 | todo |
-| AI-08 | Оценка качества `make eval` | Влад О. | КТ4 | AI-04, AI-07 | todo |
-| AI-09 | LLM-текст докладной — если успеваем | Влад О. | после КТ3 | B-16 | todo |
-| AI-10 | Ассистент на инструментах — если успеваем | Влад О. | после КТ3 | B-11 | todo |
+| AI-03 | Выбор и проверка LLM ([#12](https://github.com/avt0b/kod_prozr_2026/issues/12)) | Влад О. | КТ0 | OPS-05 | wip |
+| AI-04 | Анализ обращения `analyze_appeal` ([#12](https://github.com/avt0b/kod_prozr_2026/issues/12)) | Влад О. | КТ2 | AI-03 | review |
+| AI-05 | Сопоставление лиц `match_persons` ([#12](https://github.com/avt0b/kod_prozr_2026/issues/12)) | Влад О. | КТ2 | AI-02 | review |
+| AI-06 | Предрасчёт анализа 100 обращений в сиды ([#12](https://github.com/avt0b/kod_prozr_2026/issues/12)) | Влад О. | КТ3 | AI-04, AI-05 | review |
+| AI-07 | R08: ML-аномалии относительно коллег ([#12](https://github.com/avt0b/kod_prozr_2026/issues/12)) | Влад О. | КТ4 | AI-02 | review |
+| AI-08 | Оценка качества `make eval` ([#12](https://github.com/avt0b/kod_prozr_2026/issues/12)) | Влад О. | КТ4 | AI-04, AI-07 | review |
+| AI-09 | LLM-текст докладной — если успеваем ([#12](https://github.com/avt0b/kod_prozr_2026/issues/12)) | Влад О. | после КТ3 | B-16 | review |
+| AI-10 | Ассистент на инструментах — если успеваем ([#12](https://github.com/avt0b/kod_prozr_2026/issues/12)) | Влад О. | после КТ3 | B-11 | review |
 | AI-11 | Вариант D: карта рисков должности — если успеваем | Влад О. | после КТ4 | — | todo |
 | OPS-01 | Монорепо, compose, Makefile, `.env.example` | Кирилл | КТ0 | — | todo |
 | OPS-02 | Образы бэка и фронта, миграции на старте | Кирилл | КТ1 | B-01, F-01 | todo |

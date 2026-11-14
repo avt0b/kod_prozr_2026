@@ -1,0 +1,199 @@
+{
+  "data": "/home/avt0b/Projects/kod_prozr_2026/backend/../data/generated",
+  "note": "метрики на синтетике: оценка верхняя",
+  "rules": {
+    "per_rule": {
+      "R01": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "R02": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "tp": 5,
+        "fp": 0,
+        "fn": 0
+      },
+      "R03": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "tp": 4,
+        "fp": 0,
+        "fn": 0
+      },
+      "R04": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "tp": 3,
+        "fp": 0,
+        "fn": 0
+      },
+      "R05": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "tp": 5,
+        "fp": 0,
+        "fn": 0
+      },
+      "R06": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "tp": 5,
+        "fp": 0,
+        "fn": 0
+      }
+    },
+    "noise_cases": {
+      "total": 19,
+      "without_false_flags": 19
+    },
+    "R08": {
+      "recall": 1.0,
+      "found": 4,
+      "planted": 4,
+      "flags_on_clean_officials": 0
+    },
+    "ranking": {
+      "precision@10": 1.0,
+      "precision@20": 0.95
+    }
+  },
+  "appeals": {
+    "fallback": {
+      "appeals": 106,
+      "engines": {
+        "fallback": 106
+      },
+      "is_corruption": {
+        "precision": 0.927,
+        "recall": 0.836,
+        "f1": 0.879,
+        "tp": 51,
+        "fp": 4,
+        "fn": 10
+      },
+      "category_macro_f1": 0.873,
+      "category_confusion": {
+        "conflict_of_interest": {
+          "other": 10,
+          "conflict_of_interest": 6,
+          "procurement": 1
+        },
+        "bribe": {
+          "bribe": 16
+        },
+        "abuse_of_power": {
+          "abuse_of_power": 11
+        },
+        "procurement": {
+          "procurement": 17
+        }
+      },
+      "linking": {
+        "precision": 1.0,
+        "recall": 0.879,
+        "f1": 0.935,
+        "tp": 29,
+        "fp": 0,
+        "fn": 4,
+        "candidates_without_link_share": 0.009
+      },
+      "signals": {
+        "named_official": {
+          "precision": 1.0,
+          "recall": 0.943,
+          "f1": 0.971,
+          "tp": 33,
+          "fp": 0,
+          "fn": 2
+        },
+        "named_position": {
+          "precision": 0.875,
+          "recall": 1.0,
+          "f1": 0.933,
+          "tp": 35,
+          "fp": 5,
+          "fn": 0
+        },
+        "money_amount": {
+          "precision": 1.0,
+          "recall": 0.862,
+          "f1": 0.926,
+          "tp": 25,
+          "fp": 0,
+          "fn": 4
+        },
+        "relative_mentioned": {
+          "precision": 0.438,
+          "recall": 0.636,
+          "f1": 0.519,
+          "tp": 7,
+          "fp": 9,
+          "fn": 4
+        },
+        "vague_no_facts": {
+          "precision": 0.688,
+          "recall": 0.423,
+          "f1": 0.524,
+          "tp": 11,
+          "fp": 5,
+          "fn": 15
+        },
+        "extortion": {
+          "precision": 0.133,
+          "recall": 0.667,
+          "f1": 0.222,
+          "tp": 2,
+          "fp": 13,
+          "fn": 1
+        },
+        "named_organization": {
+          "precision": 1.0,
+          "recall": 0.75,
+          "f1": 0.857,
+          "tp": 9,
+          "fp": 0,
+          "fn": 3
+        },
+        "procurement_ref": {
+          "precision": 1.0,
+          "recall": 0.333,
+          "f1": 0.5,
+          "tp": 1,
+          "fp": 0,
+          "fn": 2
+        },
+        "specific_date": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "tp": 9,
+          "fp": 0,
+          "fn": 0
+        },
+        "evidence_available": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "tp": 4,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "injection_intact": "4/5",
+      "seconds": {
+        "median": 0.0,
+        "p95": 0.001
+      }
+    }
+  }
+}

@@ -1,15 +1,17 @@
-"""ACL appeals -> officials: поиск людей по фамилии и ФИО по id.
+"""ACL appeals -> officials: справочник служащих с должностями и ФИО по id.
 
 Модуль officials не импортируется: внешний источник описан локальным протоколом,
 настоящий объект (QueryOfficialsUseCase) подставляет src/web/dependencies.py.
 """
 
 from collections.abc import Sequence
+from datetime import date
 from typing import Protocol
 from uuid import UUID
 
 from src.modules.appeals.application.dto.appeal_dto import PersonRef
 from src.modules.appeals.application.interfaces.person_directory import PersonDirectoryInterface
+from src.modules.appeals.application.interfaces.person_matcher import OfficialCard, OfficialPost
 
 
 class ExternalPerson(Protocol):
@@ -23,6 +25,9 @@ class ExternalTitle(Protocol):
     @property
     def title(self) -> str: ...
 
+    @property
+    def department(self) -> str: ...
+
 
 class ExternalOrgan(Protocol):
     @property
@@ -34,6 +39,10 @@ class ExternalAppointment(Protocol):
     def position(self) -> ExternalTitle: ...
     @property
     def organ(self) -> ExternalOrgan: ...
+    @property
+    def started_at(self) -> date: ...
+    @property
+    def ended_at(self) -> date | None: ...
 
 
 class ExternalSnapshot(Protocol):
@@ -41,6 +50,9 @@ class ExternalSnapshot(Protocol):
     def person(self) -> ExternalPerson: ...
     @property
     def current_appointment(self) -> ExternalAppointment | None: ...
+
+    @property
+    def appointments(self) -> Sequence[ExternalAppointment]: ...
 
 
 class ExternalScore(Protocol):
@@ -55,7 +67,7 @@ class ExternalRiskSource(Protocol):
 
 
 class ExternalPersonSource(Protocol):
-    async def persons_by_name(self, name_query: str) -> Sequence[ExternalPerson]: ...
+    async def official_ids(self) -> Sequence[UUID]: ...
 
     async def persons(self, person_ids: Sequence[UUID]) -> Sequence[ExternalPerson]: ...
 
@@ -67,10 +79,25 @@ class OfficialsDirectoryACLAdapter(PersonDirectoryInterface):
         self._source = external_source
         self._risk = risk
 
-    async def find_candidates(self, surname_stem: str) -> list[PersonRef]:
-        found = await self._source.persons_by_name(surname_stem)
-        snapshots = await self._source.snapshots([p.id for p in found])
-        return [PersonRef(id=s.person.id, full_name=s.person.full_name) for s in snapshots]
+    async def officials(self) -> list[OfficialCard]:
+        snapshots = await self._source.snapshots(list(await self._source.official_ids()))
+        return [
+            OfficialCard(
+                id=s.person.id,
+                full_name=s.person.full_name,
+                posts=tuple(
+                    OfficialPost(
+                        title=a.position.title,
+                        department=a.position.department,
+                        organ=a.organ.name,
+                        started_at=a.started_at,
+                        ended_at=a.ended_at,
+                    )
+                    for a in s.appointments
+                ),
+            )
+            for s in snapshots
+        ]
 
     async def get_many(self, person_ids: Sequence[UUID]) -> list[PersonRef]:
         if not person_ids:

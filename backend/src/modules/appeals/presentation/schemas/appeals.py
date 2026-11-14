@@ -8,7 +8,7 @@ from src.core.schemas import APIModel, SafeString
 
 class AppealCreateRequest(APIModel):
     text: SafeString = Field(min_length=1, max_length=20_000)
-    # Значения из docs/data.md: web | email | letter | hotline (в контракт ещё не внесены).
+    # Контракт: web | email | letter | hotline | personal.
     channel: SafeString = Field(default="web", min_length=1, max_length=32)
 
 
@@ -24,6 +24,12 @@ class SignalResponse(APIModel):
     text: str
 
 
+class CandidateResponse(APIModel):
+    person_id: UUID
+    full_name: str
+    score: float
+
+
 class AnalysisResponse(APIModel):
     is_corruption: bool
     category: str
@@ -34,6 +40,8 @@ class AnalysisResponse(APIModel):
     route_to: str
     summary: str
     analyzer: str
+    engine: str
+    candidates: list[CandidateResponse]
 
 
 class LinkedPersonResponse(APIModel):

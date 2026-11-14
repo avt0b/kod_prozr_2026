@@ -12,8 +12,13 @@ dependencies = [
   "jsonschema>=4.26.0",
   "loguru>=0.7.3",
   "nh3>=0.2.20",
+  "numpy>=2.5.4",
   "pydantic>=2.10",
   "pydantic-settings>=2.7",
+  "pymorphy3>=2.0.6",
+  "pymorphy3-dicts-ru>=2.4.417150.4580142",
+  "rapidfuzz>=3.14.6",
+  "scikit-learn>=1.9.1",
   "sqlalchemy[asyncio]>=2.0.36",
   "uvicorn>=0.32",
 ]
@@ -116,13 +121,13 @@ forbidden_modules = ["pydantic", "pydantic_settings"]
 name = "Core is independent of modules and composition root"
 type = "forbidden"
 source_modules = ["src.core"]
-forbidden_modules = ["src.modules", "src.web", "src.seed"]
+forbidden_modules = ["src.modules", "src.web", "src.seed", "src.eval"]
 
 [[tool.importlinter.contracts]]
 name = "Modules do not know the composition root"
 type = "forbidden"
 source_modules = ["src.modules"]
-forbidden_modules = ["src.web", "src.seed"]
+forbidden_modules = ["src.web", "src.seed", "src.eval"]
 
 [tool.mypy]
 python_version = "3.12"

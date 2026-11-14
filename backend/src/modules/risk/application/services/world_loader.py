@@ -59,6 +59,11 @@ class RiskWorldLoader:
                 await self._counterparties.contracts(customer_organ_ids=batch, limit=MAX_CONTRACTS)
             )
 
+        # Роли в компаниях-поставщиках: R08 считает долю «номинальных» директоров.
+        staff: list[CompanyRoleFacts] = []
+        for batch in chunked(list({c.supplier_company_id for c in contracts})):
+            staff.extend(await self._counterparties.roles_for_companies(batch))
+
         mentions: list[AppealMentionFacts] = []
         for batch in chunked([o.person.id for o in officials]):
             mentions.extend(await self._appeals.mentions(batch))
@@ -70,4 +75,5 @@ class RiskWorldLoader:
             company_roles=roles,
             contracts=contracts,
             appeal_mentions=mentions,
+            company_staff=staff,
         )

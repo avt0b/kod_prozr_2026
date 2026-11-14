@@ -36,6 +36,7 @@ def generate(
         "seed": seed,
         "threshold": threshold,
         "cases": {case: o.person_id for case, o in sorted(scenario.cases.items())},
+        "demo_appeal_ids": [label["appeal_id"] for label in appeals.labels if label["keep_new"]],
     }
     rows = {name: world.rows[name] for name in ENTITIES}
     return rows, truth, scenario

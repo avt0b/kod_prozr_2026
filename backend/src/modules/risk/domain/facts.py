@@ -49,6 +49,7 @@ class AppointmentFacts:
     started_at: date
     ended_at: date | None = None
     authorities: tuple[AuthorityFacts, ...] = ()
+    organ_region: str | None = None
 
     def contains(self, day: date) -> bool:
         return self.started_at <= day and (self.ended_at is None or day <= self.ended_at)
@@ -103,6 +104,7 @@ class CompanyFacts:
     okved: str | None = None
     address: str | None = None
     phone: str | None = None
+    registered_at: date | None = None
 
     @property
     def is_active(self) -> bool:
@@ -135,6 +137,7 @@ class ContractFacts:
     amount: float
     signed_at: date
     okpd2: str | None = None
+    method: str | None = None
 
 
 @dataclass(frozen=True)

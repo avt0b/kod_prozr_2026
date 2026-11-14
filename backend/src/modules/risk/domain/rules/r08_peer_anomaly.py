@@ -30,7 +30,8 @@ class PeerAnomalyRule(RiskRule):
         details = "; ".join(_describe(f) for f in top)
         explanation = (
             f"Показатели {short_name(official.person.full_name)} нетипичны для коллег "
-            f"({anomaly.peers_count} чел., та же должность и регион): {details}. "
+            f"(группа сравнения — {anomaly.peers_count} чел. со схожими полномочиями в регионе): "
+            f"{details}. "
             "Это статистическая аномалия, а не нарушение: она подсказывает, куда посмотреть."
         )
         evidence = [person_node(official.person)]
