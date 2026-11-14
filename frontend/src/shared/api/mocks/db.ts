@@ -457,6 +457,9 @@ export function analyzeText(text: string): { analysis: AppealAnalysis; linked: U
       summary: isCorruption
         ? `Обращение с признаками коррупции (категория определена по ключевым словам). Найдено сигналов: ${signals.length}.`
         : 'Признаков коррупции не выявлено, обращение направляется по компетенции.',
+      engine: 'fallback',
+      analyzer: 'rules',
+      candidates: [],
     },
   };
 }

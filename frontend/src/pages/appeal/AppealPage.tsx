@@ -10,9 +10,16 @@ import { LinkedOfficialPreview } from '@/features/appeals/LinkedOfficialPreview'
 import { routes } from '@/shared/config/routes';
 import { formatDateTime } from '@/shared/lib/format';
 import { APPEAL_CHANNEL_LABELS } from '@/shared/lib/labels';
+import type { AppealCandidate } from '@/shared/api';
 import { QueryState } from '@/shared/ui';
 
-function LinkedOfficials({ persons }: { persons: string[] }) {
+function LinkedOfficials({
+  persons,
+  candidates,
+}: {
+  persons: string[];
+  candidates: AppealCandidate[];
+}) {
   return (
     <Card>
       <Title order={4} mb="sm">
@@ -20,12 +27,31 @@ function LinkedOfficials({ persons }: { persons: string[] }) {
       </Title>
       {persons.length === 0 ? (
         <Text size="sm" c="dimmed">
-          Не сопоставлены с базой служащих
+          {candidates.length
+            ? 'Автоматически не привязаны: упоминание неоднозначно'
+            : 'Не сопоставлены с базой служащих'}
         </Text>
       ) : (
         <Stack gap="sm">
           {persons.map((id) => (
             <LinkedOfficialPreview key={id} id={id} />
+          ))}
+        </Stack>
+      )}
+      {candidates.length > 0 && (
+        <Stack gap={4} mt="md">
+          <Text size="sm" fw={600}>
+            Возможно (подтверждает аналитик):
+          </Text>
+          {candidates.map((c) => (
+            <Group key={c.person_id} gap="xs">
+              <Anchor component={Link} to={routes.official(c.person_id)} size="sm">
+                {c.full_name}
+              </Anchor>
+              <Text size="xs" c="dimmed">
+                совпадение {Math.round(c.score * 100)}%
+              </Text>
+            </Group>
           ))}
         </Stack>
       )}
@@ -62,7 +88,7 @@ export function AppealPage() {
                 loading={reanalyze.isPending}
                 onClick={() => reanalyze.mutate(a.id)}
               >
-                Повторить анализ
+                {a.analysis ? 'Повторить анализ' : 'Запустить анализ'}
               </Button>
             </Group>
             {reanalyze.isError && (
@@ -93,7 +119,10 @@ export function AppealPage() {
                       </Stack>
                     )}
                   </Card>
-                  <LinkedOfficials persons={a.linked_person_ids} />
+                  <LinkedOfficials
+                    persons={a.linked_person_ids}
+                    candidates={a.analysis?.candidates ?? []}
+                  />
                 </Stack>
               </Grid.Col>
               <Grid.Col span={{ base: 12, md: 5 }}>
@@ -101,7 +130,7 @@ export function AppealPage() {
                   <AppealAnalysisPanel analysis={a.analysis} />
                 ) : (
                   <Alert color="blue" title="Обращение ещё не проанализировано">
-                    Нажмите «Повторить анализ», чтобы запустить классификацию.
+                    Нажмите «Запустить анализ», чтобы классифицировать обращение.
                   </Alert>
                 )}
               </Grid.Col>

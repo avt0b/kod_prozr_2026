@@ -170,6 +170,16 @@ export interface AppealSignal {
   text: string;
 }
 
+/** Служащий, похожий на упомянутого, но не привязанный автоматически (ai.md §3). */
+export interface AppealCandidate {
+  person_id: UUID;
+  full_name: string;
+  score: number;
+}
+
+/** Чем сделан разбор: LLM или фоллбэк на правилах (ADR-05). */
+export type AnalysisEngine = 'llm' | 'fallback';
+
 export interface AppealAnalysis {
   is_corruption: boolean;
   category: AppealCategory;
@@ -179,6 +189,11 @@ export interface AppealAnalysis {
   specificity: number;
   route_to: string;
   summary: string;
+  /** Контракт: llm | fallback. Старые разборы могут его не содержать. */
+  engine?: AnalysisEngine;
+  /** Техническое имя анализатора: rules, llm:<модель>. */
+  analyzer?: string;
+  candidates?: AppealCandidate[];
 }
 
 export interface Appeal {
