@@ -27,6 +27,9 @@ class ExternalCompany(Protocol):
     @property
     def phone(self) -> str | None: ...
 
+    @property
+    def registered_at(self) -> date | None: ...
+
 
 class ExternalCompanyRole(Protocol):
     @property
@@ -58,6 +61,9 @@ class ExternalContract(Protocol):
     def signed_at(self) -> date: ...
     @property
     def okpd2(self) -> str | None: ...
+
+    @property
+    def method(self) -> str | None: ...
 
 
 class ExternalCounterpartiesSource(Protocol):
@@ -91,6 +97,7 @@ def _company(company: ExternalCompany) -> CompanyFacts:
         okved=company.okved,
         address=company.address,
         phone=company.phone,
+        registered_at=company.registered_at,
     )
 
 
@@ -142,6 +149,7 @@ class CounterpartiesACLAdapter(CounterpartiesSourceInterface):
                 amount=c.amount,
                 signed_at=c.signed_at,
                 okpd2=c.okpd2,
+                method=c.method,
             )
             for c in found
         ]

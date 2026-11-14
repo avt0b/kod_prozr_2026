@@ -32,6 +32,7 @@ async def load_seed(
     *,
     analyze: bool = True,
     recompute: bool = True,
+    reanalyze: bool = False,
 ) -> dict[str, Any]:
     with TemporaryDirectory(prefix="kodprozr-seed-") as temp:
         snapshot = Path(temp)
@@ -56,7 +57,9 @@ async def load_seed(
                         "officials.persons, officials.organs"
                     )
                 )
-                return await _import(importing, snapshot, settings, llm, analyze, recompute)
+                return await _import(
+                    importing, snapshot, settings, llm, analyze, recompute, reanalyze
+                )
 
 
 async def _import(
@@ -66,6 +69,7 @@ async def _import(
     llm: LLMClientInterface | None,
     analyze: bool,
     recompute: bool,
+    reanalyze: bool = False,
 ) -> dict[str, Any]:
     logger.info("Seed from {}", data_dir)
     report: dict[str, Any] = {
@@ -78,6 +82,7 @@ async def _import(
         analyzer=build_appeal_analyzer(settings, llm),
         directory=wiring.appeals_person_directory(session),
         analyze=analyze,
+        reanalyze=reanalyze,
     )
     for name, counts in report.items():
         logger.info("{}: {}", name, counts)

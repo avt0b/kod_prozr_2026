@@ -1,0 +1,65 @@
+[
+ {
+  "id": "8c6b5712-dc1c-5fc9-93cc-26c5c225ef51",
+  "person_id": "4d32a594-1325-5c9d-bed1-cfec43b131a2",
+  "company_id": "27a34bf9-7fed-57f2-9e2d-18e36c770021",
+  "started_at": "2014-10-23",
+  "ended_at": "2020-02-19"
+ },
+ {
+  "id": "aa87c4b3-6ba0-57a2-88c5-78b23f78f4b5",
+  "person_id": "4d32a594-1325-5c9d-bed1-cfec43b131a2",
+  "company_id": "27a34bf9-7fed-57f2-9e2d-18e36c770021",
+  "started_at": "2010-06-29",
+  "ended_at": "2014-09-16"
+ },
+ {
+  "id": "0d5df22a-abb0-5b9a-a88e-a3d1a34a12e5",
+  "person_id": "c39d5cae-091f-5b73-af39-6fbb6b9a613e",
+  "company_id": "0be4df7c-fd7b-5490-a19c-bf3c3ba44b03",
+  "started_at": "2014-10-17",
+  "ended_at": "2017-09-11"
+ },
+ {
+  "id": "180862fb-7c09-5279-93f7-84b4ad064e0f",
+  "person_id": "3f06dada-686f-580b-874e-58593097933f",
+  "company_id": "10427bfb-69c7-58e7-a66f-ba43480b5529",
+  "started_at": "2017-05-23",
+  "ended_at": "2020-07-16"
+ },
+ {
+  "id": "892034cb-1bd6-5035-97e9-c6e21a5c3a66",
+  "person_id": "3f06dada-686f-580b-874e-58593097933f",
+  "company_id": "466a6c86-859c-5050-82a4-2f05af4505a3",
+  "started_at": "2012-11-05",
+  "ended_at": "2016-12-09"
+ },
+ {
+  "id": "3e32d808-bd06-58ed-96c2-8c15792fb3b0",
+  "person_id": "3f06dada-686f-580b-874e-58593097933f",
+  "company_id": "e021a58d-9110-59a9-af7d-b588acf4a876",
+  "started_at": "2006-02-15",
+  "ended_at": "2012-03-09"
+ },
+ {
+  "id": "5eef26ed-ef9d-5e4a-97b5-5d9aedeb3d01",
+  "person_id": "12b5fe9f-4f46-52d7-b758-a3ae1f18cf32",
+  "company_id": "33f60c99-33c1-5eff-97e0-45bbefdc92c6",
+  "started_at": "2013-10-25",
+  "ended_at": "2019-02-14"
+ },
+ {
+  "id": "5ae079e2-a7e9-56dd-ae2b-44322ad10e49",
+  "person_id": "fb05291e-c81e-5e5c-b2be-db310f0a2fbb",
+  "company_id": "b1fc37ba-0cea-5a86-ae59-5b72bad25bc0",
+  "started_at": "2016-05-16",
+  "ended_at": "2024-02-28"
+ },
+ {
+  "id": "d036b520-b3ca-5fc7-84cb-40acfd5f8021",
+  "person_id": "fb05291e-c81e-5e5c-b2be-db310f0a2fbb",
+  "company_id": "d711e64e-b0ab-5bb1-8c41-f450ef42835e",
+  "started_at": "2010-09-01",
+  "ended_at": "2016-05-06"
+ }
+]

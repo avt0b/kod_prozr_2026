@@ -1,0 +1,401 @@
+[
+ {
+  "id": "fbdced0a-f98d-509e-bb41-1574b668e65f",
+  "organ_id": "b1104e41-e62d-5002-80d2-73e40a3ca0be",
+  "title": "Руководитель департамента",
+  "department": "Руководство",
+  "is_corruption_risky": true
+ },
+ {
+  "id": "8c7297ef-c548-5cc3-ac12-1f46af0dfb43",
+  "organ_id": "b1104e41-e62d-5002-80d2-73e40a3ca0be",
+  "title": "Заместитель руководителя департамента",
+  "department": "Руководство",
+  "is_corruption_risky": true
+ },
+ {
+  "id": "4be236f5-46bd-5a34-a9a2-9baf08171fd7",
+  "organ_id": "b1104e41-e62d-5002-80d2-73e40a3ca0be",
+  "title": "Начальник отдела закупок",
+  "department": "Отдел закупок",
+  "is_corruption_risky": true
+ },
+ {
+  "id": "3bee5990-585e-5758-9243-d370c1b724a5",
+  "organ_id": "b1104e41-e62d-5002-80d2-73e40a3ca0be",
+  "title": "Заместитель начальника отдела закупок",
+  "department": "Отдел закупок",
+  "is_corruption_risky": true
+ },
+ {
+  "id": "842aab84-2c18-5733-9afd-87072c36dde8",
+  "organ_id": "b1104e41-e62d-5002-80d2-73e40a3ca0be",
+  "title": "Главный специалист отдела закупок",
+  "department": "Отдел закупок",
+  "is_corruption_risky": true
+ },
+ {
+  "id": "126ddad4-2ee7-5664-866b-26572cdc419d",
+  "organ_id": "b1104e41-e62d-5002-80d2-73e40a3ca0be",
+  "title": "Ведущий специалист отдела закупок",
+  "department": "Отдел закупок",
+  "is_corruption_risky": true
+ },
+ {
+  "id": "d204dd9c-43eb-5f0e-8f11-98e6b7af25d2",
+  "organ_id": "b1104e41-e62d-5002-80d2-73e40a3ca0be",
+  "title": "Специалист-эксперт отдела закупок",
+  "department": "Отдел закупок",
+  "is_corruption_risky": true
+ },
+ {
+  "id": "e6447e9e-27bc-51b7-9e7e-0974941c496a",
+  "organ_id": "b1104e41-e62d-5002-80d2-73e40a3ca0be",
+  "title": "Специалист-эксперт отдела закупок",
+  "department": "Отдел закупок",
+  "is_corruption_risky": true
+ },
+ {
+  "id": "144c561f-5ce9-5cfd-bad3-a891533cb743",
+  "organ_id": "b1104e41-e62d-5002-80d2-73e40a3ca0be",
+  "title": "Начальник отдела",
+  "department": "Отдел дорожного хозяйства",
+  "is_corruption_risky": true
+ },
+ {
+  "id": "726b88eb-eeeb-5747-aa5d-8f00732f34cb",
+  "organ_id": "b1104e41-e62d-5002-80d2-73e40a3ca0be",
+  "title": "Главный специалист",
+  "department": "Отдел дорожного хозяйства",
+  "is_corruption_risky": true
+ },
+ {
+  "id": "3fc81fb7-569b-5ac9-90ba-d5816121cc29",
+  "organ_id": "b1104e41-e62d-5002-80d2-73e40a3ca0be",
+  "title": "Специалист-эксперт",
+  "department": "Отдел дорожного хозяйства",
+  "is_corruption_risky": false
+ },
+ {
+  "id": "7009c5dc-f8f3-501b-a6c2-d0321765b6a9",
+  "organ_id": "b1104e41-e62d-5002-80d2-73e40a3ca0be",
+  "title": "Начальник отдела",
+  "department": "Отдел капитального строительства",
+  "is_corruption_risky": true
+ },
+ {
+  "id": "9c2325b1-1ed0-504d-9f4c-49ffc7e488eb",
+  "organ_id": "b1104e41-e62d-5002-80d2-73e40a3ca0be",
+  "title": "Главный специалист",
+  "department": "Отдел капитального строительства",
+  "is_corruption_risky": true
+ },
+ {
+  "id": "25458e2a-32ed-56c5-9997-798c38bc9aac",
+  "organ_id": "b1104e41-e62d-5002-80d2-73e40a3ca0be",
+  "title": "Специалист-эксперт",
+  "department": "Отдел капитального строительства",
+  "is_corruption_risky": false
+ },
+ {
+  "id": "8f2a8eb0-92d3-5487-ba21-46add44d171a",
+  "organ_id": "b1104e41-e62d-5002-80d2-73e40a3ca0be",
+  "title": "Начальник отдела",
+  "department": "Финансово-экономический отдел",
+  "is_corruption_risky": true
+ },
+ {
+  "id": "eda66219-049b-54eb-8735-45eb13772e71",
+  "organ_id": "b1104e41-e62d-5002-80d2-73e40a3ca0be",
+  "title": "Главный специалист",
+  "department": "Финансово-экономический отдел",
+  "is_corruption_risky": false
+ },
+ {
+  "id": "8979c0e8-abb8-5dc6-b669-5084183d9a1a",
+  "organ_id": "b1104e41-e62d-5002-80d2-73e40a3ca0be",
+  "title": "Начальник отдела",
+  "department": "Отдел кадров",
+  "is_corruption_risky": true
+ },
+ {
+  "id": "7bc93c5c-0027-588a-9507-007065010047",
+  "organ_id": "b1104e41-e62d-5002-80d2-73e40a3ca0be",
+  "title": "Ведущий специалист",
+  "department": "Отдел кадров",
+  "is_corruption_risky": false
+ },
+ {
+  "id": "55da8ac7-87e8-5aef-bb5f-3aa54346f5b1",
+  "organ_id": "b1104e41-e62d-5002-80d2-73e40a3ca0be",
+  "title": "Главный специалист",
+  "department": "Юридический отдел",
+  "is_corruption_risky": false
+ },
+ {
+  "id": "a65e30b1-b4a7-5f45-ace8-664239535196",
+  "organ_id": "b1104e41-e62d-5002-80d2-73e40a3ca0be",
+  "title": "Специалист-эксперт",
+  "department": "Отдел информатизации",
+  "is_corruption_risky": false
+ },
+ {
+  "id": "cfc695a1-e0f0-560c-bab7-bcd37def08a0",
+  "organ_id": "07ca6da8-949a-5803-8a45-e013799aa220",
+  "title": "Председатель комитета",
+  "department": "Руководство",
+  "is_corruption_risky": true
+ },
+ {
+  "id": "5e999ec7-015f-5143-a254-13bc1de0a7ef",
+  "organ_id": "07ca6da8-949a-5803-8a45-e013799aa220",
+  "title": "Заместитель председателя комитета",
+  "department": "Руководство",
+  "is_corruption_risky": true
+ },
+ {
+  "id": "530755a2-9a4d-540a-8d45-84dfec95ec05",
+  "organ_id": "07ca6da8-949a-5803-8a45-e013799aa220",
+  "title": "Начальник отдела государственного заказа",
+  "department": "Отдел государственного заказа",
+  "is_corruption_risky": true
+ },
+ {
+  "id": "b6b1f75a-510c-58c5-aa16-815955c6f757",
+  "organ_id": "07ca6da8-949a-5803-8a45-e013799aa220",
+  "title": "Заместитель начальника отдела государственного заказа",
+  "department": "Отдел государственного заказа",
+  "is_corruption_risky": true
+ },
+ {
+  "id": "aec8cad1-06a6-50f2-8653-20e62c845ea5",
+  "organ_id": "07ca6da8-949a-5803-8a45-e013799aa220",
+  "title": "Главный специалист отдела госзаказа",
+  "department": "Отдел государственного заказа",
+  "is_corruption_risky": true
+ },
+ {
+  "id": "64768b03-a247-5c15-8bdf-a1bc7c3e61f1",
+  "organ_id": "07ca6da8-949a-5803-8a45-e013799aa220",
+  "title": "Специалист-эксперт отдела госзаказа",
+  "department": "Отдел государственного заказа",
+  "is_corruption_risky": true
+ },
+ {
+  "id": "1faa2371-ac7b-505a-8622-a48c6ffbfd65",
+  "organ_id": "07ca6da8-949a-5803-8a45-e013799aa220",
+  "title": "Ведущий специалист отдела госзаказа",
+  "department": "Отдел государственного заказа",
+  "is_corruption_risky": true
+ },
+ {
+  "id": "17369665-30b5-5f63-8b80-d66ed49325d0",
+  "organ_id": "07ca6da8-949a-5803-8a45-e013799aa220",
+  "title": "Начальник отдела",
+  "department": "Отдел лицензирования",
+  "is_corruption_risky": true
+ },
+ {
+  "id": "b556fe68-7563-5865-9d36-5d5e342955d5",
+  "organ_id": "07ca6da8-949a-5803-8a45-e013799aa220",
+  "title": "Главный специалист отдела лицензирования",
+  "department": "Отдел лицензирования",
+  "is_corruption_risky": true
+ },
+ {
+  "id": "3d5009fa-74da-572a-b126-375b6d227c8c",
+  "organ_id": "07ca6da8-949a-5803-8a45-e013799aa220",
+  "title": "Начальник отдела",
+  "department": "Отдел контроля качества медицинской помощи",
+  "is_corruption_risky": true
+ },
+ {
+  "id": "42b966a8-0d85-5590-91e4-54bd68e3d7c2",
+  "organ_id": "07ca6da8-949a-5803-8a45-e013799aa220",
+  "title": "Главный специалист",
+  "department": "Отдел контроля качества медицинской помощи",
+  "is_corruption_risky": true
+ },
+ {
+  "id": "9e6b385f-da68-537e-9d3a-f9476af75c62",
+  "organ_id": "07ca6da8-949a-5803-8a45-e013799aa220",
+  "title": "Специалист-эксперт",
+  "department": "Отдел контроля качества медицинской помощи",
+  "is_corruption_risky": false
+ },
+ {
+  "id": "c37089d3-9167-5c48-bcfa-8e9404029738",
+  "organ_id": "07ca6da8-949a-5803-8a45-e013799aa220",
+  "title": "Начальник отдела",
+  "department": "Финансово-экономический отдел",
+  "is_corruption_risky": true
+ },
+ {
+  "id": "b7619c3e-4991-5c4d-9c2b-0e2c3fb6d8a2",
+  "organ_id": "07ca6da8-949a-5803-8a45-e013799aa220",
+  "title": "Главный специалист",
+  "department": "Финансово-экономический отдел",
+  "is_corruption_risky": false
+ },
+ {
+  "id": "67714aa5-adb9-5110-a160-dc6f1d797341",
+  "organ_id": "07ca6da8-949a-5803-8a45-e013799aa220",
+  "title": "Начальник отдела",
+  "department": "Отдел кадров",
+  "is_corruption_risky": true
+ },
+ {
+  "id": "f733cf6a-a638-59d2-a141-ba5aee1a37e6",
+  "organ_id": "07ca6da8-949a-5803-8a45-e013799aa220",
+  "title": "Ведущий специалист",
+  "department": "Отдел кадров",
+  "is_corruption_risky": false
+ },
+ {
+  "id": "8530872b-337f-5469-adfa-1ba3ee25b53c",
+  "organ_id": "07ca6da8-949a-5803-8a45-e013799aa220",
+  "title": "Главный специалист",
+  "department": "Юридический отдел",
+  "is_corruption_risky": false
+ },
+ {
+  "id": "62c4501c-b1f9-5094-8b5a-925703bd559e",
+  "organ_id": "07ca6da8-949a-5803-8a45-e013799aa220",
+  "title": "Специалист-эксперт",
+  "department": "Организационный отдел",
+  "is_corruption_risky": false
+ },
+ {
+  "id": "98d73564-2cf7-5aa6-842d-026decb2ba46",
+  "organ_id": "1d26701f-1409-56a6-af4f-206fc695f1ca",
+  "title": "Начальник управления",
+  "department": "Руководство",
+  "is_corruption_risky": true
+ },
+ {
+  "id": "06d6564f-679a-506f-8635-5296e995f703",
+  "organ_id": "1d26701f-1409-56a6-af4f-206fc695f1ca",
+  "title": "Заместитель начальника управления",
+  "department": "Руководство",
+  "is_corruption_risky": true
+ },
+ {
+  "id": "d39c4432-756e-5c5a-aa59-5c369153126b",
+  "organ_id": "1d26701f-1409-56a6-af4f-206fc695f1ca",
+  "title": "Заместитель начальника управления",
+  "department": "Руководство",
+  "is_corruption_risky": true
+ },
+ {
+  "id": "56835f92-4f4d-5b1e-8dfd-7ca3b9b28e3a",
+  "organ_id": "1d26701f-1409-56a6-af4f-206fc695f1ca",
+  "title": "Начальник отдела благоустройства",
+  "department": "Отдел благоустройства",
+  "is_corruption_risky": true
+ },
+ {
+  "id": "e847d69b-af34-5626-97ec-e745a4eccd51",
+  "organ_id": "1d26701f-1409-56a6-af4f-206fc695f1ca",
+  "title": "Главный специалист отдела благоустройства",
+  "department": "Отдел благоустройства",
+  "is_corruption_risky": true
+ },
+ {
+  "id": "ddd85245-60d6-5d54-b0fb-a803ecb0c4bc",
+  "organ_id": "1d26701f-1409-56a6-af4f-206fc695f1ca",
+  "title": "Специалист-эксперт",
+  "department": "Отдел благоустройства",
+  "is_corruption_risky": false
+ },
+ {
+  "id": "0ff92cb5-cf1a-5937-8278-b55ac2bbc32e",
+  "organ_id": "1d26701f-1409-56a6-af4f-206fc695f1ca",
+  "title": "Начальник отдела ЖКХ",
+  "department": "Отдел ЖКХ",
+  "is_corruption_risky": true
+ },
+ {
+  "id": "2f75bc2c-c10c-5099-ab92-89f4d8c4cd08",
+  "organ_id": "1d26701f-1409-56a6-af4f-206fc695f1ca",
+  "title": "Главный специалист отдела ЖКХ",
+  "department": "Отдел ЖКХ",
+  "is_corruption_risky": true
+ },
+ {
+  "id": "e9092d25-a91d-5a47-ae7e-515b06147fec",
+  "organ_id": "1d26701f-1409-56a6-af4f-206fc695f1ca",
+  "title": "Ведущий специалист отдела ЖКХ",
+  "department": "Отдел ЖКХ",
+  "is_corruption_risky": true
+ },
+ {
+  "id": "4490c535-e85b-5b15-8250-4d5c098a7dea",
+  "organ_id": "1d26701f-1409-56a6-af4f-206fc695f1ca",
+  "title": "Главный специалист",
+  "department": "Отдел ЖКХ",
+  "is_corruption_risky": true
+ },
+ {
+  "id": "87586100-0c5b-543c-9c79-b464b956d0a9",
+  "organ_id": "1d26701f-1409-56a6-af4f-206fc695f1ca",
+  "title": "Специалист-эксперт отдела ЖКХ",
+  "department": "Отдел ЖКХ",
+  "is_corruption_risky": true
+ },
+ {
+  "id": "a94f06e0-0708-5763-8c59-4e4ecb9aba9a",
+  "organ_id": "1d26701f-1409-56a6-af4f-206fc695f1ca",
+  "title": "Ведущий специалист",
+  "department": "Отдел ЖКХ",
+  "is_corruption_risky": true
+ },
+ {
+  "id": "5de8538f-e01b-54ba-b3f8-52c309ba0c41",
+  "organ_id": "1d26701f-1409-56a6-af4f-206fc695f1ca",
+  "title": "Начальник отдела",
+  "department": "Отдел муниципального контроля",
+  "is_corruption_risky": true
+ },
+ {
+  "id": "e7c5b26d-65a6-595b-89e7-153221c11b8d",
+  "organ_id": "1d26701f-1409-56a6-af4f-206fc695f1ca",
+  "title": "Главный специалист",
+  "department": "Отдел муниципального контроля",
+  "is_corruption_risky": true
+ },
+ {
+  "id": "034da948-24c0-572f-b9ba-23f5664b4177",
+  "organ_id": "1d26701f-1409-56a6-af4f-206fc695f1ca",
+  "title": "Специалист-эксперт",
+  "department": "Отдел муниципального контроля",
+  "is_corruption_risky": false
+ },
+ {
+  "id": "9aef9b65-e2a9-54a5-bf7b-a83196dad95d",
+  "organ_id": "1d26701f-1409-56a6-af4f-206fc695f1ca",
+  "title": "Главный специалист",
+  "department": "Финансовый отдел",
+  "is_corruption_risky": true
+ },
+ {
+  "id": "fe8c7e96-f090-5039-af01-448b8037c7fe",
+  "organ_id": "1d26701f-1409-56a6-af4f-206fc695f1ca",
+  "title": "Ведущий специалист",
+  "department": "Отдел кадров",
+  "is_corruption_risky": true
+ },
+ {
+  "id": "717cb65d-badd-5418-bbe6-54d29fde90a5",
+  "organ_id": "1d26701f-1409-56a6-af4f-206fc695f1ca",
+  "title": "Главный специалист",
+  "department": "Юридический отдел",
+  "is_corruption_risky": false
+ },
+ {
+  "id": "88257e31-076c-573d-a668-7d1f47305941",
+  "organ_id": "1d26701f-1409-56a6-af4f-206fc695f1ca",
+  "title": "Специалист-эксперт",
+  "department": "Организационный отдел",
+  "is_corruption_risky": false
+ }
+]

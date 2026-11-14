@@ -1,0 +1,37 @@
+[
+ {
+  "id": "4be236f5-46bd-5a34-a9a2-9baf08171fd7",
+  "organ_id": "b1104e41-e62d-5002-80d2-73e40a3ca0be",
+  "title": "Начальник отдела закупок",
+  "department": "Отдел закупок",
+  "is_corruption_risky": true
+ },
+ {
+  "id": "b556fe68-7563-5865-9d36-5d5e342955d5",
+  "organ_id": "07ca6da8-949a-5803-8a45-e013799aa220",
+  "title": "Главный специалист отдела лицензирования",
+  "department": "Отдел лицензирования",
+  "is_corruption_risky": true
+ },
+ {
+  "id": "06d6564f-679a-506f-8635-5296e995f703",
+  "organ_id": "1d26701f-1409-56a6-af4f-206fc695f1ca",
+  "title": "Заместитель начальника управления",
+  "department": "Руководство",
+  "is_corruption_risky": true
+ },
+ {
+  "id": "56835f92-4f4d-5b1e-8dfd-7ca3b9b28e3a",
+  "organ_id": "1d26701f-1409-56a6-af4f-206fc695f1ca",
+  "title": "Начальник отдела благоустройства",
+  "department": "Отдел благоустройства",
+  "is_corruption_risky": true
+ },
+ {
+  "id": "4490c535-e85b-5b15-8250-4d5c098a7dea",
+  "organ_id": "1d26701f-1409-56a6-af4f-206fc695f1ca",
+  "title": "Главный специалист",
+  "department": "Отдел ЖКХ",
+  "is_corruption_risky": true
+ }
+]

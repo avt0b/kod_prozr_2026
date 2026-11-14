@@ -5,14 +5,18 @@
 """
 
 from typing import Any
+from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from src.modules.appeals.domain.analysis import (
     CORRUPTION_ROUTE,
+    ENGINE_FALLBACK,
+    ENGINE_LLM,
     GENERAL_ROUTE,
     AppealAnalysis,
     ExtractedEntity,
+    MatchCandidate,
     Signal,
 )
 from src.modules.appeals.domain.enums import AppealCategory, EntityType
@@ -30,6 +34,12 @@ class SignalSchema(BaseModel):
     text: str
 
 
+class CandidateSchema(BaseModel):
+    person_id: UUID
+    full_name: str
+    score: float = Field(ge=0, le=1)
+
+
 class AnalysisSchema(BaseModel):
     model_config = ConfigDict(extra="ignore")
 
@@ -42,6 +52,8 @@ class AnalysisSchema(BaseModel):
     route_to: str | None = None
     summary: str = ""
     analyzer: str = "unknown"
+    engine: str | None = None
+    candidates: list[CandidateSchema] = Field(default_factory=list)
 
     @field_validator("category", mode="before")
     @classmethod
@@ -71,6 +83,11 @@ class AnalysisSchema(BaseModel):
             entities=tuple(entities),
             signals=tuple(Signal(s.code, s.text) for s in self.signals),
             analyzer=self.analyzer,
+            engine=self.engine
+            or (ENGINE_LLM if self.analyzer.startswith("llm") else ENGINE_FALLBACK),
+            candidates=tuple(
+                MatchCandidate(c.person_id, c.full_name, c.score) for c in self.candidates
+            ),
         )
 
     @classmethod
@@ -88,6 +105,11 @@ class AnalysisSchema(BaseModel):
             route_to=analysis.route_to,
             summary=analysis.summary,
             analyzer=analysis.analyzer,
+            engine=analysis.engine,
+            candidates=[
+                CandidateSchema(person_id=c.person_id, full_name=c.full_name, score=c.score)
+                for c in analysis.candidates
+            ],
         )
 
 

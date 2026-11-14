@@ -29,6 +29,7 @@ class RiskWorld:
         company_roles: Iterable[CompanyRoleFacts] = (),
         contracts: Iterable[ContractFacts] = (),
         appeal_mentions: Iterable[AppealMentionFacts] = (),
+        company_staff: Iterable[CompanyRoleFacts] = (),
     ) -> None:
         self.today = today
         self.officials: dict[UUID, OfficialFacts] = {o.person.id: o for o in officials}
@@ -56,6 +57,16 @@ class RiskWorld:
             if phone := normalize_phone(company.phone):
                 self._companies_per_phone[phone] += 1
 
+        # Учредители и директора поставщиков (R08: «номинальные» директора). Отдельно от
+        # _roles_by_person, чтобы правила R01/R02 видели только роли служащих и родственников.
+        self._staff_by_company: dict[UUID, list[CompanyRoleFacts]] = defaultdict(list)
+        directed: dict[UUID, set[UUID]] = defaultdict(set)
+        for role in [*company_staff, *(r for rs in self._roles_by_person.values() for r in rs)]:
+            if role not in self._staff_by_company[role.company_id]:
+                self._staff_by_company[role.company_id].append(role)
+            if role.role == "director":
+                directed[role.person_id].add(role.company_id)
+        self._directorships = {person: len(ids) for person, ids in directed.items()}
         self._peer_anomalies: dict[UUID, PeerAnomalyFacts] = {}
         self._mentions_by_person: dict[UUID, list[AppealMentionFacts]] = defaultdict(list)
         for mention in appeal_mentions:
@@ -66,6 +77,13 @@ class RiskWorld:
 
     def roles_of(self, person_id: UUID) -> list[CompanyRoleFacts]:
         return self._roles_by_person.get(person_id, [])
+
+    def staff_of(self, company_id: UUID) -> list[CompanyRoleFacts]:
+        return self._staff_by_company.get(company_id, [])
+
+    def directorships_of(self, person_id: UUID) -> int:
+        """Сколькими компаниями человек руководит (по загруженным ролям)."""
+        return self._directorships.get(person_id, 0)
 
     def contracts_between(self, organ_id: UUID, company_id: UUID) -> list[ContractFacts]:
         return self._contracts_by_pair.get((organ_id, company_id), [])

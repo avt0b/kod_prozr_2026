@@ -1,0 +1,509 @@
+[
+ {
+  "id": "9c70c3ad-a1c7-58e4-a9b4-07f6a30db48a",
+  "position_id": "fbdced0a-f98d-509e-bb41-1574b668e65f",
+  "kind": "budget",
+  "scope": {
+   "okpd2": [],
+   "okved": [],
+   "territory": "Энская область"
+  }
+ },
+ {
+  "id": "0a51a75e-7b4b-5b5c-9ffa-1938123060be",
+  "position_id": "fbdced0a-f98d-509e-bb41-1574b668e65f",
+  "kind": "hr",
+  "scope": {
+   "okpd2": [],
+   "okved": [],
+   "territory": "Энская область"
+  }
+ },
+ {
+  "id": "ad1595aa-fdbe-5a70-90cb-0ffdf4be4224",
+  "position_id": "8c7297ef-c548-5cc3-ac12-1f46af0dfb43",
+  "kind": "budget",
+  "scope": {
+   "okpd2": [],
+   "okved": [],
+   "territory": "Энская область"
+  }
+ },
+ {
+  "id": "10414808-8532-5a79-9819-7306e89ab423",
+  "position_id": "4be236f5-46bd-5a34-a9a2-9baf08171fd7",
+  "kind": "procurement",
+  "scope": {
+   "okpd2": [
+    "42.11"
+   ],
+   "okved": [],
+   "territory": "Энская область"
+  }
+ },
+ {
+  "id": "a68146f9-6875-58cc-8e89-5e9b53290a51",
+  "position_id": "3bee5990-585e-5758-9243-d370c1b724a5",
+  "kind": "procurement",
+  "scope": {
+   "okpd2": [
+    "41.20"
+   ],
+   "okved": [],
+   "territory": "Энская область"
+  }
+ },
+ {
+  "id": "6d5f314a-9de3-565e-8700-6a6b594df2fb",
+  "position_id": "842aab84-2c18-5733-9afd-87072c36dde8",
+  "kind": "procurement",
+  "scope": {
+   "okpd2": [
+    "43.99",
+    "23.63"
+   ],
+   "okved": [],
+   "territory": "Энская область"
+  }
+ },
+ {
+  "id": "b1b2afa3-77d5-564b-a2bb-aa5a8672846c",
+  "position_id": "126ddad4-2ee7-5664-866b-26572cdc419d",
+  "kind": "procurement",
+  "scope": {
+   "okpd2": [
+    "71.12",
+    "08.12"
+   ],
+   "okved": [],
+   "territory": "Энская область"
+  }
+ },
+ {
+  "id": "6761773e-81bd-574a-81d1-3efdb19a478e",
+  "position_id": "d204dd9c-43eb-5f0e-8f11-98e6b7af25d2",
+  "kind": "procurement",
+  "scope": {
+   "okpd2": [
+    "33.12"
+   ],
+   "okved": [],
+   "territory": "Энская область"
+  }
+ },
+ {
+  "id": "b7bedd95-9109-5371-a635-687265dae054",
+  "position_id": "e6447e9e-27bc-51b7-9e7e-0974941c496a",
+  "kind": "procurement",
+  "scope": {
+   "okpd2": [
+    "26.20",
+    "17.12",
+    "58.29"
+   ],
+   "okved": [],
+   "territory": "Энская область"
+  }
+ },
+ {
+  "id": "5f9ddadd-0b27-5643-81d6-425ca62c358e",
+  "position_id": "144c561f-5ce9-5cfd-bad3-a891533cb743",
+  "kind": "inspection",
+  "scope": {
+   "okpd2": [],
+   "okved": [],
+   "territory": "Энская область"
+  }
+ },
+ {
+  "id": "e6ec1a98-2e6c-58fc-a809-9c2dddee3079",
+  "position_id": "726b88eb-eeeb-5747-aa5d-8f00732f34cb",
+  "kind": "inspection",
+  "scope": {
+   "okpd2": [],
+   "okved": [],
+   "territory": "Энская область"
+  }
+ },
+ {
+  "id": "5ef56b0c-f12b-53eb-9502-5b311b9f9133",
+  "position_id": "7009c5dc-f8f3-501b-a6c2-d0321765b6a9",
+  "kind": "permits",
+  "scope": {
+   "okpd2": [],
+   "okved": [],
+   "territory": "Энская область"
+  }
+ },
+ {
+  "id": "52a8f451-0e2d-5167-9bf3-1111f827b913",
+  "position_id": "9c2325b1-1ed0-504d-9f4c-49ffc7e488eb",
+  "kind": "permits",
+  "scope": {
+   "okpd2": [],
+   "okved": [],
+   "territory": "Энская область"
+  }
+ },
+ {
+  "id": "8d69868a-585f-5d4b-a1b1-1a4b51815c97",
+  "position_id": "8f2a8eb0-92d3-5487-ba21-46add44d171a",
+  "kind": "budget",
+  "scope": {
+   "okpd2": [],
+   "okved": [],
+   "territory": "Энская область"
+  }
+ },
+ {
+  "id": "b467d36f-7bb6-5823-b47a-a1f515477230",
+  "position_id": "8979c0e8-abb8-5dc6-b669-5084183d9a1a",
+  "kind": "hr",
+  "scope": {
+   "okpd2": [],
+   "okved": [],
+   "territory": "Энская область"
+  }
+ },
+ {
+  "id": "a4daefe2-fd5f-5670-98bd-16f152b80f18",
+  "position_id": "cfc695a1-e0f0-560c-bab7-bcd37def08a0",
+  "kind": "budget",
+  "scope": {
+   "okpd2": [],
+   "okved": [],
+   "territory": "Энская область"
+  }
+ },
+ {
+  "id": "e03e62c1-35a0-5806-baa1-83c7ba9468ae",
+  "position_id": "cfc695a1-e0f0-560c-bab7-bcd37def08a0",
+  "kind": "hr",
+  "scope": {
+   "okpd2": [],
+   "okved": [],
+   "territory": "Энская область"
+  }
+ },
+ {
+  "id": "25d146f3-670a-5d59-9d23-09b1f817da08",
+  "position_id": "5e999ec7-015f-5143-a254-13bc1de0a7ef",
+  "kind": "budget",
+  "scope": {
+   "okpd2": [],
+   "okved": [],
+   "territory": "Энская область"
+  }
+ },
+ {
+  "id": "6fbc5482-451c-51c8-a490-16ebeffd069a",
+  "position_id": "530755a2-9a4d-540a-8d45-84dfec95ec05",
+  "kind": "procurement",
+  "scope": {
+   "okpd2": [
+    "21.20",
+    "52.10"
+   ],
+   "okved": [],
+   "territory": "Энская область"
+  }
+ },
+ {
+  "id": "ebc8270a-1529-5681-a314-5c08652a9414",
+  "position_id": "b6b1f75a-510c-58c5-aa16-815955c6f757",
+  "kind": "procurement",
+  "scope": {
+   "okpd2": [
+    "32.50"
+   ],
+   "okved": [],
+   "territory": "Энская область"
+  }
+ },
+ {
+  "id": "7f18bdf1-0c4d-5145-99fa-1f93b70aff9a",
+  "position_id": "aec8cad1-06a6-50f2-8653-20e62c845ea5",
+  "kind": "procurement",
+  "scope": {
+   "okpd2": [
+    "86.90",
+    "49.39"
+   ],
+   "okved": [],
+   "territory": "Энская область"
+  }
+ },
+ {
+  "id": "54651e97-02f3-51f9-9749-5577b47ada71",
+  "position_id": "64768b03-a247-5c15-8bdf-a1bc7c3e61f1",
+  "kind": "procurement",
+  "scope": {
+   "okpd2": [
+    "33.13"
+   ],
+   "okved": [],
+   "territory": "Энская область"
+  }
+ },
+ {
+  "id": "32261fd6-be73-56c9-ad50-8b4203cad709",
+  "position_id": "1faa2371-ac7b-505a-8622-a48c6ffbfd65",
+  "kind": "procurement",
+  "scope": {
+   "okpd2": [
+    "26.20",
+    "17.12",
+    "58.29"
+   ],
+   "okved": [],
+   "territory": "Энская область"
+  }
+ },
+ {
+  "id": "a31e087f-082d-5e57-8a98-b07fc01f8f54",
+  "position_id": "17369665-30b5-5f63-8b80-d66ed49325d0",
+  "kind": "permits",
+  "scope": {
+   "okpd2": [],
+   "okved": [],
+   "territory": "Энская область"
+  }
+ },
+ {
+  "id": "7a1a2a90-8aa1-5fe4-b931-fbfbaa3c7ac1",
+  "position_id": "b556fe68-7563-5865-9d36-5d5e342955d5",
+  "kind": "permits",
+  "scope": {
+   "okpd2": [],
+   "okved": [],
+   "territory": "Энская область"
+  }
+ },
+ {
+  "id": "c88b132d-4589-5a08-a6d6-7c35b91290e9",
+  "position_id": "3d5009fa-74da-572a-b126-375b6d227c8c",
+  "kind": "inspection",
+  "scope": {
+   "okpd2": [],
+   "okved": [],
+   "territory": "Энская область"
+  }
+ },
+ {
+  "id": "93060757-9f91-5b11-b5fa-8e1666b2bcb6",
+  "position_id": "42b966a8-0d85-5590-91e4-54bd68e3d7c2",
+  "kind": "inspection",
+  "scope": {
+   "okpd2": [],
+   "okved": [],
+   "territory": "Энская область"
+  }
+ },
+ {
+  "id": "694574db-0c97-54e7-9f31-f931315f7816",
+  "position_id": "c37089d3-9167-5c48-bcfa-8e9404029738",
+  "kind": "budget",
+  "scope": {
+   "okpd2": [],
+   "okved": [],
+   "territory": "Энская область"
+  }
+ },
+ {
+  "id": "042b8cbd-94b2-5234-87d4-da99e05626a9",
+  "position_id": "67714aa5-adb9-5110-a160-dc6f1d797341",
+  "kind": "hr",
+  "scope": {
+   "okpd2": [],
+   "okved": [],
+   "territory": "Энская область"
+  }
+ },
+ {
+  "id": "13912cd6-5f43-5b6f-933b-10300e580d9e",
+  "position_id": "98d73564-2cf7-5aa6-842d-026decb2ba46",
+  "kind": "budget",
+  "scope": {
+   "okpd2": [],
+   "okved": [],
+   "territory": "г. Энск"
+  }
+ },
+ {
+  "id": "8db845ab-f776-5274-ba5b-8a01c34d014a",
+  "position_id": "98d73564-2cf7-5aa6-842d-026decb2ba46",
+  "kind": "hr",
+  "scope": {
+   "okpd2": [],
+   "okved": [],
+   "territory": "г. Энск"
+  }
+ },
+ {
+  "id": "b10d4ee3-2209-59c4-bac7-d76a9bc1e698",
+  "position_id": "06d6564f-679a-506f-8635-5296e995f703",
+  "kind": "procurement",
+  "scope": {
+   "okpd2": [],
+   "okved": [],
+   "territory": "г. Энск"
+  }
+ },
+ {
+  "id": "b922f9e3-2681-51f2-bfd3-6071efba3107",
+  "position_id": "06d6564f-679a-506f-8635-5296e995f703",
+  "kind": "budget",
+  "scope": {
+   "okpd2": [],
+   "okved": [],
+   "territory": "г. Энск"
+  }
+ },
+ {
+  "id": "b5018e74-3661-599d-952b-32d1c086ab5c",
+  "position_id": "d39c4432-756e-5c5a-aa59-5c369153126b",
+  "kind": "inspection",
+  "scope": {
+   "okpd2": [],
+   "okved": [],
+   "territory": "г. Энск"
+  }
+ },
+ {
+  "id": "a5982518-7aea-56d6-a650-2a93b78a8a70",
+  "position_id": "56835f92-4f4d-5b1e-8dfd-7ca3b9b28e3a",
+  "kind": "procurement",
+  "scope": {
+   "okpd2": [
+    "81.29"
+   ],
+   "okved": [],
+   "territory": "г. Энск"
+  }
+ },
+ {
+  "id": "3fcc40cc-d1fc-562a-ba93-31549cbdc867",
+  "position_id": "e847d69b-af34-5626-97ec-e745a4eccd51",
+  "kind": "procurement",
+  "scope": {
+   "okpd2": [
+    "81.30"
+   ],
+   "okved": [],
+   "territory": "г. Энск"
+  }
+ },
+ {
+  "id": "73570bbf-3a1d-5d4e-936f-b72ec7eb89dd",
+  "position_id": "0ff92cb5-cf1a-5937-8278-b55ac2bbc32e",
+  "kind": "procurement",
+  "scope": {
+   "okpd2": [
+    "43.22",
+    "35.30"
+   ],
+   "okved": [],
+   "territory": "г. Энск"
+  }
+ },
+ {
+  "id": "a2cf1be5-1944-55f6-853d-577cf11b15a2",
+  "position_id": "2f75bc2c-c10c-5099-ab92-89f4d8c4cd08",
+  "kind": "procurement",
+  "scope": {
+   "okpd2": [
+    "42.21"
+   ],
+   "okved": [],
+   "territory": "г. Энск"
+  }
+ },
+ {
+  "id": "96e65eb6-dba5-555e-ad9e-6609f93b41fe",
+  "position_id": "e9092d25-a91d-5a47-ae7e-515b06147fec",
+  "kind": "procurement",
+  "scope": {
+   "okpd2": [
+    "38.11"
+   ],
+   "okved": [],
+   "territory": "г. Энск"
+  }
+ },
+ {
+  "id": "7421b5e8-2d2c-5f4e-a136-861af492e741",
+  "position_id": "4490c535-e85b-5b15-8250-4d5c098a7dea",
+  "kind": "inspection",
+  "scope": {
+   "okpd2": [],
+   "okved": [],
+   "territory": "г. Энск"
+  }
+ },
+ {
+  "id": "77069c07-ed05-593a-acf4-7ea02f30c048",
+  "position_id": "87586100-0c5b-543c-9c79-b464b956d0a9",
+  "kind": "procurement",
+  "scope": {
+   "okpd2": [
+    "33.12"
+   ],
+   "okved": [],
+   "territory": "г. Энск"
+  }
+ },
+ {
+  "id": "ba3e8924-36c6-5d73-aa90-e2ab712c1a05",
+  "position_id": "a94f06e0-0708-5763-8c59-4e4ecb9aba9a",
+  "kind": "procurement",
+  "scope": {
+   "okpd2": [
+    "26.20",
+    "17.12",
+    "58.29"
+   ],
+   "okved": [],
+   "territory": "г. Энск"
+  }
+ },
+ {
+  "id": "8cd4ca82-26c3-51d3-94ac-b2540ca543c4",
+  "position_id": "5de8538f-e01b-54ba-b3f8-52c309ba0c41",
+  "kind": "inspection",
+  "scope": {
+   "okpd2": [],
+   "okved": [],
+   "territory": "г. Энск"
+  }
+ },
+ {
+  "id": "f583fc4e-b40d-5b85-ac8f-485bbdc2f425",
+  "position_id": "e7c5b26d-65a6-595b-89e7-153221c11b8d",
+  "kind": "inspection",
+  "scope": {
+   "okpd2": [],
+   "okved": [],
+   "territory": "г. Энск"
+  }
+ },
+ {
+  "id": "22148553-1a58-53ce-b22c-6d2fce4757be",
+  "position_id": "9aef9b65-e2a9-54a5-bf7b-a83196dad95d",
+  "kind": "budget",
+  "scope": {
+   "okpd2": [],
+   "okved": [],
+   "territory": "г. Энск"
+  }
+ },
+ {
+  "id": "2d5fecd7-3cae-5f52-b0e3-da23c450fa12",
+  "position_id": "fe8c7e96-f090-5039-af01-448b8037c7fe",
+  "kind": "hr",
+  "scope": {
+   "okpd2": [],
+   "okved": [],
+   "territory": "г. Энск"
+  }
+ }
+]
