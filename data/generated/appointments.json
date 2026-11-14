@@ -1,0 +1,1255 @@
+[
+ {
+  "id": "72624795-aae5-5e7b-a734-039b8a8d8323",
+  "person_id": "4d32a594-1325-5c9d-bed1-cfec43b131a2",
+  "position_id": "4be236f5-46bd-5a34-a9a2-9baf08171fd7",
+  "started_at": "2021-02-01",
+  "ended_at": null
+ },
+ {
+  "id": "6f942926-29ff-5e92-98cd-af317dc764fc",
+  "person_id": "4d351fe6-f601-58d5-97c4-6ab37dba98a4",
+  "position_id": "3bee5990-585e-5758-9243-d370c1b724a5",
+  "started_at": "2019-10-01",
+  "ended_at": null
+ },
+ {
+  "id": "2614bfbc-6a03-58b1-8375-f38575ef56f8",
+  "person_id": "28cf6237-801f-5705-8223-908f2f999f56",
+  "position_id": "842aab84-2c18-5733-9afd-87072c36dde8",
+  "started_at": "2020-03-02",
+  "ended_at": null
+ },
+ {
+  "id": "99ed849e-06c2-5c37-bfce-82e63c9448c6",
+  "person_id": "334bacfa-24f7-516e-bf46-aa41e4a54562",
+  "position_id": "126ddad4-2ee7-5664-866b-26572cdc419d",
+  "started_at": "2022-04-04",
+  "ended_at": null
+ },
+ {
+  "id": "97d54127-2ddf-5e19-ac1c-75fe0ece66e4",
+  "person_id": "8d8d19d9-8fa3-5ac2-86e1-42c77162384e",
+  "position_id": "d204dd9c-43eb-5f0e-8f11-98e6b7af25d2",
+  "started_at": "2022-05-16",
+  "ended_at": null
+ },
+ {
+  "id": "86c6a4a1-71d0-59a8-ae21-0c2e3800feb5",
+  "person_id": "1f4e9157-76bb-5f26-b691-4d689dc93b1e",
+  "position_id": "e6447e9e-27bc-51b7-9e7e-0974941c496a",
+  "started_at": "2018-06-01",
+  "ended_at": null
+ },
+ {
+  "id": "e19dc1b5-41e7-54f2-806c-0ed2ad473939",
+  "person_id": "c1860b3f-db84-5d70-a76e-06a5cd7e2bbc",
+  "position_id": "726b88eb-eeeb-5747-aa5d-8f00732f34cb",
+  "started_at": "2016-04-11",
+  "ended_at": null
+ },
+ {
+  "id": "b8f29869-c987-5559-92eb-2d4b1163eaaf",
+  "person_id": "064b49e2-817f-52b5-a3ae-45463c9d5ea8",
+  "position_id": "9c2325b1-1ed0-504d-9f4c-49ffc7e488eb",
+  "started_at": "2019-08-19",
+  "ended_at": null
+ },
+ {
+  "id": "2ecf7e7d-3ea1-567e-aead-fa1a4f2acdca",
+  "person_id": "67a3304b-ee55-54ff-a6c7-168a44597854",
+  "position_id": "9c2325b1-1ed0-504d-9f4c-49ffc7e488eb",
+  "started_at": "2017-01-16",
+  "ended_at": null
+ },
+ {
+  "id": "466279b9-0a78-5838-bb54-4ad7d329dd0e",
+  "person_id": "8ae40810-435e-5a8a-84a3-5a24b30f062d",
+  "position_id": "8f2a8eb0-92d3-5487-ba21-46add44d171a",
+  "started_at": "2015-09-01",
+  "ended_at": null
+ },
+ {
+  "id": "df9bb828-de07-5a77-b974-cb888db5235a",
+  "person_id": "a7aacc85-c07d-5d35-80bd-48ac141069b1",
+  "position_id": "7009c5dc-f8f3-501b-a6c2-d0321765b6a9",
+  "started_at": "2016-02-01",
+  "ended_at": null
+ },
+ {
+  "id": "9add49ef-868d-545e-b5fc-21b7bc73fca4",
+  "person_id": "d53bedc3-2b98-5ef9-b578-dce52bd841f1",
+  "position_id": "55da8ac7-87e8-5aef-bb5f-3aa54346f5b1",
+  "started_at": "2021-03-01",
+  "ended_at": null
+ },
+ {
+  "id": "3d38ff63-ba13-5741-a908-63b3760d9bc6",
+  "person_id": "5d388af0-ae6f-57e2-a392-693badbff1df",
+  "position_id": "144c561f-5ce9-5cfd-bad3-a891533cb743",
+  "started_at": "2024-09-02",
+  "ended_at": null
+ },
+ {
+  "id": "0e93e3be-d571-5b26-acb2-b079b05efc56",
+  "person_id": "4caf7ce1-8294-512a-b047-000c75758be4",
+  "position_id": "530755a2-9a4d-540a-8d45-84dfec95ec05",
+  "started_at": "2025-07-15",
+  "ended_at": null
+ },
+ {
+  "id": "fdeccef3-44ee-51a7-a820-7a2456ddea09",
+  "person_id": "1254886a-c4b6-50a7-8300-20a5137fa9dc",
+  "position_id": "b6b1f75a-510c-58c5-aa16-815955c6f757",
+  "started_at": "2016-05-04",
+  "ended_at": null
+ },
+ {
+  "id": "528704c4-662c-52a8-84c2-47f86cd8e496",
+  "person_id": "f4bf02c4-794c-5e3c-8c38-40dd45bb3b00",
+  "position_id": "aec8cad1-06a6-50f2-8653-20e62c845ea5",
+  "started_at": "2017-02-01",
+  "ended_at": null
+ },
+ {
+  "id": "9176a934-0a04-565b-a5d0-3bbcaba7bbcc",
+  "person_id": "831f3967-cb1c-59c3-b99d-fcb2d161432e",
+  "position_id": "64768b03-a247-5c15-8bdf-a1bc7c3e61f1",
+  "started_at": "2019-01-15",
+  "ended_at": null
+ },
+ {
+  "id": "f30a3612-46dc-55c8-a9b9-219acf0edd41",
+  "person_id": "24c97c5f-6380-5853-946d-ddc78dbc9f22",
+  "position_id": "1faa2371-ac7b-505a-8622-a48c6ffbfd65",
+  "started_at": "2020-11-02",
+  "ended_at": null
+ },
+ {
+  "id": "1c8047fd-9b93-5a0b-a79b-362861ed91b2",
+  "person_id": "c39d5cae-091f-5b73-af39-6fbb6b9a613e",
+  "position_id": "b556fe68-7563-5865-9d36-5d5e342955d5",
+  "started_at": "2018-09-03",
+  "ended_at": null
+ },
+ {
+  "id": "fccc87ad-dde7-5c9f-b10e-801b12c72987",
+  "person_id": "42a17b66-f721-5db0-80a8-3cd4641a74b9",
+  "position_id": "b556fe68-7563-5865-9d36-5d5e342955d5",
+  "started_at": "2019-03-11",
+  "ended_at": null
+ },
+ {
+  "id": "487438b2-aa90-58a7-a7d5-a46d4e4c9a46",
+  "person_id": "55e459c7-85cc-5dca-a77a-cf6ef8e41dc3",
+  "position_id": "17369665-30b5-5f63-8b80-d66ed49325d0",
+  "started_at": "2024-04-15",
+  "ended_at": null
+ },
+ {
+  "id": "42a8296a-4215-55a3-86db-90423fa305a0",
+  "person_id": "4db8bf1e-523d-5648-bca9-9a61183d28d4",
+  "position_id": "3d5009fa-74da-572a-b126-375b6d227c8c",
+  "started_at": "2022-12-12",
+  "ended_at": null
+ },
+ {
+  "id": "cb4f760b-e206-5714-abd4-cd1740d3b773",
+  "person_id": "3e708e21-db98-568d-add6-bc4cedb1c5ba",
+  "position_id": "42b966a8-0d85-5590-91e4-54bd68e3d7c2",
+  "started_at": "2018-02-05",
+  "ended_at": null
+ },
+ {
+  "id": "f12815e6-3967-503d-b6e8-304388104be0",
+  "person_id": "559f2781-81d6-5d41-b09d-f84a6165d34d",
+  "position_id": "9e6b385f-da68-537e-9d3a-f9476af75c62",
+  "started_at": "2017-10-02",
+  "ended_at": null
+ },
+ {
+  "id": "53f00414-3cc9-5438-b368-bf9378bcc6db",
+  "person_id": "43cccfa0-b801-556e-83c6-922ce446792b",
+  "position_id": "62c4501c-b1f9-5094-8b5a-925703bd559e",
+  "started_at": "2020-06-15",
+  "ended_at": null
+ },
+ {
+  "id": "7ad63d1c-9dbb-5685-8259-5e24602a01ed",
+  "person_id": "695daea3-1a4f-58bf-84cd-c8e69790f3e7",
+  "position_id": "c37089d3-9167-5c48-bcfa-8e9404029738",
+  "started_at": "2014-11-17",
+  "ended_at": null
+ },
+ {
+  "id": "b63553ad-8c90-56d6-81c5-3d5ff2c808d3",
+  "person_id": "8b0dd305-a05b-586c-b054-eb5aff63a9ef",
+  "position_id": "b7619c3e-4991-5c4d-9c2b-0e2c3fb6d8a2",
+  "started_at": "2016-08-22",
+  "ended_at": null
+ },
+ {
+  "id": "2e729bdd-e67d-5b21-93a5-ffc9d8999ae7",
+  "person_id": "cc01a3d9-b2a7-52ce-8ba7-2a2f44d13585",
+  "position_id": "67714aa5-adb9-5110-a160-dc6f1d797341",
+  "started_at": "2013-05-06",
+  "ended_at": null
+ },
+ {
+  "id": "b5e18763-d4fe-5e0c-be39-0de427fd9342",
+  "person_id": "b1001af7-a1ab-5161-b6e6-d3334e158436",
+  "position_id": "8530872b-337f-5469-adfa-1ba3ee25b53c",
+  "started_at": "2020-01-20",
+  "ended_at": null
+ },
+ {
+  "id": "c9371c8f-ab2c-54fc-8554-c60507d1ca78",
+  "person_id": "fb05291e-c81e-5e5c-b2be-db310f0a2fbb",
+  "position_id": "06d6564f-679a-506f-8635-5296e995f703",
+  "started_at": "2024-03-01",
+  "ended_at": null
+ },
+ {
+  "id": "3778196e-dc87-5937-8745-d82dc8490c49",
+  "person_id": "3f06dada-686f-580b-874e-58593097933f",
+  "position_id": "56835f92-4f4d-5b1e-8dfd-7ca3b9b28e3a",
+  "started_at": "2020-09-01",
+  "ended_at": null
+ },
+ {
+  "id": "6c49fafa-7fce-517e-8124-2482bf62e767",
+  "person_id": "af36a00a-ac27-50e2-9198-827c28486ef3",
+  "position_id": "e847d69b-af34-5626-97ec-e745a4eccd51",
+  "started_at": "2018-04-02",
+  "ended_at": null
+ },
+ {
+  "id": "d42f99e8-dc26-5c40-af61-2df881eb4297",
+  "person_id": "e9521d31-a099-57c2-a796-c04c3d79144e",
+  "position_id": "0ff92cb5-cf1a-5937-8278-b55ac2bbc32e",
+  "started_at": "2016-10-03",
+  "ended_at": null
+ },
+ {
+  "id": "c5efb4df-ec34-5e87-b176-3595cbae0f66",
+  "person_id": "ac060958-2c08-5ceb-bbf7-efb4bf4eaf7c",
+  "position_id": "2f75bc2c-c10c-5099-ab92-89f4d8c4cd08",
+  "started_at": "2017-06-13",
+  "ended_at": null
+ },
+ {
+  "id": "beefbecc-3c9f-568b-97dd-8a0af290f5d9",
+  "person_id": "30f746f2-6dca-51bb-b671-27083e1bdc6b",
+  "position_id": "e9092d25-a91d-5a47-ae7e-515b06147fec",
+  "started_at": "2019-12-02",
+  "ended_at": null
+ },
+ {
+  "id": "19369c1c-abba-5b0b-a0c1-85cf2a2a2004",
+  "person_id": "48eaf100-0750-569f-804f-b19a968c953c",
+  "position_id": "87586100-0c5b-543c-9c79-b464b956d0a9",
+  "started_at": "2025-02-03",
+  "ended_at": null
+ },
+ {
+  "id": "4c88654a-1828-5e04-b4aa-5379ff0193c8",
+  "person_id": "f4e76d75-2661-5101-8c2d-3e12323e68f5",
+  "position_id": "a94f06e0-0708-5763-8c59-4e4ecb9aba9a",
+  "started_at": "2018-11-12",
+  "ended_at": null
+ },
+ {
+  "id": "da14c2b8-f268-5b3a-9a80-d8ddb53342f6",
+  "person_id": "12b5fe9f-4f46-52d7-b758-a3ae1f18cf32",
+  "position_id": "4490c535-e85b-5b15-8250-4d5c098a7dea",
+  "started_at": "2019-05-20",
+  "ended_at": null
+ },
+ {
+  "id": "fc9d5bc5-304f-513b-8ed8-4c01b911e506",
+  "person_id": "e4d79dc8-6503-5abb-b8ab-99785104e5b6",
+  "position_id": "5de8538f-e01b-54ba-b3f8-52c309ba0c41",
+  "started_at": "2017-03-14",
+  "ended_at": null
+ },
+ {
+  "id": "12fcde27-d0f9-5012-b903-271524cb95fe",
+  "person_id": "c850538b-16eb-5b68-9881-3d9deb10c01b",
+  "position_id": "e7c5b26d-65a6-595b-89e7-153221c11b8d",
+  "started_at": "2022-01-10",
+  "ended_at": null
+ },
+ {
+  "id": "00b0fa43-130b-521d-ac21-ebd5d6bf2379",
+  "person_id": "f1d4adf5-89f2-5a54-b0e4-5488bd6c92b1",
+  "position_id": "9aef9b65-e2a9-54a5-bf7b-a83196dad95d",
+  "started_at": "2015-07-01",
+  "ended_at": null
+ },
+ {
+  "id": "0bb1ec4c-5a01-598b-be44-5bf4f3f35a1d",
+  "person_id": "f3c164f8-2cf0-5d9c-b96f-e3e5c1df6df3",
+  "position_id": "fbdced0a-f98d-509e-bb41-1574b668e65f",
+  "started_at": "2014-06-13",
+  "ended_at": null
+ },
+ {
+  "id": "0256b7d7-0074-52c3-aadd-9bcc6a91b29a",
+  "person_id": "acfb39c2-561f-56fb-bfae-c6100e3c4b8e",
+  "position_id": "8c7297ef-c548-5cc3-ac12-1f46af0dfb43",
+  "started_at": "2012-04-04",
+  "ended_at": null
+ },
+ {
+  "id": "322ede2b-b419-5cb1-b868-f120a47b9eec",
+  "person_id": "01718251-3e24-573a-b0b8-b8cd3beadda9",
+  "position_id": "8c7297ef-c548-5cc3-ac12-1f46af0dfb43",
+  "started_at": "2017-02-15",
+  "ended_at": null
+ },
+ {
+  "id": "b51a6cf2-2b4e-59b7-b887-5465c65e5fbc",
+  "person_id": "0bc89a23-d116-5bac-8ac7-8bdc58f644ea",
+  "position_id": "8c7297ef-c548-5cc3-ac12-1f46af0dfb43",
+  "started_at": "2012-01-05",
+  "ended_at": null
+ },
+ {
+  "id": "409d2b37-b02a-5bac-bb38-78efa06e5992",
+  "person_id": "ef463db9-8812-56b0-a502-85abc7078a6f",
+  "position_id": "726b88eb-eeeb-5747-aa5d-8f00732f34cb",
+  "started_at": "2022-04-14",
+  "ended_at": null
+ },
+ {
+  "id": "c7706ef5-fbb3-59e1-a998-ab8b2a1a764b",
+  "person_id": "1c1ea5e5-a0f7-5aaa-872c-a14c3780d1e2",
+  "position_id": "726b88eb-eeeb-5747-aa5d-8f00732f34cb",
+  "started_at": "2016-06-19",
+  "ended_at": null
+ },
+ {
+  "id": "be9c40e1-9229-56fa-94b3-14159cdd6a28",
+  "person_id": "a9bb6758-1f59-5a91-ba9a-8680248f5227",
+  "position_id": "726b88eb-eeeb-5747-aa5d-8f00732f34cb",
+  "started_at": "2017-12-03",
+  "ended_at": null
+ },
+ {
+  "id": "3e1c821a-983f-5a86-85c5-17c6de2af1fb",
+  "person_id": "a9bb6758-1f59-5a91-ba9a-8680248f5227",
+  "position_id": "7bc93c5c-0027-588a-9507-007065010047",
+  "started_at": "2016-05-28",
+  "ended_at": "2017-12-02"
+ },
+ {
+  "id": "4d581598-1e8e-5401-8171-f6a19a8afaac",
+  "person_id": "3b8d4a0c-08af-579b-ac43-5d487895d9ca",
+  "position_id": "726b88eb-eeeb-5747-aa5d-8f00732f34cb",
+  "started_at": "2012-06-03",
+  "ended_at": null
+ },
+ {
+  "id": "5abace84-43f1-5c0d-8f19-ebe5f7872699",
+  "person_id": "3b8d4a0c-08af-579b-ac43-5d487895d9ca",
+  "position_id": "7bc93c5c-0027-588a-9507-007065010047",
+  "started_at": "2008-09-17",
+  "ended_at": "2012-06-02"
+ },
+ {
+  "id": "58f435ef-1086-5ae0-a461-ab09cd68b3b3",
+  "person_id": "ea8f2af9-bce9-5971-b608-dd2008edf1ce",
+  "position_id": "3fc81fb7-569b-5ac9-90ba-d5816121cc29",
+  "started_at": "2018-01-25",
+  "ended_at": null
+ },
+ {
+  "id": "43d49976-d9f2-5154-a0ca-bdb4f7872c3a",
+  "person_id": "9562cb46-4c0a-5d15-b62c-e57a42da21ac",
+  "position_id": "3fc81fb7-569b-5ac9-90ba-d5816121cc29",
+  "started_at": "2019-01-02",
+  "ended_at": null
+ },
+ {
+  "id": "170a080f-1f38-5c85-8be1-890d2ed56a64",
+  "person_id": "b03e23a2-cee8-554d-9202-d31c76b0e754",
+  "position_id": "3fc81fb7-569b-5ac9-90ba-d5816121cc29",
+  "started_at": "2020-01-04",
+  "ended_at": null
+ },
+ {
+  "id": "2131047e-e231-5247-ae26-04d0c0dab082",
+  "person_id": "e6ed9b54-2791-5dc6-b6fe-ef3097e64860",
+  "position_id": "3fc81fb7-569b-5ac9-90ba-d5816121cc29",
+  "started_at": "2020-09-27",
+  "ended_at": null
+ },
+ {
+  "id": "2bdd33f5-de2f-5d9c-bcdb-4743a0c82359",
+  "person_id": "9d9dbd17-53b9-5246-be68-46128e113e07",
+  "position_id": "3fc81fb7-569b-5ac9-90ba-d5816121cc29",
+  "started_at": "2023-05-18",
+  "ended_at": null
+ },
+ {
+  "id": "7a3ab26d-1d73-5b4e-b695-8352d128b69f",
+  "person_id": "dd9dc37e-557a-56e7-8d67-2ed909584388",
+  "position_id": "3fc81fb7-569b-5ac9-90ba-d5816121cc29",
+  "started_at": "2019-09-26",
+  "ended_at": null
+ },
+ {
+  "id": "6b7870aa-fedb-545a-ba22-511d38eec893",
+  "person_id": "876506a8-916a-51b6-8cde-e211a64aabde",
+  "position_id": "9c2325b1-1ed0-504d-9f4c-49ffc7e488eb",
+  "started_at": "2012-04-12",
+  "ended_at": null
+ },
+ {
+  "id": "9a94bfc3-1254-58f9-9c1c-f9c77ee7abc5",
+  "person_id": "7d296cbf-8518-58cf-80e0-af717a35d8e6",
+  "position_id": "9c2325b1-1ed0-504d-9f4c-49ffc7e488eb",
+  "started_at": "2022-10-31",
+  "ended_at": null
+ },
+ {
+  "id": "ce4c1f79-ef72-5d1a-bdd2-2fa866107040",
+  "person_id": "c9d2980f-88aa-5800-a016-0a3f71be67b5",
+  "position_id": "9c2325b1-1ed0-504d-9f4c-49ffc7e488eb",
+  "started_at": "2019-11-24",
+  "ended_at": null
+ },
+ {
+  "id": "54ff0ab9-4a8a-508e-92df-f74db03342e4",
+  "person_id": "167d966e-3b81-530d-8b24-e45e733156b9",
+  "position_id": "25458e2a-32ed-56c5-9997-798c38bc9aac",
+  "started_at": "2017-08-18",
+  "ended_at": null
+ },
+ {
+  "id": "28f40cc3-7555-57e4-ae94-12f12878f57a",
+  "person_id": "a07bab56-2390-529f-859e-0c9c213ec118",
+  "position_id": "25458e2a-32ed-56c5-9997-798c38bc9aac",
+  "started_at": "2013-01-05",
+  "ended_at": null
+ },
+ {
+  "id": "5fad855e-c327-5644-b30c-12a727f8c690",
+  "person_id": "af357f0e-12fa-5d65-b68c-76253dcd8750",
+  "position_id": "25458e2a-32ed-56c5-9997-798c38bc9aac",
+  "started_at": "2013-04-19",
+  "ended_at": null
+ },
+ {
+  "id": "ff5dd4cd-4e33-52b8-9a84-4117e2dae344",
+  "person_id": "6d61f951-5d32-5712-896b-b457cf030208",
+  "position_id": "25458e2a-32ed-56c5-9997-798c38bc9aac",
+  "started_at": "2013-02-10",
+  "ended_at": null
+ },
+ {
+  "id": "410bd64f-0e1d-570e-ad7d-f83edb98a61b",
+  "person_id": "e7db086d-2ee2-5cb5-b32d-e9ef698f0566",
+  "position_id": "25458e2a-32ed-56c5-9997-798c38bc9aac",
+  "started_at": "2017-09-11",
+  "ended_at": null
+ },
+ {
+  "id": "a7305f31-00be-52a6-95b5-cc2412029dc3",
+  "person_id": "e7db086d-2ee2-5cb5-b32d-e9ef698f0566",
+  "position_id": "eda66219-049b-54eb-8735-45eb13772e71",
+  "started_at": "2016-02-21",
+  "ended_at": "2017-09-10"
+ },
+ {
+  "id": "187e0681-5595-5b10-a3a0-285722756ef4",
+  "person_id": "b4e44494-95c2-5538-b6ec-193de5fbc251",
+  "position_id": "eda66219-049b-54eb-8735-45eb13772e71",
+  "started_at": "2021-08-24",
+  "ended_at": null
+ },
+ {
+  "id": "8e8161d5-7286-58b5-9adb-4410b265beae",
+  "person_id": "7f4b326f-989f-5afb-ae37-cbbd5c16cf72",
+  "position_id": "eda66219-049b-54eb-8735-45eb13772e71",
+  "started_at": "2017-01-18",
+  "ended_at": null
+ },
+ {
+  "id": "3374b2aa-1892-5437-b0c0-5a73ba53295c",
+  "person_id": "ffc13933-834a-5822-9d7b-68e7f9ea1118",
+  "position_id": "eda66219-049b-54eb-8735-45eb13772e71",
+  "started_at": "2012-10-17",
+  "ended_at": null
+ },
+ {
+  "id": "0988a7ff-7dbf-5a66-b7db-0070735b0aa9",
+  "person_id": "98e3fd38-d705-51fb-80c0-ae47a30c9121",
+  "position_id": "eda66219-049b-54eb-8735-45eb13772e71",
+  "started_at": "2020-10-15",
+  "ended_at": null
+ },
+ {
+  "id": "ee96fe3a-893b-55f5-8819-46fc5df7e4aa",
+  "person_id": "a2730f92-832e-5745-9ac3-f039f0e54d86",
+  "position_id": "eda66219-049b-54eb-8735-45eb13772e71",
+  "started_at": "2024-12-31",
+  "ended_at": null
+ },
+ {
+  "id": "d2f1c2a3-df53-52bd-a193-3432aba6f033",
+  "person_id": "cf648a7b-7ed3-54a9-a10a-6a0b24bf04b6",
+  "position_id": "8979c0e8-abb8-5dc6-b669-5084183d9a1a",
+  "started_at": "2011-11-12",
+  "ended_at": null
+ },
+ {
+  "id": "92cc4af0-589c-5727-8312-d3b88b3362bc",
+  "person_id": "5ff6c464-13d6-5193-89f5-328fcbecb9bd",
+  "position_id": "7bc93c5c-0027-588a-9507-007065010047",
+  "started_at": "2022-01-19",
+  "ended_at": null
+ },
+ {
+  "id": "545a66cd-f914-5f54-b7f9-4ed373abc206",
+  "person_id": "5ff6c464-13d6-5193-89f5-328fcbecb9bd",
+  "position_id": "25458e2a-32ed-56c5-9997-798c38bc9aac",
+  "started_at": "2020-08-02",
+  "ended_at": "2022-01-18"
+ },
+ {
+  "id": "16be427c-eb8f-56bf-a572-600b191c0a28",
+  "person_id": "99982761-4a2f-5ce5-818e-1ec125cd27ed",
+  "position_id": "7bc93c5c-0027-588a-9507-007065010047",
+  "started_at": "2018-01-01",
+  "ended_at": null
+ },
+ {
+  "id": "6f203161-7afc-51a7-a064-391d0fd6e700",
+  "person_id": "d3f1b88b-7ae6-59b2-b182-9c9133853750",
+  "position_id": "7bc93c5c-0027-588a-9507-007065010047",
+  "started_at": "2013-10-20",
+  "ended_at": null
+ },
+ {
+  "id": "c8ae42ad-e484-532d-b2de-acfc935f7b60",
+  "person_id": "6629f107-fa56-52ed-b2c5-46a85c52ed3a",
+  "position_id": "55da8ac7-87e8-5aef-bb5f-3aa54346f5b1",
+  "started_at": "2024-07-04",
+  "ended_at": null
+ },
+ {
+  "id": "e27118d1-4ec2-57ce-86ca-476d177a2d1f",
+  "person_id": "6629f107-fa56-52ed-b2c5-46a85c52ed3a",
+  "position_id": "a65e30b1-b4a7-5f45-ace8-664239535196",
+  "started_at": "2018-09-06",
+  "ended_at": "2024-07-03"
+ },
+ {
+  "id": "7fb43f3a-a341-5b92-a889-dc58c825d5a6",
+  "person_id": "658217d5-5e6a-532c-899b-c0bcf56521e0",
+  "position_id": "55da8ac7-87e8-5aef-bb5f-3aa54346f5b1",
+  "started_at": "2019-06-02",
+  "ended_at": null
+ },
+ {
+  "id": "58948484-9d06-5d87-9348-477d131023d0",
+  "person_id": "2ab2c61c-3ae5-5bef-b27e-848240513893",
+  "position_id": "55da8ac7-87e8-5aef-bb5f-3aa54346f5b1",
+  "started_at": "2011-10-26",
+  "ended_at": null
+ },
+ {
+  "id": "a9c103d1-7a26-5b98-97eb-8a061a408b55",
+  "person_id": "1a43fa56-f761-57d3-9026-49acd6812439",
+  "position_id": "55da8ac7-87e8-5aef-bb5f-3aa54346f5b1",
+  "started_at": "2018-07-21",
+  "ended_at": null
+ },
+ {
+  "id": "a7366974-2489-55d8-b4d9-ddd8bb581d6d",
+  "person_id": "8366682e-1cac-5578-bfb2-f13bc427281d",
+  "position_id": "a65e30b1-b4a7-5f45-ace8-664239535196",
+  "started_at": "2015-05-22",
+  "ended_at": null
+ },
+ {
+  "id": "7ef73852-8ad9-5f04-a455-23c26b8d8cb5",
+  "person_id": "a08c05cd-baab-5b37-b3b4-f28420b1cdb7",
+  "position_id": "a65e30b1-b4a7-5f45-ace8-664239535196",
+  "started_at": "2014-10-22",
+  "ended_at": null
+ },
+ {
+  "id": "e5d20727-acad-537e-981e-ff7494d6b6af",
+  "person_id": "60dbc323-590e-52e5-ad37-b60a85b96f7b",
+  "position_id": "a65e30b1-b4a7-5f45-ace8-664239535196",
+  "started_at": "2024-03-24",
+  "ended_at": null
+ },
+ {
+  "id": "8be8cb41-4f19-5202-afaa-cd04ad0bccdb",
+  "person_id": "aa4fecab-584b-5d32-8a65-f8b6bf4678ec",
+  "position_id": "cfc695a1-e0f0-560c-bab7-bcd37def08a0",
+  "started_at": "2013-12-19",
+  "ended_at": null
+ },
+ {
+  "id": "2647a095-47ef-5466-b968-0d1727973250",
+  "person_id": "da63eaee-1e89-5dde-ae56-3701a6ac90aa",
+  "position_id": "5e999ec7-015f-5143-a254-13bc1de0a7ef",
+  "started_at": "2020-05-16",
+  "ended_at": null
+ },
+ {
+  "id": "f847a89b-e7be-550c-b047-c6afc2834e14",
+  "person_id": "da63eaee-1e89-5dde-ae56-3701a6ac90aa",
+  "position_id": "9e6b385f-da68-537e-9d3a-f9476af75c62",
+  "started_at": "2016-05-29",
+  "ended_at": "2020-05-15"
+ },
+ {
+  "id": "8ab19a01-cf55-5a48-8ba9-378c2716ea78",
+  "person_id": "041821e6-c139-5282-98f8-5e4fb120e137",
+  "position_id": "5e999ec7-015f-5143-a254-13bc1de0a7ef",
+  "started_at": "2013-08-31",
+  "ended_at": null
+ },
+ {
+  "id": "bda87516-73db-574c-8d54-7b2642fdeff2",
+  "person_id": "9e2febe2-506e-5c63-a28d-b9faecb4bf2a",
+  "position_id": "5e999ec7-015f-5143-a254-13bc1de0a7ef",
+  "started_at": "2018-06-10",
+  "ended_at": null
+ },
+ {
+  "id": "d8d230fb-604c-552e-9ae3-80425e16ae47",
+  "person_id": "a0d8721c-d381-59c1-a621-056feaf48048",
+  "position_id": "b556fe68-7563-5865-9d36-5d5e342955d5",
+  "started_at": "2019-02-07",
+  "ended_at": null
+ },
+ {
+  "id": "cb19f127-47a3-5b93-8bce-222b65ff9913",
+  "person_id": "9997b89b-844e-5a3f-8b59-74988d191854",
+  "position_id": "b556fe68-7563-5865-9d36-5d5e342955d5",
+  "started_at": "2020-06-25",
+  "ended_at": null
+ },
+ {
+  "id": "2b087cd2-ee27-5222-9779-bd6c70afbf20",
+  "person_id": "9997b89b-844e-5a3f-8b59-74988d191854",
+  "position_id": "f733cf6a-a638-59d2-a141-ba5aee1a37e6",
+  "started_at": "2019-04-26",
+  "ended_at": "2020-06-24"
+ },
+ {
+  "id": "60c6422f-abd1-5b10-bfc5-d0c1fd370ba5",
+  "person_id": "31adc1b8-8847-532c-abdc-c6675993eb4f",
+  "position_id": "b556fe68-7563-5865-9d36-5d5e342955d5",
+  "started_at": "2022-10-18",
+  "ended_at": null
+ },
+ {
+  "id": "6c7198e9-949f-538d-a8f6-13545282715f",
+  "person_id": "4e28c44f-e9b6-54c3-9a3f-959115a9808b",
+  "position_id": "b556fe68-7563-5865-9d36-5d5e342955d5",
+  "started_at": "2022-02-22",
+  "ended_at": null
+ },
+ {
+  "id": "9a363ced-f506-560b-b542-e3cc5f84f908",
+  "person_id": "5db385ca-4fe2-5cbc-b156-cf90ab766874",
+  "position_id": "42b966a8-0d85-5590-91e4-54bd68e3d7c2",
+  "started_at": "2011-06-04",
+  "ended_at": null
+ },
+ {
+  "id": "9112a695-f497-57c8-a001-2f1d7d2a75d9",
+  "person_id": "27164f71-c85e-5a0a-8f3d-6482c29ce6f4",
+  "position_id": "42b966a8-0d85-5590-91e4-54bd68e3d7c2",
+  "started_at": "2021-03-20",
+  "ended_at": null
+ },
+ {
+  "id": "67b18142-f65d-50f4-ae8d-11d8d94f9a69",
+  "person_id": "d09f37da-fa50-5379-8bc8-046bd7c7c89f",
+  "position_id": "42b966a8-0d85-5590-91e4-54bd68e3d7c2",
+  "started_at": "2022-01-25",
+  "ended_at": null
+ },
+ {
+  "id": "141914db-407c-5daa-be43-8020b52005d7",
+  "person_id": "cfadb924-82d4-5199-a437-dab24251dddb",
+  "position_id": "42b966a8-0d85-5590-91e4-54bd68e3d7c2",
+  "started_at": "2011-02-14",
+  "ended_at": null
+ },
+ {
+  "id": "eac11139-c5ae-52b4-ac51-7580cd8b283b",
+  "person_id": "9d501ffe-f57b-5537-9145-40c2c659924c",
+  "position_id": "9e6b385f-da68-537e-9d3a-f9476af75c62",
+  "started_at": "2016-08-04",
+  "ended_at": null
+ },
+ {
+  "id": "9ef3b61b-7a57-5c27-9ad2-aef20b79d276",
+  "person_id": "e4f9c6a3-fbaf-5a19-b476-437a1fc179c4",
+  "position_id": "9e6b385f-da68-537e-9d3a-f9476af75c62",
+  "started_at": "2013-12-31",
+  "ended_at": null
+ },
+ {
+  "id": "737a21e5-4741-5010-819f-468b514a357f",
+  "person_id": "e4f9c6a3-fbaf-5a19-b476-437a1fc179c4",
+  "position_id": "9e6b385f-da68-537e-9d3a-f9476af75c62",
+  "started_at": "2011-10-13",
+  "ended_at": "2013-12-30"
+ },
+ {
+  "id": "944e8b45-c981-56b7-954e-4431144b4828",
+  "person_id": "27d6e6fe-e135-5648-8b6a-d4d7b8a3c46a",
+  "position_id": "9e6b385f-da68-537e-9d3a-f9476af75c62",
+  "started_at": "2017-01-05",
+  "ended_at": null
+ },
+ {
+  "id": "310d0d7f-69b1-512f-91c2-ebcb3fb18aab",
+  "person_id": "b7960459-c4aa-5787-9b95-214b1e784da6",
+  "position_id": "9e6b385f-da68-537e-9d3a-f9476af75c62",
+  "started_at": "2017-06-23",
+  "ended_at": null
+ },
+ {
+  "id": "18a5c41e-346b-55da-925c-4b7467963974",
+  "person_id": "e9f9ba94-302f-54dc-b020-fc45e7642a6b",
+  "position_id": "9e6b385f-da68-537e-9d3a-f9476af75c62",
+  "started_at": "2020-08-20",
+  "ended_at": null
+ },
+ {
+  "id": "955b93c4-4182-5f5e-92fa-2b2729d4e556",
+  "person_id": "70b2b65c-ad0a-594e-bcf6-932d0d3a6b0f",
+  "position_id": "b7619c3e-4991-5c4d-9c2b-0e2c3fb6d8a2",
+  "started_at": "2019-01-21",
+  "ended_at": null
+ },
+ {
+  "id": "fac5d581-6501-578e-a82f-4247affaf0a9",
+  "person_id": "f6ab1741-2095-55fc-a37a-1d9c85f32352",
+  "position_id": "b7619c3e-4991-5c4d-9c2b-0e2c3fb6d8a2",
+  "started_at": "2024-11-21",
+  "ended_at": null
+ },
+ {
+  "id": "72085e5b-eac0-5117-a119-980f04c41e31",
+  "person_id": "3123430d-e548-5e2a-a418-f982ad4791dc",
+  "position_id": "b7619c3e-4991-5c4d-9c2b-0e2c3fb6d8a2",
+  "started_at": "2013-03-06",
+  "ended_at": null
+ },
+ {
+  "id": "b4a6825c-9344-5d94-b7f9-a19f33455e37",
+  "person_id": "d617b87f-e3c3-585e-8159-5d940bbbbd7a",
+  "position_id": "b7619c3e-4991-5c4d-9c2b-0e2c3fb6d8a2",
+  "started_at": "2011-11-16",
+  "ended_at": null
+ },
+ {
+  "id": "a111c357-b4e1-514a-8edc-324068819147",
+  "person_id": "fb9e8d89-0404-5a06-add4-e6bf4886ca56",
+  "position_id": "f733cf6a-a638-59d2-a141-ba5aee1a37e6",
+  "started_at": "2024-11-22",
+  "ended_at": null
+ },
+ {
+  "id": "aacb2026-5bc2-5652-a2a4-5377704a3cfa",
+  "person_id": "fb9e8d89-0404-5a06-add4-e6bf4886ca56",
+  "position_id": "b7619c3e-4991-5c4d-9c2b-0e2c3fb6d8a2",
+  "started_at": "2023-01-12",
+  "ended_at": "2024-11-21"
+ },
+ {
+  "id": "86969d87-5ae7-5c9a-b53f-50128d20eba5",
+  "person_id": "5a667328-f5f8-5809-874f-755c257a71cb",
+  "position_id": "f733cf6a-a638-59d2-a141-ba5aee1a37e6",
+  "started_at": "2019-10-18",
+  "ended_at": null
+ },
+ {
+  "id": "ee7eabf9-b541-587c-97c4-94c17f68b962",
+  "person_id": "5df63da4-dc6c-5c57-898e-066845a67e27",
+  "position_id": "f733cf6a-a638-59d2-a141-ba5aee1a37e6",
+  "started_at": "2015-05-20",
+  "ended_at": null
+ },
+ {
+  "id": "9fa17f8c-7f45-59c5-8081-99c4917c2ed2",
+  "person_id": "e388522c-e54e-5507-940e-94c4219a7f0a",
+  "position_id": "8530872b-337f-5469-adfa-1ba3ee25b53c",
+  "started_at": "2021-02-17",
+  "ended_at": null
+ },
+ {
+  "id": "73949662-2ad2-50c3-9a38-e764ca861606",
+  "person_id": "1430fe67-15a0-5f59-9ff7-6ad17902836f",
+  "position_id": "8530872b-337f-5469-adfa-1ba3ee25b53c",
+  "started_at": "2019-01-26",
+  "ended_at": null
+ },
+ {
+  "id": "eb04ee09-f478-5c96-a8e8-447d9a7a934f",
+  "person_id": "8f58fa59-312b-5bd3-bc83-32488b44a9f1",
+  "position_id": "8530872b-337f-5469-adfa-1ba3ee25b53c",
+  "started_at": "2024-04-04",
+  "ended_at": null
+ },
+ {
+  "id": "ec269ab7-64bc-5e98-824f-4e7e6a73137c",
+  "person_id": "e7ed7681-3a18-5bf5-8c00-675d66942c52",
+  "position_id": "8530872b-337f-5469-adfa-1ba3ee25b53c",
+  "started_at": "2011-04-06",
+  "ended_at": null
+ },
+ {
+  "id": "bfdefa10-7c89-5537-9657-b5456148951a",
+  "person_id": "e7ed7681-3a18-5bf5-8c00-675d66942c52",
+  "position_id": "f733cf6a-a638-59d2-a141-ba5aee1a37e6",
+  "started_at": "2009-08-02",
+  "ended_at": "2011-04-05"
+ },
+ {
+  "id": "d2c24c95-4995-54dd-b8ab-eedc134d030d",
+  "person_id": "294fb7ef-2b25-547b-b53d-b13f3f7acce3",
+  "position_id": "62c4501c-b1f9-5094-8b5a-925703bd559e",
+  "started_at": "2022-09-20",
+  "ended_at": null
+ },
+ {
+  "id": "e9a7da43-6534-51cb-b8d1-911d4b397401",
+  "person_id": "294fb7ef-2b25-547b-b53d-b13f3f7acce3",
+  "position_id": "9e6b385f-da68-537e-9d3a-f9476af75c62",
+  "started_at": "2018-09-27",
+  "ended_at": "2022-09-19"
+ },
+ {
+  "id": "127c085f-923d-5085-b179-a9f3ab71bc72",
+  "person_id": "a3489b53-1629-5406-87da-4249b74d5700",
+  "position_id": "62c4501c-b1f9-5094-8b5a-925703bd559e",
+  "started_at": "2025-06-16",
+  "ended_at": null
+ },
+ {
+  "id": "d63c5493-f964-5b7a-ad42-a744d4655f7c",
+  "person_id": "06a5c5a3-bf5d-55cb-9460-f390a632d2fd",
+  "position_id": "62c4501c-b1f9-5094-8b5a-925703bd559e",
+  "started_at": "2011-07-12",
+  "ended_at": null
+ },
+ {
+  "id": "8ca6bda8-d98e-572d-89eb-5c81a03ef8ce",
+  "person_id": "06a5c5a3-bf5d-55cb-9460-f390a632d2fd",
+  "position_id": "f733cf6a-a638-59d2-a141-ba5aee1a37e6",
+  "started_at": "2009-12-13",
+  "ended_at": "2011-07-11"
+ },
+ {
+  "id": "ac82f763-9030-5606-bd53-8e580fbfbc39",
+  "person_id": "ec09f1f1-bc7e-5d7a-a0af-483a7bc60d6b",
+  "position_id": "62c4501c-b1f9-5094-8b5a-925703bd559e",
+  "started_at": "2015-11-19",
+  "ended_at": null
+ },
+ {
+  "id": "b07df0be-addb-58f3-b72f-cde229d4b45e",
+  "person_id": "85b88e74-5e8d-5def-b6a7-e5d687d39b7e",
+  "position_id": "98d73564-2cf7-5aa6-842d-026decb2ba46",
+  "started_at": "2019-09-02",
+  "ended_at": null
+ },
+ {
+  "id": "928776ff-2b05-5371-8748-9eae6d2b7a0d",
+  "person_id": "932a9fab-3286-52d1-904f-004a3e309148",
+  "position_id": "d39c4432-756e-5c5a-aa59-5c369153126b",
+  "started_at": "2019-07-30",
+  "ended_at": null
+ },
+ {
+  "id": "ffa0c0f1-e1f2-5f76-9c6e-91a451d36448",
+  "person_id": "932a9fab-3286-52d1-904f-004a3e309148",
+  "position_id": "ddd85245-60d6-5d54-b0fb-a803ecb0c4bc",
+  "started_at": "2016-05-17",
+  "ended_at": "2019-07-29"
+ },
+ {
+  "id": "bdcbd0d6-c64b-5ea2-8185-f354c6906400",
+  "person_id": "b4426a7e-3f41-5a76-8da0-2f65a32eb61a",
+  "position_id": "ddd85245-60d6-5d54-b0fb-a803ecb0c4bc",
+  "started_at": "2025-09-15",
+  "ended_at": null
+ },
+ {
+  "id": "510be040-e8c2-5437-8b7c-f164659d4020",
+  "person_id": "1697ce8b-76e5-553b-8f9a-a185b65038f2",
+  "position_id": "ddd85245-60d6-5d54-b0fb-a803ecb0c4bc",
+  "started_at": "2023-07-13",
+  "ended_at": null
+ },
+ {
+  "id": "833772a7-d40c-50a3-81d1-d16598d973ac",
+  "person_id": "a255467a-df32-5864-961f-03858056dca3",
+  "position_id": "ddd85245-60d6-5d54-b0fb-a803ecb0c4bc",
+  "started_at": "2012-03-11",
+  "ended_at": null
+ },
+ {
+  "id": "a3fa462a-b03a-5268-920c-9aa02db86cb1",
+  "person_id": "848a7f13-937c-5251-8077-70d6127e527c",
+  "position_id": "ddd85245-60d6-5d54-b0fb-a803ecb0c4bc",
+  "started_at": "2014-07-22",
+  "ended_at": null
+ },
+ {
+  "id": "a0fbe6d6-f6a4-59e9-865e-af840825c464",
+  "person_id": "7c94bbe6-9b44-5191-bc70-9ee620b32d4a",
+  "position_id": "ddd85245-60d6-5d54-b0fb-a803ecb0c4bc",
+  "started_at": "2019-06-26",
+  "ended_at": null
+ },
+ {
+  "id": "c910b798-bc6a-5610-b07d-baaf71b9328d",
+  "person_id": "b397e594-6337-5042-8eca-5d448ffec1a7",
+  "position_id": "4490c535-e85b-5b15-8250-4d5c098a7dea",
+  "started_at": "2019-12-22",
+  "ended_at": null
+ },
+ {
+  "id": "52e8b854-d438-5697-ab74-d0eb5b7f3b8e",
+  "person_id": "b397e594-6337-5042-8eca-5d448ffec1a7",
+  "position_id": "ddd85245-60d6-5d54-b0fb-a803ecb0c4bc",
+  "started_at": "2018-03-16",
+  "ended_at": "2019-12-21"
+ },
+ {
+  "id": "71704ead-f465-5d85-b4bd-4b81fb2825e7",
+  "person_id": "de2c4479-5aed-522f-86a3-568540a1e6b1",
+  "position_id": "4490c535-e85b-5b15-8250-4d5c098a7dea",
+  "started_at": "2012-10-13",
+  "ended_at": null
+ },
+ {
+  "id": "81a52ae2-e77a-554f-a3b6-3d2335d8fbd9",
+  "person_id": "ee14162d-6ef4-5e87-bfcb-c5d6c8ec51ce",
+  "position_id": "4490c535-e85b-5b15-8250-4d5c098a7dea",
+  "started_at": "2014-12-11",
+  "ended_at": null
+ },
+ {
+  "id": "fb5b2711-87bd-5566-b119-ee97efd7e550",
+  "person_id": "37848bd9-9d65-568d-a0aa-5dd245abe29d",
+  "position_id": "4490c535-e85b-5b15-8250-4d5c098a7dea",
+  "started_at": "2021-02-18",
+  "ended_at": null
+ },
+ {
+  "id": "4efb926b-e6cf-5416-8af2-c327e5762e38",
+  "person_id": "2bdd0de2-d685-597c-986a-84bc403434b5",
+  "position_id": "4490c535-e85b-5b15-8250-4d5c098a7dea",
+  "started_at": "2021-12-09",
+  "ended_at": null
+ },
+ {
+  "id": "e895c640-ff3a-5877-b4ed-1d76c54f324c",
+  "person_id": "175d4459-1acf-5272-a021-11bb5ce1c654",
+  "position_id": "e7c5b26d-65a6-595b-89e7-153221c11b8d",
+  "started_at": "2015-06-27",
+  "ended_at": null
+ },
+ {
+  "id": "4e6d6bbf-5c66-5b6b-a753-2d8caebc73bc",
+  "person_id": "ddc6f3f3-706e-54bd-b72c-79d6f4e89469",
+  "position_id": "e7c5b26d-65a6-595b-89e7-153221c11b8d",
+  "started_at": "2012-08-16",
+  "ended_at": null
+ },
+ {
+  "id": "3ddbe001-2767-54b3-9ff8-b46adeabb652",
+  "person_id": "7e8351ba-69c3-56e9-8b64-e3c18098bbeb",
+  "position_id": "e7c5b26d-65a6-595b-89e7-153221c11b8d",
+  "started_at": "2011-07-18",
+  "ended_at": null
+ },
+ {
+  "id": "906dc5aa-d08f-5987-8197-7e65ed612456",
+  "person_id": "da137170-c3c5-5629-b9a4-f908d7339011",
+  "position_id": "e7c5b26d-65a6-595b-89e7-153221c11b8d",
+  "started_at": "2012-11-30",
+  "ended_at": null
+ },
+ {
+  "id": "e43adf8e-819d-5596-a858-c6e515cb2279",
+  "person_id": "8cbe7b6f-53a7-53ad-8e15-1f6e46107080",
+  "position_id": "034da948-24c0-572f-b9ba-23f5664b4177",
+  "started_at": "2023-02-13",
+  "ended_at": null
+ },
+ {
+  "id": "5568a081-0c79-5f1f-ba8a-02de3baf70ee",
+  "person_id": "0fdecc4f-5f53-56c8-9e9b-5c2fc28a7fda",
+  "position_id": "034da948-24c0-572f-b9ba-23f5664b4177",
+  "started_at": "2017-10-31",
+  "ended_at": null
+ },
+ {
+  "id": "69696145-0847-5c28-b579-7f994ea2e992",
+  "person_id": "891b31eb-80e4-5981-a24d-183d3d4cae24",
+  "position_id": "034da948-24c0-572f-b9ba-23f5664b4177",
+  "started_at": "2024-10-11",
+  "ended_at": null
+ },
+ {
+  "id": "0b785784-2987-5b37-9871-55d7f2dd00d1",
+  "person_id": "9719364d-877e-5f34-a0e3-7183ba1225f9",
+  "position_id": "034da948-24c0-572f-b9ba-23f5664b4177",
+  "started_at": "2013-04-26",
+  "ended_at": null
+ },
+ {
+  "id": "c1823b01-3bb3-5860-a474-1e54e34dcff6",
+  "person_id": "4ade9d5b-6f9a-51f3-b738-5b1f57dcfd14",
+  "position_id": "034da948-24c0-572f-b9ba-23f5664b4177",
+  "started_at": "2014-04-20",
+  "ended_at": null
+ },
+ {
+  "id": "0d42c48c-33a3-54f6-a311-dc53934f1ea2",
+  "person_id": "445c2e1e-b5c2-5e44-898f-eb117034ba1f",
+  "position_id": "9aef9b65-e2a9-54a5-bf7b-a83196dad95d",
+  "started_at": "2015-11-29",
+  "ended_at": null
+ },
+ {
+  "id": "71d1a27b-b2a0-5077-aeb1-e7f41ceaf531",
+  "person_id": "445c2e1e-b5c2-5e44-898f-eb117034ba1f",
+  "position_id": "034da948-24c0-572f-b9ba-23f5664b4177",
+  "started_at": "2012-01-05",
+  "ended_at": "2015-11-28"
+ },
+ {
+  "id": "5ac4aad1-b5c9-5902-9e76-a5cf2d403a72",
+  "person_id": "ec1356e5-4374-5942-baaa-847a2db85e4c",
+  "position_id": "9aef9b65-e2a9-54a5-bf7b-a83196dad95d",
+  "started_at": "2013-01-27",
+  "ended_at": null
+ },
+ {
+  "id": "d995b3b1-9d8c-5f1d-93ec-0e90afc26cb4",
+  "person_id": "ec1356e5-4374-5942-baaa-847a2db85e4c",
+  "position_id": "ddd85245-60d6-5d54-b0fb-a803ecb0c4bc",
+  "started_at": "2009-04-04",
+  "ended_at": "2013-01-26"
+ },
+ {
+  "id": "a12d53d7-7a45-51d8-993f-78287b5bfd69",
+  "person_id": "1053a950-891f-58ae-9584-1955c35de3a3",
+  "position_id": "9aef9b65-e2a9-54a5-bf7b-a83196dad95d",
+  "started_at": "2020-11-02",
+  "ended_at": null
+ },
+ {
+  "id": "6b74ddc6-df36-534a-9091-d0d5a701ee5b",
+  "person_id": "c17a6665-4ba7-551d-9583-1e95b3021ed9",
+  "position_id": "9aef9b65-e2a9-54a5-bf7b-a83196dad95d",
+  "started_at": "2019-04-05",
+  "ended_at": null
+ },
+ {
+  "id": "5ef30d17-bc5e-59ec-9a8d-52e41a542e81",
+  "person_id": "90935c6c-220e-511e-938d-f9d3b6110dec",
+  "position_id": "fe8c7e96-f090-5039-af01-448b8037c7fe",
+  "started_at": "2018-04-01",
+  "ended_at": null
+ },
+ {
+  "id": "5305eb2c-a511-58b7-8cb3-790e7910d9d5",
+  "person_id": "303c7c30-5cd2-53bd-9677-8e73034b369f",
+  "position_id": "fe8c7e96-f090-5039-af01-448b8037c7fe",
+  "started_at": "2012-10-26",
+  "ended_at": null
+ },
+ {
+  "id": "e6a2d118-a03c-5bec-b1dc-7cc4901b9aa6",
+  "person_id": "14197f2e-b168-5248-9370-596e939d0de9",
+  "position_id": "fe8c7e96-f090-5039-af01-448b8037c7fe",
+  "started_at": "2013-05-23",
+  "ended_at": null
+ },
+ {
+  "id": "2c4fa6f4-0e97-5c15-8fe8-40b14529e4d9",
+  "person_id": "b2ea405f-78b3-545d-8a59-81e1c654214a",
+  "position_id": "717cb65d-badd-5418-bbe6-54d29fde90a5",
+  "started_at": "2025-03-24",
+  "ended_at": null
+ },
+ {
+  "id": "56aa3e90-b255-51a5-8c85-e3fc1613849d",
+  "person_id": "c6f9f7bf-a3b0-5556-9a52-554fb7a5e570",
+  "position_id": "717cb65d-badd-5418-bbe6-54d29fde90a5",
+  "started_at": "2011-07-06",
+  "ended_at": null
+ },
+ {
+  "id": "da7ad11f-b61c-5861-bcb7-aa937b671d1d",
+  "person_id": "775f9793-6d8f-5e5c-92b1-1e94fcfdabc0",
+  "position_id": "717cb65d-badd-5418-bbe6-54d29fde90a5",
+  "started_at": "2023-12-13",
+  "ended_at": null
+ },
+ {
+  "id": "bc6dff96-887e-55fc-8fc7-15e78697cd38",
+  "person_id": "ddfcf600-9b68-5ce1-9016-5b201241435d",
+  "position_id": "88257e31-076c-573d-a668-7d1f47305941",
+  "started_at": "2018-05-10",
+  "ended_at": null
+ },
+ {
+  "id": "6839c8dc-bc9e-5657-ab73-ff20d08ed7c8",
+  "person_id": "daa3ffac-4a64-597d-83bf-81ee56897bf8",
+  "position_id": "88257e31-076c-573d-a668-7d1f47305941",
+  "started_at": "2025-08-27",
+  "ended_at": null
+ },
+ {
+  "id": "0d23aae5-556b-59b3-97d3-a130fb979641",
+  "person_id": "51264246-4cf8-537d-a093-167470747479",
+  "position_id": "88257e31-076c-573d-a668-7d1f47305941",
+  "started_at": "2016-04-05",
+  "ended_at": null
+ },
+ {
+  "id": "097a454b-7ae5-588a-908a-f33e22d13edb",
+  "person_id": "6e214da5-9010-5522-8559-567885f891c7",
+  "position_id": "88257e31-076c-573d-a668-7d1f47305941",
+  "started_at": "2011-06-09",
+  "ended_at": null
+ },
+ {
+  "id": "d5ed7c86-b960-5ba2-a564-45bef9650eb9",
+  "person_id": "6e214da5-9010-5522-8559-567885f891c7",
+  "position_id": "717cb65d-badd-5418-bbe6-54d29fde90a5",
+  "started_at": "2005-06-23",
+  "ended_at": "2011-06-08"
+ },
+ {
+  "id": "de0daf12-f24c-5ee3-ac19-769f2f35af22",
+  "person_id": "4764197b-6d5e-57cd-b239-afd69e47d3a8",
+  "position_id": "88257e31-076c-573d-a668-7d1f47305941",
+  "started_at": "2025-08-03",
+  "ended_at": null
+ },
+ {
+  "id": "927586b9-c800-5987-b003-053a35d86da5",
+  "person_id": "c66a841f-e902-56e7-a4a1-8a8047961cac",
+  "position_id": "530755a2-9a4d-540a-8d45-84dfec95ec05",
+  "started_at": "2019-04-01",
+  "ended_at": "2025-06-30"
+ },
+ {
+  "id": "9f01c635-e26c-58ee-b7a2-4fc2b781ac79",
+  "person_id": "d837535d-84d2-5522-8a31-ef5548bfb602",
+  "position_id": "144c561f-5ce9-5cfd-bad3-a891533cb743",
+  "started_at": "2016-03-01",
+  "ended_at": "2024-08-16"
+ },
+ {
+  "id": "2a8f50ab-f85e-5807-9846-288290981ad0",
+  "person_id": "ebdef1d4-f2d0-5d1a-abf7-a9819d8b4d6c",
+  "position_id": "17369665-30b5-5f63-8b80-d66ed49325d0",
+  "started_at": "2014-02-03",
+  "ended_at": "2024-03-29"
+ },
+ {
+  "id": "f42ee466-b964-5c6c-8b51-9fcc00b7af7f",
+  "person_id": "288b292f-ee78-5b17-bda8-d50060a6b6f2",
+  "position_id": "06d6564f-679a-506f-8635-5296e995f703",
+  "started_at": "2015-04-06",
+  "ended_at": "2024-02-20"
+ },
+ {
+  "id": "d9aba20c-ba70-581e-843b-51a8067282d1",
+  "person_id": "401d7a8f-4c10-532f-b05d-6de498d25c60",
+  "position_id": "eda66219-049b-54eb-8735-45eb13772e71",
+  "started_at": "2013-06-04",
+  "ended_at": "2018-05-02"
+ },
+ {
+  "id": "8c45ad6f-4936-53e9-93a9-7c1003dd999f",
+  "person_id": "2c772eb9-ab59-5b7d-8619-3e9c0c8c2ac1",
+  "position_id": "a65e30b1-b4a7-5f45-ace8-664239535196",
+  "started_at": "2018-04-05",
+  "ended_at": "2022-09-02"
+ },
+ {
+  "id": "6391f83a-c080-50e0-aa58-c9bb243195c2",
+  "person_id": "f5016ac0-4196-5012-9bb7-87f2e991f8e7",
+  "position_id": "726b88eb-eeeb-5747-aa5d-8f00732f34cb",
+  "started_at": "2013-01-23",
+  "ended_at": "2020-10-17"
+ },
+ {
+  "id": "ac1688f2-f037-502e-99ae-0566949ab467",
+  "person_id": "4decbd9d-b9a2-5567-b1ec-739a6b653be6",
+  "position_id": "3fc81fb7-569b-5ac9-90ba-d5816121cc29",
+  "started_at": "2020-06-20",
+  "ended_at": "2023-08-27"
+ },
+ {
+  "id": "e631dd46-16a7-5769-97c2-efd670c999e1",
+  "person_id": "c651865d-3916-581a-9b3a-1096d29b92cc",
+  "position_id": "9e6b385f-da68-537e-9d3a-f9476af75c62",
+  "started_at": "2020-01-26",
+  "ended_at": "2023-10-11"
+ },
+ {
+  "id": "d928c02a-4858-5978-ac4a-5f7c20ec820b",
+  "person_id": "f0fb4ea8-3bb9-5a26-9b5d-5c7bc72b343f",
+  "position_id": "7bc93c5c-0027-588a-9507-007065010047",
+  "started_at": "2013-04-29",
+  "ended_at": "2018-01-29"
+ },
+ {
+  "id": "8a802d33-eaa7-53be-94d9-df6068d3cf59",
+  "person_id": "886ebef0-3945-57ac-b45c-d2d795187801",
+  "position_id": "a65e30b1-b4a7-5f45-ace8-664239535196",
+  "started_at": "2016-10-27",
+  "ended_at": "2024-12-27"
+ },
+ {
+  "id": "9f0d50b7-3bcb-50f7-859d-bbd4143894b6",
+  "person_id": "77565ca3-b383-5093-ad3c-eba20a6d70c1",
+  "position_id": "fe8c7e96-f090-5039-af01-448b8037c7fe",
+  "started_at": "2020-10-21",
+  "ended_at": "2024-09-16"
+ },
+ {
+  "id": "77fc349e-ea93-58c2-a5be-37c5004de74c",
+  "person_id": "483122cb-9dce-593b-99c1-416c55368189",
+  "position_id": "fe8c7e96-f090-5039-af01-448b8037c7fe",
+  "started_at": "2017-10-25",
+  "ended_at": "2020-05-20"
+ },
+ {
+  "id": "52854d11-8dbf-5df9-82ad-ededd345b98d",
+  "person_id": "6ec94f46-b3f2-5e2c-85fa-f39d63890988",
+  "position_id": "fe8c7e96-f090-5039-af01-448b8037c7fe",
+  "started_at": "2017-03-18",
+  "ended_at": "2021-04-18"
+ },
+ {
+  "id": "e76fc653-22eb-598c-b2d1-c49a69253a31",
+  "person_id": "d1a9c36d-2fd8-5bbc-88eb-6a909b98ad80",
+  "position_id": "42b966a8-0d85-5590-91e4-54bd68e3d7c2",
+  "started_at": "2015-03-12",
+  "ended_at": "2018-10-13"
+ }
+]
