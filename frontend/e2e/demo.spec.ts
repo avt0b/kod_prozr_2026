@@ -16,8 +16,9 @@ const HERE = dirname(fileURLToPath(import.meta.url));
 const SHOTS = join(HERE, 'screenshots');
 const DEMO_TEXT = readFileSync(join(HERE, '../../demo/appeal_h1.txt'), 'utf8').trim();
 const SOKOLOV = 'Соколов Андрей Викторович';
+const N1 = 'Орлов Сергей Михайлович';
 const ASSISTANT_QUESTION = 'Покажи служащих, у которых родственники среди подрядчиков их органа';
-/** Кейсы C2–C5 из шпаргалки docs/demo.md: правило → служащий, которого должен показать фильтр. */
+/** Кейсы C2–C5 из docs/demo.md: правило → служащий, который в фильтре по правилу в первой тройке. */
 const RULE_CASES = [
   { rule: 'R02', name: 'Лебедева Ольга Николаевна' },
   { rule: 'R03', name: 'Гусев Павел Сергеевич' },
@@ -209,8 +210,8 @@ test('сценарий демо docs/demo.md проходит на реальн�
     await expect(page.getByRole('button', { name: 'Отправить на анализ' })).toBeEnabled();
     await shot(page, '04-appeal-new');
     await page.getByRole('button', { name: 'Отправить на анализ' }).click();
-    // Фоллбэк отвечает мгновенно, LLM — до минуты
-    await page.waitForURL(/\/appeals\/(?!new$)[^/]+$/, { timeout: 90_000 });
+    // Фоллбэк отвечает мгновенно, LLM на CPU — долго: фронт ждёт POST /appeals до 150 с
+    await page.waitForURL(/\/appeals\/(?!new$)[^/]+$/, { timeout: 160_000 });
     appealId = new URL(page.url()).pathname.split('/').at(-1) ?? '';
     expect(appealId).not.toBe('');
   });
@@ -222,16 +223,10 @@ test('сценарий демо docs/demo.md проходит на реальн�
       analysis: { category: string; engine?: string; entities: unknown[] } | null;
     }>(request, `/appeals/${appealId}`);
     const category = appeal.analysis?.category;
-    if (appeal.analysis?.engine === 'llm') expect(category).toBe('conflict_of_interest');
-    else {
-      // Фоллбэк на словарях пока относит H1 к закупкам (слов о контрактах больше, чем о жене)
-      expect(['conflict_of_interest', 'procurement']).toContain(category);
-      if (category !== 'conflict_of_interest')
-        note({
-          type: 'warning',
-          description: `фоллбэк: категория H1 = ${category}, в docs/demo.md — conflict_of_interest`,
-        });
-    }
+    // docs/demo.md: фоллбэк относит H1 к `procurement`, от LLM ждём `conflict_of_interest` (не проверено),
+    // спикер называет категорию с экрана — поэтому принимаем обе
+    expect(['conflict_of_interest', 'procurement']).toContain(category);
+    note({ type: 'Разбор H1', description: `${appeal.analysis?.engine}: ${category}` });
     expect(appeal.linked_person_ids).toContain(before.id);
 
     await expect(page.getByRole('heading', { name: /Обращение от/ })).toBeVisible();
@@ -287,7 +282,7 @@ test('сценарий демо docs/demo.md проходит на реальн�
     await expect(page.getByRole('heading', { name: SOKOLOV, level: 2 })).toBeVisible();
     await expect(page.getByText(/ОКПД2: .*42\.11/)).toBeVisible();
     await expect(page.getByText(/Соколова Марина Олеговна/).first()).toBeVisible();
-    for (const code of ['R01', 'R05', 'R06', 'R07']) {
+    for (const code of ['R01', 'R05', 'R06', 'R07', 'R08']) {
       await expect(
         page.locator('.mantine-Badge-label', { hasText: new RegExp(`^${code}$`) }),
       ).toBeVisible();
@@ -386,16 +381,32 @@ test('сценарий демо docs/demo.md проходит на реальн�
       await ruleSelect.click();
       await page.getByRole('option', { name: new RegExp(`^${rule} — `) }).click();
       await expect(page).toHaveURL(new RegExp(`rule_code=${rule}`));
-      await expect(tableRows(page).filter({ hasText: name })).toBeVisible();
-      // Каждая строка выборки показывает бейдж выбранного правила или его нет только из-за лимита top_flags
+      // Выборка на экране совпадает с ответом API на тот же фильтр (ждём смены данных:
+      // пока идёт запрос, таблица показывает прошлую выборку)
       const api = await apiGet<{ items: ListItem[] }>(
         request,
         `/officials?rule_code=${rule}&sort=-risk_score&limit=20&offset=0`,
       );
-      await expect(tableRows(page)).toHaveCount(api.items.length);
+      await expect
+        .poll(() => tableRows(page).locator('td:nth-child(3)').allInnerTexts())
+        .toEqual(api.items.map((i) => i.full_name));
+      const top3 = api.items.slice(0, 3).map((i) => i.full_name);
+      expect(top3, `${rule}: ${name} в первой тройке`).toContain(name);
       if (rule === 'R02') await shot(page, '11-rating-rule-r02');
     }
     await shot(page, '11-rating-rule');
+
+    // N1 Орлов: одно расплывчатое обращение даёт только слабый сигнал — он внизу среди служащих с флагами
+    const all = await apiGet<{ items: ListItem[] }>(
+      request,
+      '/officials?sort=-risk_score&limit=100&offset=0',
+    );
+    const flagged = all.items.filter((i) => i.top_flags.length > 0);
+    const n1 = flagged.findIndex((i) => i.full_name === N1);
+    expect(n1, `${N1} среди служащих с флагами`).toBeGreaterThanOrEqual(0);
+    expect(flagged[n1].top_flags.map((f) => f.rule_code)).toEqual(['R07']);
+    expect(n1 + 1, `${N1} в нижней четверти`).toBeGreaterThan(flagged.length * 0.75);
+    note({ type: 'N1 Орлов', description: `${n1 + 1}-е из ${flagged.length} с флагами` });
 
     // Остальные фильтры рейтинга: поиск, мин. балл, сброс правила
     await page
