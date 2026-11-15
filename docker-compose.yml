@@ -114,7 +114,7 @@ services:
   # Общая LLM для команды по сети: OLLAMA_BIND_HOST=0.0.0.0 (только доверенная сеть, у Ollama
   # нет авторизации) или SSH-туннель — docs/devops.md §5.
   ollama:
-    image: ${OLLAMA_IMAGE:-ollama/ollama:0.40.16}
+    image: ${OLLAMA_IMAGE:-ollama/ollama:0.12.6}
     container_name: kodprozr_ollama
     profiles: ["llm"]
     ports:

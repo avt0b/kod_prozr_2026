@@ -29,13 +29,19 @@
 
 | Сервис     | Образ / сборка                | Хост-порт        | Внутри сети      | Healthcheck                    |
 | ---------- | ----------------------------- | ---------------- | ---------------- | ------------------------------ |
-| `postgres` | `postgres:16-alpine`          | 5432             | `postgres:5432`  | `pg_isready`                   |
+| `postgres` | `postgres:16.15-alpine`       | 5432             | `postgres:5432`  | `pg_isready`                   |
 | `backend`  | `./backend/Dockerfile`        | 8000             | `backend:8000`   | `GET /health` → 200            |
 | `frontend` | `./frontend/Dockerfile`       | 3000 (dev: 5173) | `frontend:80`    | `GET /` → 200                  |
-| `ollama`   | `ollama/ollama` (профиль llm) | 11434            | `ollama:11434`   | `ollama list`                  |
+| `ollama`   | `ollama/ollama:0.12.6` (профиль llm) | 11434     | `ollama:11434`   | `ollama list`                  |
 
 Порядок старта: `postgres` (healthy) → `backend` (сначала `alembic upgrade head`, затем uvicorn) →
 `frontend`. Порты публикуются на `BIND_HOST` (по умолчанию `127.0.0.1`).
+
+Хост-порты по умолчанию из [contracts.md](contracts.md). Если на машине порт уже занят другим
+проектом, его можно сдвинуть в `.env` (`POSTGRES_PORT`, `BACKEND_PORT`, `FRONTEND_PORT`,
+`OLLAMA_PORT`); внутри сети compose порты не меняются. При смене `BACKEND_PORT` поменяйте и
+`VITE_API_URL` (`http://localhost:<порт>/api/v1`) и пересоберите фронт: `make build && make up`.
+`make smoke`, `make eval`, `make precompute` и `make video` берут порты из того же `.env`.
 
 Браузер обращается к API напрямую по `VITE_API_URL`, nginx фронта ничего не проксирует. Поэтому
 бэк должен разрешать origin фронта в `CORS_ORIGINS`. На VPS оба сервиса стоят за одним доменом
@@ -57,7 +63,13 @@
 | `VITE_API_URL`                   | frontend (сборка) | `http://localhost:8000/api/v1`                                  |
 | `BACKEND_APP`                    | compose           | `src.web.main:app` — путь к ASGI-приложению для uvicorn         |
 | `BIND_HOST`                      | compose           | `127.0.0.1`; `0.0.0.0` — показать демо по локальной сети        |
-| `OLLAMA_IMAGE`                   | compose           | `ollama/ollama:latest`                                          |
+| `POSTGRES_IMAGE`                 | compose           | `postgres:16.15-alpine`                                         |
+| `OLLAMA_IMAGE`                   | compose           | `ollama/ollama:0.12.6` (закреплено, см. §5)                     |
+| `POSTGRES_PORT` / `BACKEND_PORT` | compose, Makefile | `5432` / `8000` — хост-порты, если стандартные заняты           |
+| `FRONTEND_PORT` / `OLLAMA_PORT`  | compose, Makefile | `3000` / `11434`                                                |
+| `OLLAMA_BIND_HOST`               | compose           | как `BIND_HOST`; `0.0.0.0` — раздать Ollama команде (§5)         |
+| `BUILD_NETWORK`                  | Makefile, compose | `host` в `make build`; `default` — сборка в bridge-сети          |
+| `LLM_GPU`                        | Makefile          | `auto` — GPU для `make llm-up`, если есть runtime `nvidia`       |
 
 Важно:
 
@@ -74,12 +86,12 @@
 | ----------------- | --------------------------------------------------------------------------- |
 | `make up`         | создаёт `.env`, если его нет, собирает образы и поднимает стек в фоне        |
 | `make down`       | останавливает стек вместе с ollama; данные в томах сохраняются               |
-| `make build`      | пересобирает образы                                                         |
+| `make build`      | пересобирает образы (в сети хоста, см. ниже)                                |
 | `make logs`       | показывает логи всех сервисов; один сервис: `make logs s=backend`            |
 | `make ps`         | показывает состояние контейнеров и healthchecks                             |
 | `make migrate`    | `alembic upgrade head` в одноразовом контейнере backend                      |
 | `make seed`       | загружает `data/generated` с предрасчётом обращений и пересчитывает риск      |
-| `make reset`      | сносит тома, поднимает стек с миграциями и сидами — состояние «как перед демо» |
+| `make reset`      | сносит БД, поднимает стек с миграциями и сидами — состояние «как перед демо»; ollama и модели не трогает |
 | `make smoke`      | smoke всех эндпоинтов + демо-обращение (меняет данные: затем `make reset`)    |
 | `make data`       | пересоздаёт синтетику генератором (`seed 42`), затем нужен `make precompute`  |
 | `make data-check` | проверки данных data.md §7 (полный набор и `sample/`)                         |
@@ -89,14 +101,33 @@
 | `make test-back`  | `uv run pytest` в `backend/` на хосте                                       |
 | `make lint-back`  | `ruff check` + `ruff format --check` в `backend/` на хосте                  |
 | `make lint-front` | `npm run lint` в `frontend/` на хосте                                        |
-| `make llm-up`     | поднимает ollama и скачивает модель `LLM_MODEL`                              |
+| `make llm-up`     | поднимает ollama (GPU, если есть), скачивает и прогревает модель `LLM_MODEL` |
+| `make llm-check`  | проверяет из контейнера backend, что `LLM_BASE_URL` отвечает (`GET /models`) |
+| `make dump`       | дамп БД стенда в `dist/db/kodprozr-<дата>.sql.gz` (§9)                       |
+| `make restore FILE=...` | пересоздаёт БД из дампа и перезапускает бэк и фронт (§9)              |
+| `make offline-bundle` | офлайн-пакет для резервного ноутбука в `dist/offline/` (§9)             |
+| `make offline-load` | загружает пакет на резервном ноутбуке; дальше `make reset OFFLINE=1` (§9) |
+| `make video`      | видео-бэкап: Playwright-сценарий демо против стенда, видео в `dist/video/` (§9) |
+
+`OFFLINE=1` у `up`, `reset`, `restore`, `llm-up` — без сборки образов и без обращений к registry
+(`--no-build --pull never`), для резервного ноутбука после `make offline-load`.
+
+**Сборка в сети хоста.** На машинах команды bridge-сеть Docker не выходит в интернет (VPN/TUN,
+прокси: DNS отвечает, но TCP из контейнера висит), поэтому `npm ci` и `uv sync` при сборке
+зависали — это и был сбой сборки 14.11. `make build` собирает в сети хоста: Compose 5 собирает
+через `buildx bake`, а bake требует явного `--allow=network.host`, поэтому Makefile передаёт
+описание сборки из `docker compose build --print` в `docker buildx bake --allow=network.host`.
+Голый `docker compose build` по-прежнему собирает в bridge (`network: default`) и работает там,
+где у контейнеров есть интернет. Вернуть обычную сборку и в make: `make build BUILD_NETWORK=default`.
+Диагностика: `docker run --rm node:22-alpine wget -qO- -T 10 https://registry.npmjs.org/ >/dev/null`
+висит, а с `--network host` проходит — значит, нужна сборка в сети хоста.
 
 Команды бэка и фронта вынесены в переменные в начале `Makefile` (`MIGRATE_CMD`, `SEED_CMD`,
 `BACK_TEST_CMD`, `BACK_LINT_CMD`, `FRONT_LINT_CMD`). Переопределить команду можно без правки файла:
 `make seed SEED_CMD="python -m src.seed --dir data/example"`.
 
 `precompute` и `eval` выполняются на хосте через `uv` и ходят в Postgres из compose на
-`localhost:5432` (`HOST_DB`). `data/generated` монтируется в бэкенд только на чтение.
+`localhost:$POSTGRES_PORT` (`HOST_DB`). `data/generated` монтируется в бэкенд только на чтение.
 
 Порядок перед демо: `make reset` → `make smoke` → `make reset` (smoke отправляет демо-обращение
 и поднимает Соколова на 1-е место, а на показе это делается вживую).
@@ -104,8 +135,9 @@
 Версии образов закреплены в `.env.example` (`POSTGRES_IMAGE`, `OLLAMA_IMAGE`) и в Dockerfile'ах
 (`python:3.12-slim`, `node:22-alpine`, `nginx:1.27-alpine`).
 
-Полный сброс вместе с данными: `docker compose --profile llm down -v`. Эта команда удаляет и БД,
-и скачанные модели.
+`make reset` снимает только том БД: раньше он вызывал `down -v` с профилем `llm` и заодно удалял том
+`ollama_models` со скачанной моделью. Полный сброс вместе с моделями — только вручную:
+`docker compose --profile llm down -v`.
 
 ## 4. Dev-режим
 
