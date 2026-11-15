@@ -12,8 +12,20 @@ from src.core.infrastructure.logger import get_logger
 logger = get_logger(__name__)
 
 
+# Ошибки, после которых повтор только удлиняет ожидание: сервер недоступен
+# (соединение не установлено) или не уложился в таймаут генерации.
+_NO_RETRY = (httpx.ConnectError, httpx.TimeoutException)
+
+DEFAULT_CONNECT_TIMEOUT = 5.0
+
+
 class OpenAICompatibleLLMClient:
-    """OpenAI-compatible transport. One retry for transient transport/server failures."""
+    """OpenAI-compatible transport.
+
+    Соединение ограничено коротким ``connect_timeout``, ответ — длинным ``timeout``.
+    Один повтор только для 5xx/429 и обрывов уже установленного соединения; недоступный
+    сервер и истёкший таймаут сразу дают ``LLMUnavailableError`` (дальше — фоллбэк).
+    """
 
     def __init__(
         self,
@@ -22,13 +34,14 @@ class OpenAICompatibleLLMClient:
         model: str,
         timeout: float,
         *,
+        connect_timeout: float = DEFAULT_CONNECT_TIMEOUT,
         transport: httpx.AsyncBaseTransport | None = None,
     ) -> None:
         self._base_url = base_url.rstrip("/")
         self._api_key = api_key
         self._model = model
-        self._timeout = timeout
-        self._client = httpx.AsyncClient(timeout=timeout, transport=transport)
+        self._timeout = httpx.Timeout(timeout, connect=min(connect_timeout, timeout))
+        self._client = httpx.AsyncClient(timeout=self._timeout, transport=transport)
 
     async def aclose(self) -> None:
         await self._client.aclose()
@@ -60,9 +73,11 @@ class OpenAICompatibleLLMClient:
                 )
                 response.raise_for_status()
             except httpx.HTTPError as exc:
-                retryable = not isinstance(exc, httpx.HTTPStatusError) or (
-                    exc.response.status_code >= 500 or exc.response.status_code == 429
-                )
+                if isinstance(exc, httpx.HTTPStatusError):
+                    status = exc.response.status_code
+                    retryable = status >= 500 or status == 429
+                else:
+                    retryable = not isinstance(exc, _NO_RETRY)
                 logger.warning(
                     "LLM transport failure: {} attempt={}", type(exc).__name__, attempt + 1
                 )

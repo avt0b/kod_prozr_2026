@@ -56,8 +56,15 @@ class ConnectionsGraph:
             self._nodes[node.id] = node
 
     def add_edge(self, edge: GraphEdge) -> None:
-        if edge.source in self._nodes and edge.target in self._nodes:
-            self._edges.setdefault((edge.source, edge.target, edge.type), edge)
+        """Добавить ребро между узлами графа. Родство симметрично: связь пары людей одна,
+        в какую бы сторону её ни прочитали; остаётся первое ребро — со стороны, ближней к корню
+        (обход в ширину), с подписью с точки зрения этой стороны."""
+        if edge.source not in self._nodes or edge.target not in self._nodes:
+            return
+        source, target = edge.source, edge.target
+        if edge.type is EdgeType.KINSHIP:
+            source, target = min(source, target), max(source, target)
+        self._edges.setdefault((source, target, edge.type), edge)
 
     def set_risk(self, scores: dict[UUID, float]) -> None:
         for node_id, node in list(self._nodes.items()):
