@@ -102,7 +102,7 @@
 | F-17 | Слайды ([#13](https://github.com/avt0b/kod_prozr_2026/issues/13)) | Егор | КТ4 | КТ3 | wip |
 | AI-01 | Генератор синтетики: структура и образцы ([#11](https://github.com/avt0b/kod_prozr_2026/issues/11)) | Влад О. | КТ0 | T-01 | review |
 | AI-02 | Генератор: полный объём, схемы, `_truth` ([#11](https://github.com/avt0b/kod_prozr_2026/issues/11)) | Влад О. | КТ1 | AI-01 | review |
-| AI-03 | Выбор и проверка LLM ([#12](https://github.com/avt0b/kod_prozr_2026/issues/12)) | Влад О. | КТ0 | OPS-05 | wip |
+| AI-03 | Выбор и проверка LLM ([#12](https://github.com/avt0b/kod_prozr_2026/issues/12)) | Влад О. | КТ0 | OPS-05 | review |
 | AI-04 | Анализ обращения `analyze_appeal` ([#12](https://github.com/avt0b/kod_prozr_2026/issues/12)) | Влад О. | КТ2 | AI-03 | review |
 | AI-05 | Сопоставление лиц `match_persons` ([#12](https://github.com/avt0b/kod_prozr_2026/issues/12)) | Влад О. | КТ2 | AI-02 | review |
 | AI-06 | Предрасчёт анализа 100 обращений в сиды ([#12](https://github.com/avt0b/kod_prozr_2026/issues/12)) | Влад О. | КТ3 | AI-04, AI-05 | review |
@@ -153,8 +153,8 @@ lint, prettier, tsc, build, 14 unit-тестов; генератор — тес�
 
 | ID | Кто | Что |
 | --- | --- | --- |
-| AI-03 | Влад О. | Скачать `qwen2.5:7b-instruct` (`make llm-up`), замерить время и `make eval EVAL_ARGS="--llm --limit 30"`, вписать в ai.md §8. Загрузку 14.11 остановили: медленная сеть. Без nvidia-container-toolkit Ollama в Docker идёт только на CPU |
-| AI-06 | Влад О. | Предрасчёт в `data/generated/appeals.json` сделан фоллбэком. При поднятой LLM повторить `make precompute` и закоммитить |
+| AI-03 | Влад О. | Сделано 15.11 (PR в `dev` по #12): `qwen2.5:7b-instruct` на GPU, замеры и метрики в ai.md §8. Осталось: проверить Ollama на демо-стенде (OPS-07) |
+| AI-06 | Влад О. | Сделано 15.11: `data/generated/appeals.json` предрасчитан LLM (105 обращений, демо-обращение `new`), порядок демо ADR-16 сохранён |
 | AI-04 | Влад О. | Сигнал `repeated_subject` не реализован (нужен запрос к другим обращениям) |
 | AI-11 | Влад О. | Вариант D не начинали (по плану — после КТ4) |
 | OPS-02 | Кирилл | `make build && make reset` с нуля не проверены: сборка образов 14.11 не прошла из-за сети. Проверить и закрыть. Тег `ollama/ollama:0.12.6` в `.env.example` сверить с реально скачанной версией |
