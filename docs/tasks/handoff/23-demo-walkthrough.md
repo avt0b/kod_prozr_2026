@@ -28,14 +28,13 @@
 - `npm run e2e` на стенде 5184/8104: 2 passed (сценарий 14 с, состояния 7 с). Вывод:
   Соколов 3-е место, 73 → 1-е, 88; разбор H1 `fallback: procurement`; N1 Орлов 35-е из 38 с флагами.
 - `npm run e2e:video`: видео `e2e/test-results/**/video.webm` пишется (до merge).
-- `npm run lint`, `npx prettier --check .` — зелёные. До последних правок docs: `tsc -b`, `npm run build`,
-  `npm test` (14/14) — зелёные; финальный прогон tsc/build/test после правки README не дождался.
+- Финальный прогон на коммите ee7f058: `npm run lint`, `npx prettier --check .`, `tsc --noEmit` (app и e2e),
+  `npm run build`, `npm test` (14/14) — зелёные.
 - Старый `tests/browser.mjs` на моках (порт 5185): PASS.
 - Скриншоты: `frontend/e2e/screenshots/` (не в git), ключевые скопированы в scratchpad координатора `screens/`.
 
 ## Что не сделано
 
-- Финальный прогон проверок (`npm run lint && npx prettier --check . && npx tsc -b && npm run build && npm test`).
 - PR в `dev` с `Closes #23`, `python3 scripts/check_workflow.py --repo avt0b/kod_prozr_2026 --pr <N>`, ожидание CI.
 - Проверка с LLM: Ollama на 11434 не отвечала, всё прогнано на фоллбэке.
 
