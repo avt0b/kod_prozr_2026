@@ -18,6 +18,7 @@ from src.core.infrastructure.logger import get_logger
 from src.modules.appeals.domain.analysis import (
     ENGINE_LLM,
     SIGNALS,
+    SYSTEM_SIGNALS,
     AppealAnalysis,
     entity_spans,
     normalize_signals,
@@ -29,7 +30,10 @@ from src.modules.appeals.domain.enums import AppealCategory, EntityType
 logger = get_logger(__name__)
 
 MAX_SUMMARY = 500
-SIGNAL_LIST = "\n".join(f"- {code} — {text}" for code, text in SIGNALS.items())
+# repeated_subject в список не входит: LLM не видит других обращений, сигнал ставит код.
+SIGNAL_LIST = "\n".join(
+    f"- {code} — {text}" for code, text in SIGNALS.items() if code not in SYSTEM_SIGNALS
+)
 
 SYSTEM_PROMPT = f"""Ты помощник аналитика подразделения
 по профилактике коррупционных правонарушений.
@@ -48,7 +52,7 @@ is_corruption=false и category="other".
 Сущности: person (ФИО служащего, как в тексте), position (должность или подразделение),
 organization (компания, фирма, орган), money (сумма), date (дата или период), address.
 entities[].text копируй из текста дословно, в той же форме и падеже, без изменений.
-Сигналы выбирай только из списка (repeated_subject не ставь — его считает система):
+Сигналы выбирай только из списка:
 {SIGNAL_LIST}
 confidence — твоя уверенность в is_corruption и category, число от 0 до 1.
 summary — одно-два предложения по-русски, без выдуманных фактов.
