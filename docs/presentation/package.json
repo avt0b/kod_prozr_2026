@@ -1,0 +1,19 @@
+{
+  "name": "kod-prozr-presentation",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Сборка презентации F-17 и скриншотов со стенда",
+  "type": "module",
+  "engines": {
+    "node": ">=22.18.0"
+  },
+  "scripts": {
+    "build": "node build.mjs",
+    "screenshots": "node screenshots.mjs",
+    "browsers": "playwright install chromium"
+  },
+  "dependencies": {
+    "playwright": "1.62.1",
+    "pptxgenjs": "4.0.1"
+  }
+}

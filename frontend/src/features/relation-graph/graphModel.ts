@@ -1,5 +1,11 @@
 import type { GraphEdge, OfficialGraph } from '@/shared/api';
 
+/** Шаг раскладки «по уровням», px: между уровнями, между колонками одного уровня, между строками. */
+const LEVEL_GAP = 165;
+const SUB_COL_GAP = 140;
+const ROW_GAP = 100;
+const MAX_ROWS = 5;
+
 /** Horizontal levels keep H1's wide first neighbourhood readable on a laptop. */
 export function compactPositions(
   graph: OfficialGraph,
@@ -38,11 +44,25 @@ export function compactPositions(
     const level = distances.get(node.id) ?? 0;
     levels.set(level, [...(levels.get(level) ?? []), node.id]);
   }
-  return Object.fromEntries(
-    [...levels].flatMap(([level, ids]) =>
-      ids.map((id, i) => [id, { x: level * 165, y: (i - (ids.length - 1) / 2) * 100 }]),
-    ),
-  );
+  // Широкий уровень (у H1 9 соседей) переносим в несколько колонок: иначе граф вытягивается
+  // в узкий столбец, вписывается в контейнер с мелким масштабом и подписи не читаются.
+  const positions: Record<string, { x: number; y: number }> = {};
+  let x = 0;
+  for (const [, ids] of [...levels].sort(([a], [b]) => a - b)) {
+    const cols = Math.ceil(ids.length / MAX_ROWS);
+    const rows = Math.ceil(ids.length / cols);
+    ids.forEach((id, i) => {
+      const col = Math.floor(i / rows);
+      const inCol = Math.min(rows, ids.length - col * rows);
+      const stagger = col % 2 === 1 && inCol === rows ? ROW_GAP / 2 : 0;
+      positions[id] = {
+        x: x + col * SUB_COL_GAP,
+        y: ((i % rows) - (inCol - 1) / 2) * ROW_GAP + stagger,
+      };
+    });
+    x += (cols - 1) * SUB_COL_GAP + LEVEL_GAP;
+  }
+  return positions;
 }
 
 /** Evidence describes a subgraph; the employment shortcut is outside an R01 chain. */

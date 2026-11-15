@@ -29,13 +29,19 @@
 
 | Сервис     | Образ / сборка                | Хост-порт        | Внутри сети      | Healthcheck                    |
 | ---------- | ----------------------------- | ---------------- | ---------------- | ------------------------------ |
-| `postgres` | `postgres:16-alpine`          | 5432             | `postgres:5432`  | `pg_isready`                   |
+| `postgres` | `postgres:16.15-alpine`       | 5432             | `postgres:5432`  | `pg_isready`                   |
 | `backend`  | `./backend/Dockerfile`        | 8000             | `backend:8000`   | `GET /health` → 200            |
 | `frontend` | `./frontend/Dockerfile`       | 3000 (dev: 5173) | `frontend:80`    | `GET /` → 200                  |
-| `ollama`   | `ollama/ollama` (профиль llm) | 11434            | `ollama:11434`   | `ollama list`                  |
+| `ollama`   | `ollama/ollama:0.12.6` (профиль llm) | 11434     | `ollama:11434`   | `ollama list`                  |
 
 Порядок старта: `postgres` (healthy) → `backend` (сначала `alembic upgrade head`, затем uvicorn) →
 `frontend`. Порты публикуются на `BIND_HOST` (по умолчанию `127.0.0.1`).
+
+Хост-порты по умолчанию из [contracts.md](contracts.md). Если на машине порт уже занят другим
+проектом, его можно сдвинуть в `.env` (`POSTGRES_PORT`, `BACKEND_PORT`, `FRONTEND_PORT`,
+`OLLAMA_PORT`); внутри сети compose порты не меняются. При смене `BACKEND_PORT` поменяйте и
+`VITE_API_URL` (`http://localhost:<порт>/api/v1`) и пересоберите фронт: `make build && make up`.
+`make smoke`, `make eval`, `make precompute` и `make video` берут порты из того же `.env`.
 
 Браузер обращается к API напрямую по `VITE_API_URL`, nginx фронта ничего не проксирует. Поэтому
 бэк должен разрешать origin фронта в `CORS_ORIGINS`. На VPS оба сервиса стоят за одним доменом
@@ -54,10 +60,18 @@
 | `LLM_BASE_URL`                   | backend           | `http://ollama:11434/v1`                                        |
 | `LLM_API_KEY`                    | backend           | `ollama` (для Ollama — любая непустая строка)                   |
 | `LLM_MODEL`                      | backend, Makefile | `qwen2.5:7b-instruct`                                           |
+| `LLM_TIMEOUT_SECONDS`            | backend           | `90` — ожидание ответа (генерации) LLM                          |
+| `LLM_CONNECT_TIMEOUT_SECONDS`    | backend           | `5` — ожидание соединения; затем сразу фоллбэк, без повтора     |
 | `VITE_API_URL`                   | frontend (сборка) | `http://localhost:8000/api/v1`                                  |
 | `BACKEND_APP`                    | compose           | `src.web.main:app` — путь к ASGI-приложению для uvicorn         |
 | `BIND_HOST`                      | compose           | `127.0.0.1`; `0.0.0.0` — показать демо по локальной сети        |
-| `OLLAMA_IMAGE`                   | compose           | `ollama/ollama:latest`                                          |
+| `POSTGRES_IMAGE`                 | compose           | `postgres:16.15-alpine`                                         |
+| `OLLAMA_IMAGE`                   | compose           | `ollama/ollama:0.12.6` (закреплено, см. §5)                     |
+| `POSTGRES_PORT` / `BACKEND_PORT` | compose, Makefile | `5432` / `8000` — хост-порты, если стандартные заняты           |
+| `FRONTEND_PORT` / `OLLAMA_PORT`  | compose, Makefile | `3000` / `11434`                                                |
+| `OLLAMA_BIND_HOST`               | compose           | как `BIND_HOST`; `0.0.0.0` — раздать Ollama команде (§5)         |
+| `BUILD_NETWORK`                  | Makefile, compose | `host` в `make build`; `default` — сборка в bridge-сети          |
+| `LLM_GPU`                        | Makefile          | `auto` — GPU для `make llm-up`, если есть runtime `nvidia`       |
 
 Важно:
 
@@ -74,12 +88,12 @@
 | ----------------- | --------------------------------------------------------------------------- |
 | `make up`         | создаёт `.env`, если его нет, собирает образы и поднимает стек в фоне        |
 | `make down`       | останавливает стек вместе с ollama; данные в томах сохраняются               |
-| `make build`      | пересобирает образы                                                         |
+| `make build`      | пересобирает образы (в сети хоста, см. ниже)                                |
 | `make logs`       | показывает логи всех сервисов; один сервис: `make logs s=backend`            |
 | `make ps`         | показывает состояние контейнеров и healthchecks                             |
 | `make migrate`    | `alembic upgrade head` в одноразовом контейнере backend                      |
 | `make seed`       | загружает `data/generated` с предрасчётом обращений и пересчитывает риск      |
-| `make reset`      | сносит тома, поднимает стек с миграциями и сидами — состояние «как перед демо» |
+| `make reset`      | сносит БД, поднимает стек с миграциями и сидами — состояние «как перед демо»; ollama и модели не трогает |
 | `make smoke`      | smoke всех эндпоинтов + демо-обращение (меняет данные: затем `make reset`)    |
 | `make data`       | пересоздаёт синтетику генератором (`seed 42`), затем нужен `make precompute`  |
 | `make data-check` | проверки данных data.md §7 (полный набор и `sample/`)                         |
@@ -89,14 +103,33 @@
 | `make test-back`  | `uv run pytest` в `backend/` на хосте                                       |
 | `make lint-back`  | `ruff check` + `ruff format --check` в `backend/` на хосте                  |
 | `make lint-front` | `npm run lint` в `frontend/` на хосте                                        |
-| `make llm-up`     | поднимает ollama и скачивает модель `LLM_MODEL`                              |
+| `make llm-up`     | поднимает ollama (GPU, если есть), скачивает и прогревает модель `LLM_MODEL` |
+| `make llm-check`  | проверяет из контейнера backend, что `LLM_BASE_URL` отвечает (`GET /models`) |
+| `make dump`       | дамп БД стенда в `dist/db/kodprozr-<дата>.sql.gz` (§9)                       |
+| `make restore FILE=...` | пересоздаёт БД из дампа и перезапускает бэк и фронт (§9)              |
+| `make offline-bundle` | офлайн-пакет для резервного ноутбука в `dist/offline/` (§9)             |
+| `make offline-load` | загружает пакет на резервном ноутбуке; дальше `make reset OFFLINE=1` (§9) |
+| `make video`      | видео-бэкап: Playwright-сценарий демо против стенда, видео в `dist/video/` (§9) |
+
+`OFFLINE=1` у `up`, `reset`, `restore`, `llm-up` — без сборки образов и без обращений к registry
+(`--no-build --pull never`), для резервного ноутбука после `make offline-load`.
+
+**Сборка в сети хоста.** На машинах команды bridge-сеть Docker не выходит в интернет (VPN/TUN,
+прокси: DNS отвечает, но TCP из контейнера висит), поэтому `npm ci` и `uv sync` при сборке
+зависали — это и был сбой сборки 14.11. `make build` собирает в сети хоста: Compose 5 собирает
+через `buildx bake`, а bake требует явного `--allow=network.host`, поэтому Makefile передаёт
+описание сборки из `docker compose build --print` в `docker buildx bake --allow=network.host`.
+Голый `docker compose build` по-прежнему собирает в bridge (`network: default`) и работает там,
+где у контейнеров есть интернет. Вернуть обычную сборку и в make: `make build BUILD_NETWORK=default`.
+Диагностика: `docker run --rm node:22-alpine wget -qO- -T 10 https://registry.npmjs.org/ >/dev/null`
+висит, а с `--network host` проходит — значит, нужна сборка в сети хоста.
 
 Команды бэка и фронта вынесены в переменные в начале `Makefile` (`MIGRATE_CMD`, `SEED_CMD`,
 `BACK_TEST_CMD`, `BACK_LINT_CMD`, `FRONT_LINT_CMD`). Переопределить команду можно без правки файла:
 `make seed SEED_CMD="python -m src.seed --dir data/example"`.
 
 `precompute` и `eval` выполняются на хосте через `uv` и ходят в Postgres из compose на
-`localhost:5432` (`HOST_DB`). `data/generated` монтируется в бэкенд только на чтение.
+`localhost:$POSTGRES_PORT` (`HOST_DB`). `data/generated` монтируется в бэкенд только на чтение.
 
 Порядок перед демо: `make reset` → `make smoke` → `make reset` (smoke отправляет демо-обращение
 и поднимает Соколова на 1-е место, а на показе это делается вживую).
@@ -104,8 +137,9 @@
 Версии образов закреплены в `.env.example` (`POSTGRES_IMAGE`, `OLLAMA_IMAGE`) и в Dockerfile'ах
 (`python:3.12-slim`, `node:22-alpine`, `nginx:1.27-alpine`).
 
-Полный сброс вместе с данными: `docker compose --profile llm down -v`. Эта команда удаляет и БД,
-и скачанные модели.
+`make reset` снимает только том БД: раньше он вызывал `down -v` с профилем `llm` и заодно удалял том
+`ollama_models` со скачанной моделью. Полный сброс вместе с моделями — только вручную:
+`docker compose --profile llm down -v`.
 
 ## 4. Dev-режим
 
@@ -147,21 +181,35 @@ prod-режим, удалите `docker-compose.override.yml`.
 
 ## 5. Локальная LLM (Ollama)
 
-Бэк работает с LLM через OpenAI-совместимый API. Ollama отдаёт такой API на `/v1`.
+Бэк работает с LLM через OpenAI-совместимый API, Ollama отдаёт его на `/v1`. Без LLM
+(`LLM_BASE_URL=` пусто) разбор обращений, докладная и ассистент работают на правилах и шаблонах.
+Есть три варианта подключения, ниже они идут от простого к сложному.
+
+| Вариант | `LLM_BASE_URL` в `.env` | Когда выбирать |
+| --- | --- | --- |
+| А. Ollama в compose (`make llm-up`) | `http://ollama:11434/v1` | чистая машина, демо-ноутбук, VPS |
+| Б. Ollama на хосте, бэк в Docker | `http://host.docker.internal:11434/v1` | Ollama уже стоит на хосте и работает на GPU |
+| В. Общая LLM команды | `http://<ip>:11434/v1` или через SSH-туннель | своей машине не хватает памяти или GPU |
+
+Во всех вариантах `LLM_API_KEY=ollama` (Ollama принимает любую непустую строку) и
+`LLM_MODEL=qwen2.5:7b-instruct`. После правки `.env` перезапустите бэк командой `make up` и
+проверьте подключение: `make llm-check` выполняет `GET /models` из контейнера backend с таймаутом 5 с.
+
+### Вариант А: Ollama в compose
 
 ```bash
-make llm-up            # поднимет ollama (профиль llm) и сделает ollama pull $LLM_MODEL
+make llm-up            # ollama из профиля llm, ollama pull $LLM_MODEL, прогрев
 ```
 
-В `.env`:
+`make llm-up` сам выбирает GPU. Если `docker info` показывает runtime `nvidia`, к compose
+подключается `docker-compose.gpu.yml`; иначе Ollama работает на CPU, и команда пишет об этом.
+Режим задаётся явно через `LLM_GPU=1` или `LLM_GPU=0`. Для GPU на хосте нужен
+nvidia-container-toolkit: драйвера NVIDIA для контейнера мало. С `-f docker-compose.gpu.yml`
+compose не подхватывает `docker-compose.override.yml`, поэтому для dev-режима с GPU файлы
+перечисляются явно.
 
-```
-LLM_BASE_URL=http://ollama:11434/v1
-LLM_API_KEY=ollama
-LLM_MODEL=qwen2.5:7b-instruct
-```
-
-После правки `.env` перезапустите бэк: `make up`.
+Если на хосте уже работает своя Ollama на 11434, порт контейнера сдвиньте: `OLLAMA_PORT=11435`.
+Бэк ходит к контейнеру по имени `ollama:11434`, поэтому хост-порт на него не влияет.
 
 Проверка с хоста:
 
@@ -171,24 +219,72 @@ curl http://localhost:11434/v1/chat/completions \
   -d '{"model":"qwen2.5:7b-instruct","messages":[{"role":"user","content":"Привет"}]}'
 ```
 
-Ресурсы и выбор модели:
+Модели хранятся в томе `ollama_models` и при пересоздании контейнера заново не скачиваются.
+`make reset` этот том не трогает. Удалить его можно только вручную: `docker compose --profile llm down -v`.
 
-- `qwen2.5:7b-instruct` весит около 4.7 ГБ и требует около 8 ГБ RAM. На CPU ответ занимает от
-  нескольких секунд до десятков секунд; для демо этого хватает, для живого чата медленно.
+### Вариант Б: Ollama на хосте, бэк в Docker
+
+Подходит, когда Ollama установлена на хосте и видит GPU сама, без nvidia-container-toolkit.
+Именно так устроена машина, где проверялся этот документ: Ollama 0.12.6 на GPU,
+`127.0.0.1:11434`, модель `qwen2.5:7b-instruct`, runtime `nvidia` в Docker отсутствует.
+
+У бэка в compose уже есть `extra_hosts: host.docker.internal:host-gateway`, поэтому имя
+`host.docker.internal` указывает на шлюз docker-сети (обычно `172.17.0.1`). Чтобы бэк
+достучался до Ollama, нужны ещё два условия:
+
+1. **Ollama слушает не только loopback.** По умолчанию она принимает соединения только на
+   `127.0.0.1:11434`. Для systemd-сервиса задайте адрес так:
+   `sudo systemctl edit ollama` → `[Service]` / `Environment="OLLAMA_HOST=0.0.0.0"` →
+   `sudo systemctl restart ollama`. Если Ollama запускается вручную, то так:
+   `OLLAMA_HOST=0.0.0.0 ollama serve`. У Ollama нет авторизации, поэтому в недоверенной сети
+   порт 11434 должен быть закрыт файрволом снаружи.
+2. **Файрвол хоста пропускает docker-сети к порту 11434.** Например, для iptables:
+   `sudo iptables -I INPUT -s 172.16.0.0/12 -p tcp --dport 11434 -j ACCEPT`, для ufw:
+   `sudo ufw allow from 172.16.0.0/12 to any port 11434 proto tcp`.
+
+Проверка: `make llm-check` должен вывести список моделей. Если ответ — «Connection refused»,
+Ollama слушает только `127.0.0.1` (условие 1). Если ответа нет до таймаута, пакеты отбрасывает
+файрвол (условие 2). На проверочной машине 15.11 было именно так: из контейнера backend
+`host.docker.internal:11434` давал timeout, а не отказ.
+
+**Таймаут при файрволе с DROP.** Если файрвол отбрасывает пакеты молча, бэк не получает
+отказа соединения. Установку соединения ограничивает `LLM_CONNECT_TIMEOUT_SECONDS` (по умолчанию
+5 с, B-20, #34): по его истечении бэк без повтора уходит на фоллбэк. До B-20 бэк ждал весь
+`LLM_TIMEOUT_SECONDS` с повтором, до 180 с на обращение. Проверка 15.11 на адресе с DROP:
+`POST /appeals` ответил за 2,9 с, `/assistant/ask` за 2,0 с (connect-timeout 2 с). Модель всё
+равно не используется, поэтому включайте LLM, только когда `make llm-check` показывает модели.
+
+### Вариант В: общая LLM команды
+
+Одна машина с GPU раздаёт модель остальным.
+
+- **SSH-туннель (рекомендуется).** Ollama на раздающей машине остаётся на `127.0.0.1`, у
+  участника выполняется `ssh -N -L 11434:127.0.0.1:11434 <user>@<машина-с-llm>`. Если бэк
+  запущен на хосте (dev-режим А, §4), укажите `LLM_BASE_URL=http://localhost:11434/v1`. Если бэк
+  в Docker, туннель должен слушать адрес, доступный из контейнера:
+  `ssh -N -L 172.17.0.1:11434:127.0.0.1:11434 ...`, и `LLM_BASE_URL=http://host.docker.internal:11434/v1`.
+  Файрвол при этом должен пропускать docker-сети, как в варианте Б.
+- **Открытый порт в доверенной сети.** Для Ollama из compose задайте `OLLAMA_BIND_HOST=0.0.0.0`
+  и выполните `make llm-up`. Для Ollama на хосте задайте `OLLAMA_HOST=0.0.0.0`. У участников
+  `LLM_BASE_URL=http://<ip-машины>:11434/v1`. Авторизации нет, поэтому только в своей сети.
+
+Оба способа общей LLM вживую не проверялись: вторая машина команды была недоступна.
+
+### Ресурсы и модель
+
+- `qwen2.5:7b-instruct` весит около 4.7 ГБ и требует около 8 ГБ RAM, на GPU — около 5 ГБ VRAM
+  (Q4). На CPU ответ занимает от нескольких до десятков секунд: для предрасчёта приемлемо, для
+  живого показа медленно (порог решения — [demo.md](demo.md)).
 - На слабом ноутбуке подойдёт `qwen2.5:3b-instruct` (около 2 ГБ): поменяйте `LLM_MODEL` и
   снова выполните `make llm-up`.
-- Для NVIDIA GPU раскомментируйте блок `deploy.resources` у сервиса `ollama` в
-  `docker-compose.yml`. На хосте нужен nvidia-container-toolkit (`docker info` должен
-  показывать runtime `nvidia`); без него Ollama молча работает на CPU.
+- Тег образа закреплён: `OLLAMA_IMAGE=ollama/ollama:0.12.6`. На этой версии AI-03 прогоняет
+  модель. Последняя стабильная версия на 15.11 — 0.40.16. Переходить на неё стоит только после
+  прогона `make llm-up` и `make eval EVAL_ARGS="--llm --limit 30"` на новой версии.
 - `LLM_TIMEOUT_SECONDS=90`: 7B на CPU отвечает десятки секунд, фронт ждёт до 150 с. При
-  недоступной LLM бэк сразу уходит на фоллбэк, демо не встаёт.
-- Если Ollama уже установлена на хосте, контейнер не нужен:
-  `LLM_BASE_URL=http://host.docker.internal:11434/v1`. На Linux для этого добавьте бэку
-  `extra_hosts: ["host.docker.internal:host-gateway"]`.
+  недоступной LLM бэк уходит на фоллбэк через `LLM_CONNECT_TIMEOUT_SECONDS` (5 с), даже если
+  файрвол молча отбрасывает пакеты; демо не встаёт.
 - Облачный провайдер или vLLM подключается без изменений в коде: поменяйте `LLM_BASE_URL`,
   `LLM_API_KEY` и `LLM_MODEL`.
-
-Модели хранятся в томе `ollama_models`, поэтому при пересоздании контейнера заново не скачиваются.
 
 ## 6. Деплой демо на один VPS
 
@@ -274,11 +370,14 @@ health/smoke и откат. Ручной вариант ниже подходи�
 где конвейер ещё не настроен.
 
 ```bash
-cd /opt/kodprozr && git pull && make up              # пересборка и перезапуск; миграции применятся при старте
-docker compose exec postgres pg_dump -U kodprozr kodprozr | gzip > backup_$(date +%F_%H%M).sql.gz
+cd /opt/kodprozr
+make dump                       # бэкап перед обновлением: dist/db/kodprozr-<дата>.sql.gz
+git pull && make up             # пересборка и перезапуск; миграции применятся при старте
 ```
 
-Восстановление: `gunzip -c backup.sql.gz | docker compose exec -T postgres psql -U kodprozr kodprozr`.
+Восстановление: `make restore FILE=dist/db/kodprozr-<дата>.sql.gz`. Цель пересоздаёт БД
+(`dropdb --force` + `createdb`), заливает дамп и поднимает бэк и фронт. Подробнее — §9.
+Дампы кладите и вне VPS: `scp <vps>:/opt/kodprozr/dist/db/*.sql.gz .`.
 
 ## 7. Релиз и деплой
 
@@ -570,7 +669,7 @@ JSON
 
 - [ ] Code freeze вечером; после него — только фиксы демо-сценария.
 - [ ] Дважды прогнать демо-сценарий на стенде: с телефона, из другой сети, в режиме инкогнито.
-- [ ] Запасной вариант: ноутбук докладчика с `make up`, скачанной моделью и дампом БД. Он должен работать без интернета.
+- [ ] Запасной вариант: ноутбук докладчика с офлайн-пакетом, моделью и дампом БД (§9). Он должен работать без интернета.
 - [ ] Проверить, что после `docker compose restart` и перезагрузки VPS всё поднимается само (`restart: unless-stopped`).
 - [ ] Проверить, что README и этот документ актуальны и ссылки работают.
 
@@ -578,3 +677,103 @@ JSON
 
 - [ ] Утром проверить `/health`, `make ps`, логи без ошибок, свободное место на диске (`df -h`).
 - [ ] Ничего не деплоить после финального прогона.
+
+## 9. Резервный ноутбук без сети, дамп, видео
+
+Резерв на защиту (OPS-07, OPS-08) состоит из трёх частей: дампа БД, офлайн-пакета для второго
+ноутбука и видео демо. Все артефакты складываются в `dist/`, который не попадает в git.
+
+### Дамп и восстановление БД
+
+```bash
+make dump                                        # dist/db/kodprozr-<дата>.sql.gz
+make restore FILE=dist/db/kodprozr-<дата>.sql.gz # пересоздать БД из дампа
+```
+
+`make dump` вызывает `pg_dump --no-owner --no-privileges` в контейнере postgres; при ошибке
+недописанный файл удаляется. `make restore` поднимает postgres, останавливает бэк и фронт,
+пересоздаёт БД, заливает дамп с `ON_ERROR_STOP` и поднимает стек обратно. Дамп содержит и
+`alembic_version`, поэтому миграции при старте бэка ничего не меняют, если дамп снят с той же
+версии кода.
+
+Проверено 15.11. Порядок: `make reset`, `make dump` (296 КБ), `docker compose down -v`,
+`make up OFFLINE=1` (пустая БД после миграций), `make restore FILE=... OFFLINE=1` (30 с),
+`make smoke`. Число строк во всех 16 таблицах и контрольная сумма `risk.scores` до и после
+совпали, результат `smoke: OK, 45 проверок`.
+
+### Офлайн-пакет для резервного ноутбука
+
+На подготовленной машине с интернетом и собранным стеком:
+
+```bash
+make build && make reset && make dump    # свежие образы и дамп «как перед демо»
+make offline-bundle                      # dist/offline/
+# Модель с Ollama на хосте (вариант Б из §5), а не из тома compose:
+make offline-bundle OLLAMA_MODELS_DIR=$HOME/.ollama/models
+```
+
+В `dist/offline/` попадает:
+
+| Файл | Содержимое |
+| --- | --- |
+| `images/kodprozr.tar.gz` | `kodprozr-backend:local`, `kodprozr-frontend:local`, `POSTGRES_IMAGE` |
+| `images/ollama.tar.gz` | `OLLAMA_IMAGE`, если образ скачан (`WITH_OLLAMA=auto\|1\|0`) |
+| `models/ollama-models.tar` | модели из тома `kodprozr_ollama_models` или из `OLLAMA_MODELS_DIR` (`WITH_MODELS=auto\|1\|0`) |
+| `env/.env` | `.env` машины, где собран пакет (или `.env.example`) |
+| `db/*.sql.gz` | последний дамп из `dist/db/` |
+| `kodprozr-src.tar.gz` | `git archive HEAD`: compose, Makefile, `data/generated`; незакоммиченных правок в нём нет |
+| `MANIFEST.txt`, `SHA256SUMS` | коммит, id образов, модель; контрольные суммы |
+
+Каталог копируется на резервный ноутбук целиком (флешка, `rsync`). На ноутбуке нужны Docker с
+Compose, `make` и `python3`, интернет не нужен:
+
+```bash
+mkdir kodprozr && tar -xzf <пакет>/kodprozr-src.tar.gz -C kodprozr && cd kodprozr
+make offline-load OFFLINE_DIR=<пакет>   # sha256, docker load, модели в том, .env из пакета
+make reset OFFLINE=1                    # стек, миграции, сиды — без сборки и без registry
+make smoke && make reset OFFLINE=1      # проверка и возврат к состоянию «перед демо»
+make llm-up OFFLINE=1                   # если демо идёт с LLM (модель из пакета)
+```
+
+`OFFLINE=1` передаёт compose `--no-build --pull never`. Если какого-то образа нет, команда
+сразу падает и не пытается ничего скачать. Если на ноутбуке уже есть `.env`, `offline-load`
+его не перезаписывает. Порты и `VITE_API_URL` в пакете взяты с машины сборки, а
+`VITE_API_URL` уже вшит в образ фронта, поэтому на резервном ноутбуке порт бэка должен
+быть тем же.
+
+Проверено 15.11 на машине сборки (второго ноутбука не было), пакет занял 6.5 ГБ, из них
+модель 4.4 ГБ и образ Ollama 1.9 ГБ. Сборка пакета заняла 1.5 мин. Затем:
+
+- образы `kodprozr-backend:local` и `kodprozr-frontend:local` удалены;
+- исходники распакованы из `kodprozr-src.tar.gz` в пустой каталог;
+- `make offline-load` (1 мин): контрольные суммы сошлись, образы загружены с теми же id, что в
+  `MANIFEST.txt`, модель в томе;
+- `make reset OFFLINE=1` (37 с), `make smoke`: `OK, 45 проверок`;
+- Ollama из пакета поднята на `OLLAMA_PORT=11435`: `ollama list` показал `qwen2.5:7b-instruct`.
+
+Не проверено: отключение сети целиком (машина сборки оставалась в сети, отсутствие загрузок
+обеспечивал `--pull never`) и прогрев модели в `make llm-up OFFLINE=1`. Прогрев 7B на CPU в
+контейнере требует около 8 ГБ свободной RAM, а на проверочной машине их не было.
+На репетиции нужно пройти этот сценарий на реальном резервном ноутбуке.
+
+### Видео-бэкап демо
+
+```bash
+make reset          # видео пишется с чистого стенда
+make video          # Playwright-сценарий demo.md, видео в dist/video/demo-<дата>-N.webm
+make reset          # сценарий отправляет демо-обращение — вернуть стенд
+```
+
+`make video` запускает `frontend/e2e/demo.spec.ts` с `DEMO_VIDEO=1` (запись 1920×1080),
+`DEMO_SLOWMO=400`, `BASE_URL=$FRONT_URL` и `API_URL=$API_URL/api/v1`, порты берутся из `.env`.
+Записанные `.webm` копируются в `dist/video/`. Если сценарий упал, частичное видео всё равно
+сохраняется, а код выхода остаётся ненулевым. Нужны `cd frontend && npm ci && npx playwright
+install chromium`.
+
+**Зависимость от #23.** Сценарий `frontend/e2e/demo.spec.ts` и `frontend/playwright.config.ts`
+приходят из ветки #23 (зона фронта) и в `dev` ещё не влиты. До их слияния `make video` сразу
+завершается понятной ошибкой «Нет frontend/e2e/demo.spec.ts…». Переменные сверены с
+`playwright.config.ts` из ветки #23, а запись видео целиком после слияния #23 не проверялась.
+
+Готовое видео и дамп храните в двух местах: на обоих ноутбуках и на флешке (чеклист в
+[demo.md](demo.md)).

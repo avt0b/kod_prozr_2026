@@ -36,6 +36,7 @@ async def precompute(data_dir: Path, keep_new: set[str]) -> dict[str, int]:
             api_key=settings.llm_api_key.get_secret_value() if settings.llm_api_key else None,
             model=settings.llm_model,
             timeout=settings.llm_timeout_seconds,
+            connect_timeout=settings.llm_connect_timeout_seconds,
         )
         if settings.llm_base_url
         else None

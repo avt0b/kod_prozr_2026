@@ -2,6 +2,7 @@
 export const routes = {
   overview: () => '/',
   officials: () => '/officials',
+  riskMap: () => '/risk-map',
   official: (id: string) => `/officials/${id}`,
   appeals: () => '/appeals',
   appealNew: () => '/appeals/new',

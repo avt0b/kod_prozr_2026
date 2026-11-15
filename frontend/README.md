@@ -18,15 +18,16 @@ npm run dev            # http://localhost:5173
 
 ## Команды
 
-| Команда                                   | Что делает                                              |
-| ----------------------------------------- | ------------------------------------------------------- |
-| `npm run dev`                             | dev-сервер Vite на :5173, режим берётся из `.env`       |
-| `npm run dev:mocks`                       | dev-сервер на моках при любом `.env`                    |
-| `npm run build`                           | проверка типов (`tsc -b`) и production-сборка в `dist/` |
-| `npm run preview`                         | раздача собранного `dist/` на :4173                     |
-| `npm run typecheck`                       | только проверка типов                                   |
-| `npm run lint` / `npm run lint:fix`       | ESLint, с исправлением во втором случае                 |
-| `npm run format` / `npm run format:check` | Prettier: переформатировать или только проверить        |
+| Команда                                   | Что делает                                                                                                                       |
+| ----------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| `npm run dev`                             | dev-сервер Vite на :5173, режим берётся из `.env`                                                                                |
+| `npm run dev:mocks`                       | dev-сервер на моках при любом `.env`                                                                                             |
+| `npm run build`                           | проверка типов (`tsc -b`) и production-сборка в `dist/`                                                                          |
+| `npm run preview`                         | раздача собранного `dist/` на :4173                                                                                              |
+| `npm run typecheck`                       | только проверка типов                                                                                                            |
+| `npm run lint` / `npm run lint:fix`       | ESLint, с исправлением во втором случае                                                                                          |
+| `npm run format` / `npm run format:check` | Prettier: переформатировать или только проверить                                                                                 |
+| `npm run e2e` / `npm run e2e:video`       | Playwright: сценарий демо на реальном стенде, см. [frontend.md §5.1](../docs/frontend.md#51-e2e-прогон-сценария-демо-playwright) |
 
 ## Переменные окружения
 
