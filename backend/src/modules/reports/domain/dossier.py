@@ -19,6 +19,7 @@ class AppealSummary:
     received_at: str
     summary: str
     specificity: float
+    category: str | None = None  # код категории анализа: bribe, procurement, ...
 
 
 @dataclass(frozen=True)

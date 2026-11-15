@@ -9,6 +9,13 @@ from src.modules.reports.domain.dossier import Dossier
 from src.modules.reports.domain.report_draft import DISCLAIMER
 
 SEVERITY_LABELS = {"high": "высокий", "medium": "средний", "low": "низкий"}
+CATEGORY_LABELS = {
+    "bribe": "взятка",
+    "conflict_of_interest": "конфликт интересов",
+    "procurement": "закупки",
+    "abuse_of_power": "превышение полномочий",
+    "other": "другое",
+}
 
 
 class TemplateReportWriter:
@@ -43,10 +50,12 @@ def render_report(dossier: Dossier, today: date | None = None) -> str:
         lines.append(f"Период замещения должности: {dossier.appointed_at:%d.%m.%Y} — {end}.")
     lines.append("Полномочия: " + (", ".join(dossier.authorities) or "не указаны") + ".")
     lines += ["", f"Связанные обращения граждан: {len(dossier.appeals)}."]
-    for appeal in dossier.appeals:
+    # Бумажный документ: обращения по порядковому номеру, дате и категории, без UUID.
+    for number, appeal in enumerate(dossier.appeals, start=1):
+        category = CATEGORY_LABELS.get(appeal.category or "", "без категории")
         lines.append(
-            f"— Обращение {appeal.appeal_id} от {appeal.received_at}: {appeal.summary} "
-            f"(конкретность {appeal.specificity:.0%})."
+            f"— Обращение № {number} от {appeal.received_at} (категория: {category}): "
+            f"{appeal.summary} (конкретность {appeal.specificity:.0%})."
         )
     lines.append("")
     if not dossier.has_flags:
