@@ -383,8 +383,10 @@ class LLMClientInterface(Protocol):
 
 - **`OpenAICompatibleLLMClient`** (`llm/openai_compatible.py`) делает `POST {LLM_BASE_URL}/chat/completions`
   через `httpx.AsyncClient`. Параметры: `temperature=0`, `response_format` — `json_schema`, а если
-  сервер его не принимает, то `json_object`. Таймаут `LLM_TIMEOUT_SECONDS` (60 с). Ошибки сети, таймаут и
-  5xx превращаются в `LLMUnavailableError`, не-JSON ответ — в `LLMInvalidResponseError`. Каждый вызов
+  сервер его не принимает, то `json_object`. Таймаут ответа `LLM_TIMEOUT_SECONDS` (60 с), соединения —
+  `LLM_CONNECT_TIMEOUT_SECONDS` (5 с). Ошибки сети, таймаут и 5xx превращаются в `LLMUnavailableError`,
+  не-JSON ответ — в `LLMInvalidResponseError`. Один повтор только при 5xx/429 и обрыве установленного
+  соединения; недоступный сервер и истёкший таймаут сразу ведут к фоллбэку. Каждый вызов
   логируется: модель, длительность, токены, валиден ли ответ. Текст обращения в лог не пишем.
 - **`NullLLMClient`** всегда бросает `LLMUnavailableError`. Его отдаёт `get_llm_client`, если
   `LLM_BASE_URL` пуст, и его же подставляем в тестах.
@@ -465,6 +467,7 @@ class Settings(BaseSettings):
     llm_api_key: SecretStr = SecretStr("")                     # LLM_API_KEY
     llm_model: str = "qwen2.5:7b-instruct"                     # LLM_MODEL
     llm_timeout_seconds: float = 60.0                          # LLM_TIMEOUT_SECONDS
+    llm_connect_timeout_seconds: float = 5.0                   # LLM_CONNECT_TIMEOUT_SECONDS
     seed_dir: str = "data/generated"                           # SEED_DIR
     # LLM выключена, если LLM_BASE_URL пуст (свойство settings.llm_enabled)
 

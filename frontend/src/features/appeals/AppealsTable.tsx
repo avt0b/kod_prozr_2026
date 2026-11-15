@@ -15,11 +15,11 @@ export function AppealsTable({ items }: { items: Appeal[] }) {
         <Table.Thead>
           <Table.Tr>
             <Table.Th w={150}>Поступило</Table.Th>
-            <Table.Th w={140}>Статус</Table.Th>
-            <Table.Th w={190}>Категория</Table.Th>
+            <Table.Th w={180}>Статус</Table.Th>
+            <Table.Th w={230}>Категория</Table.Th>
             <Table.Th>Текст</Table.Th>
-            <Table.Th>Уверенность</Table.Th>
-            <Table.Th>Связанные служащие</Table.Th>
+            <Table.Th w={130}>Уверенность</Table.Th>
+            <Table.Th w={280}>Связанные служащие</Table.Th>
           </Table.Tr>
         </Table.Thead>
         <Table.Tbody>

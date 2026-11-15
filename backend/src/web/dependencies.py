@@ -39,4 +39,6 @@ DEPENDENCY_OVERRIDES: dict[Callable[..., Any], Callable[..., Any]] = {
     stats_deps.get_officials_counter: _on_session(wiring.stats_officials_counter),
     stats_deps.get_risk_counter: _on_session(wiring.stats_risk_counter),
     stats_deps.get_appeals_counter: _on_session(wiring.stats_appeals_counter),
+    stats_deps.get_official_placements: _on_session(wiring.stats_official_placements),
+    stats_deps.get_official_risk_profiles: _on_session(wiring.stats_official_risk_profiles),
 }

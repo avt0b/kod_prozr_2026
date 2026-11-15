@@ -115,6 +115,7 @@ Healthcheck бэка: `GET /health` → `200 {"status": "ok"}`.
 | ----- | ---- | ---------- |
 | GET  | `/audit?object_id=&limit=20&offset=0` | Журнал действий аналитика `{items, total}`, новые сверху |
 | GET  | `/stats/overview` | Счётчики для главной: служащие, флаги по уровням, обращения по статусам |
+| GET  | `/risk-map?organ_id=&limit=100&offset=0` | Карта рисков должностей (вариант D): должности и органы с долей служащих с флагами, баллами, частыми правилами и типовыми рисками |
 | GET  | `/organs` | Список органов |
 | GET  | `/officials?query=&organ_id=&min_score=&rule_code=&sort=-risk_score&limit=20&offset=0` | Рейтинг служащих: `{items: [{id, full_name, position, organ, risk_score, top_flags[]}], total}` |
 | GET  | `/officials/{id}` | Профиль: person, appointments, authorities, relatives, companies, risk `{score, flags[]}` |
@@ -148,6 +149,46 @@ Healthcheck бэка: `GET /health` → `200 {"status": "ok"}`.
 ```
 
 `computed_at` — время последнего пересчёта риска, `null`, если пересчёта ещё не было.
+
+**`GET /risk-map`** (AI-11, вариант D)
+
+```json
+{
+  "items": [{
+    "position_id": "...", "title": "Начальник отдела закупок", "department": "Отдел закупок",
+    "organ_id": "...", "organ": "Департамент строительства ...", "is_corruption_risky": true,
+    "authorities": ["procurement"], "risk_level": "high",
+    "typical_risks": [{"code": "procurement_affiliated_supplier", "title": "Аффилированный поставщик",
+                       "description": "...", "authority": "procurement",
+                       "rule_codes": ["R01", "R03", "R05"], "legal_ref": "273-ФЗ ст. 10, 11; ..."}],
+    "officials_total": 1, "officials_with_flags": 1, "flagged_share": 1.0,
+    "avg_score": 79.0, "max_score": 79.0,
+    "top_rules": [{"rule_code": "R01", "count": 1}],
+    "top_officials": [{"id": "...", "full_name": "Соколов Андрей Викторович", "risk_score": 79.0}]
+  }],
+  "total": 57,
+  "organs": [{"organ_id": "...", "organ": "...", "positions_total": 20, "officials_total": 58,
+              "officials_with_flags": 11, "flagged_share": 0.19, "avg_score": 5.9, "max_score": 80.0,
+              "top_rules": [...], "top_officials": [...]}],
+  "computed_at": "2026-11-15T12:00:00Z"
+}
+```
+
+- Служащий относится к своей **текущей** должности, как в рейтинге (`position`/`organ` в
+  `GET /officials`). Должности без замещающих служащих в карту не входят.
+- `items` — должности, по убыванию `avg_score`, затем `max_score`; `total` — число должностей,
+  `limit` по умолчанию 100. `organs` — сводка тех же служащих по органам, без пагинации.
+  `organ_id` оставляет должности и сводку одного органа.
+- `flagged_share` — доля служащих с хотя бы одним флагом (0–1), `avg_score` и `max_score` —
+  по баллам 0–100. `top_rules` — до 5 правил по числу служащих с флагом, `top_officials` —
+  до 3 служащих с флагами по баллу.
+- `risk_level` и `typical_risks` описывают **должность**, а не людей: они зависят только от
+  полномочий (`Authority.kind`) и признака `is_corruption_risky`. `high` — есть `procurement`,
+  `permits` или `inspection`; `medium` — есть `budget` или `hr`, либо должность в перечне
+  коррупционно-опасных; иначе `low`. `typical_risks[].rule_codes` — правила, которыми система
+  ищет этот риск (пусто — система его не проверяет), `authority` — вид полномочия.
+  Извлечение полномочий из текста регламента (`POST /positions/analyze-regulation`) в контракт
+  не входит.
 
 **`GET /officials`** — элемент списка:
 

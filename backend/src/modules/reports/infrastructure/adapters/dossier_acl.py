@@ -103,6 +103,8 @@ class ExternalAppeal(Protocol):
     def summary(self) -> str | None: ...
     @property
     def specificity(self) -> float: ...
+    @property
+    def category(self) -> str | None: ...
 
 
 class ExternalAppealsSource(Protocol):
@@ -154,8 +156,11 @@ class DossierACLAdapter(DossierSourceInterface):
                     a.received_at.strftime("%d.%m.%Y"),
                     a.summary or "Без краткого содержания",
                     a.specificity,
+                    a.category,
                 )
-                for a in await self._appeals.mentions([person_id])
+                for a in sorted(
+                    await self._appeals.mentions([person_id]), key=lambda m: m.received_at
+                )
             ),
             flags=tuple(
                 FlagSummary(
