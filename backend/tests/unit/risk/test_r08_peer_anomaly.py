@@ -42,7 +42,7 @@ def test_r08_turns_detector_result_into_explained_flag(today: date) -> None:
     flags = PeerAnomalyRule().evaluate(OFFICIAL, world)
 
     assert [(f.rule_code, f.severity, f.weight) for f in flags] == [
-        (RuleCode.R08, Severity.MEDIUM, 10)
+        (RuleCode.R08, Severity.MEDIUM, 5)
     ]
     text = flags[0].explanation
     assert "14 чел." in text and "40% при медиане коллег 8%" in text

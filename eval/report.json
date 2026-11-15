@@ -189,6 +189,14 @@
           "fn": 0
         }
       },
+      "repeated_subject_by_official": {
+        "precision": 1.0,
+        "recall": 0.6,
+        "f1": 0.75,
+        "tp": 3,
+        "fp": 0,
+        "fn": 2
+      },
       "injection_intact": "4/5",
       "seconds": {
         "median": 0.0,
