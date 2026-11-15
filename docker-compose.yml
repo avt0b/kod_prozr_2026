@@ -4,7 +4,9 @@
 #
 # Значения ${VAR:-default} берутся из .env в корне (compose читает его сам).
 # Порты публикуются на ${BIND_HOST} (по умолчанию 127.0.0.1): на VPS наружу
-# смотрит только reverse proxy (Caddy/nginx), а не сами сервисы.
+# смотрит только reverse proxy (Caddy/nginx), а не сами сервисы. Хост-порты по умолчанию
+# из контракта (5432/8000/3000/11434); если порт на машине занят — POSTGRES_PORT,
+# BACKEND_PORT, FRONTEND_PORT, OLLAMA_PORT в .env (внутри сети compose порты не меняются).
 
 name: kodprozr
 
@@ -17,7 +19,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-kodprozr}
       POSTGRES_DB: ${POSTGRES_DB:-kodprozr}
     ports:
-      - "${BIND_HOST:-127.0.0.1}:5432:5432"
+      - "${BIND_HOST:-127.0.0.1}:${POSTGRES_PORT:-5432}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -35,6 +37,9 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
+      # Сборка в сети хоста: на машинах команды bridge-сеть Docker не выходит в интернет
+      # (VPN/TUN, прокси), и `uv sync`/`npm ci` висят. Вернуть bridge: BUILD_NETWORK=default.
+      network: ${BUILD_NETWORK:-default}
     image: kodprozr-backend:local
     container_name: kodprozr_backend
     env_file:
@@ -52,11 +57,15 @@ services:
         "alembic upgrade head && exec uvicorn ${BACKEND_APP:-src.web.main:app} --host 0.0.0.0 --port 8000",
       ]
     ports:
-      - "${BIND_HOST:-127.0.0.1}:8000:8000"
+      - "${BIND_HOST:-127.0.0.1}:${BACKEND_PORT:-8000}:8000"
     # Синтетика с предрасчётом анализа: make seed читает /app/data/generated.
     # Пример backend/data/example остаётся в образе.
     volumes:
       - ./data/generated:/app/data/generated:ro
+    # Ollama на хосте (не в compose): LLM_BASE_URL=http://host.docker.internal:11434/v1.
+    # На Linux имя host.docker.internal само не появляется — пробрасываем шлюз хоста.
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     depends_on:
       postgres:
         condition: service_healthy
@@ -79,6 +88,7 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+      network: ${BUILD_NETWORK:-default}
       args:
         # Vite вшивает адрес API в бандл на этапе сборки — после смены нужен `make build`.
         # В frontend/Dockerfile должен быть `ARG VITE_API_URL`.
@@ -86,7 +96,7 @@ services:
     image: kodprozr-frontend:local
     container_name: kodprozr_frontend
     ports:
-      - "${BIND_HOST:-127.0.0.1}:3000:80"
+      - "${BIND_HOST:-127.0.0.1}:${FRONTEND_PORT:-3000}:80"
     depends_on:
       backend:
         condition: service_healthy
@@ -101,12 +111,14 @@ services:
   # Локальная LLM с OpenAI-совместимым API. Поднимается только с профилем:
   #   make llm-up   (или docker compose --profile llm up -d ollama)
   # Бэку в .env: LLM_BASE_URL=http://ollama:11434/v1, LLM_API_KEY=ollama (любая непустая строка).
+  # Общая LLM для команды по сети: OLLAMA_BIND_HOST=0.0.0.0 (только доверенная сеть, у Ollama
+  # нет авторизации) или SSH-туннель — docs/devops.md §5.
   ollama:
-    image: ${OLLAMA_IMAGE:-ollama/ollama:0.12.6}
+    image: ${OLLAMA_IMAGE:-ollama/ollama:0.40.16}
     container_name: kodprozr_ollama
     profiles: ["llm"]
     ports:
-      - "${BIND_HOST:-127.0.0.1}:11434:11434"
+      - "${OLLAMA_BIND_HOST:-${BIND_HOST:-127.0.0.1}}:${OLLAMA_PORT:-11434}:11434"
     environment:
       OLLAMA_KEEP_ALIVE: ${OLLAMA_KEEP_ALIVE:-30m}
     volumes:
@@ -117,14 +129,8 @@ services:
       timeout: 5s
       retries: 12
     restart: unless-stopped
-    # NVIDIA GPU (нужен nvidia-container-toolkit на хосте) — раскомментировать:
-    # deploy:
-    #   resources:
-    #     reservations:
-    #       devices:
-    #         - driver: nvidia
-    #           count: all
-    #           capabilities: [gpu]
+    # NVIDIA GPU — в docker-compose.gpu.yml: make llm-up подключает его сам, если в
+    # `docker info` есть runtime nvidia (nvidia-container-toolkit); иначе Ollama на CPU.
 
 volumes:
   postgres_data:
