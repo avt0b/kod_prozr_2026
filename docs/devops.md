@@ -54,6 +54,8 @@
 | `LLM_BASE_URL`                   | backend           | `http://ollama:11434/v1`                                        |
 | `LLM_API_KEY`                    | backend           | `ollama` (для Ollama — любая непустая строка)                   |
 | `LLM_MODEL`                      | backend, Makefile | `qwen2.5:7b-instruct`                                           |
+| `LLM_TIMEOUT_SECONDS`            | backend           | `90` — ожидание ответа (генерации) LLM                          |
+| `LLM_CONNECT_TIMEOUT_SECONDS`    | backend           | `5` — ожидание соединения; затем сразу фоллбэк, без повтора     |
 | `VITE_API_URL`                   | frontend (сборка) | `http://localhost:8000/api/v1`                                  |
 | `BACKEND_APP`                    | compose           | `src.web.main:app` — путь к ASGI-приложению для uvicorn         |
 | `BIND_HOST`                      | compose           | `127.0.0.1`; `0.0.0.0` — показать демо по локальной сети        |
@@ -181,7 +183,8 @@ curl http://localhost:11434/v1/chat/completions \
   `docker-compose.yml`. На хосте нужен nvidia-container-toolkit (`docker info` должен
   показывать runtime `nvidia`); без него Ollama молча работает на CPU.
 - `LLM_TIMEOUT_SECONDS=90`: 7B на CPU отвечает десятки секунд, фронт ждёт до 150 с. При
-  недоступной LLM бэк сразу уходит на фоллбэк, демо не встаёт.
+  недоступной LLM бэк уходит на фоллбэк через `LLM_CONNECT_TIMEOUT_SECONDS` (5 с), даже если
+  файрвол молча отбрасывает пакеты; демо не встаёт.
 - Если Ollama уже установлена на хосте, контейнер не нужен:
   `LLM_BASE_URL=http://host.docker.internal:11434/v1`. На Linux для этого добавьте бэку
   `extra_hosts: ["host.docker.internal:host-gateway"]`.
