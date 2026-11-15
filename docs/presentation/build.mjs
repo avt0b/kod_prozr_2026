@@ -236,7 +236,7 @@ shot(s, 'overview', 648, 190, 568, 400, 'Главная страница: счё
 // ------------------------------------------------------------------ 2. Задача и аналоги
 s = slide(
   'Задача и существующие решения',
-  '25 с. По материалам docs/README.md, docs/decisions.md ADR-02 и docs/demo.md. Позиционирование команды, без утверждений ' +
+  '25 с. По материалам docs/README.md, docs/decisions.md ADR-02 и docs/jury-qa.md. Позиционирование команды, без утверждений ' +
     'о полном функционале внешних систем. Ответ жюри: мы дополняем «Посейдон»; сравнения доходов и расходов в прототипе нет. ' +
     'Маркеры КНД РАНХиГС не воспроизводим.',
 );
@@ -344,9 +344,7 @@ s = slide(
     ' Демо-обращение H1 создано через форму и сопоставлено с Соколовым. ' +
     (engineFallback
       ? `LLM на стенде не подключена, разбор сделан правилами (engine: fallback), категория «${CATEGORY[category] ?? category}». ` +
-        (category && category !== 'conflict_of_interest'
-          ? 'Ожидаемая по сценарию категория — conflict_of_interest: это открытое расхождение фоллбэка, ответ в интерфейсе не подменяем. '
-          : '')
+        'Так фоллбэк и работает (docs/demo.md): называем категорию, которая на экране, а не заученную. '
       : stand?.appeal?.engine
         ? `Разбор сделан LLM (engine: ${stand.appeal.engine}), категория «${CATEGORY[category] ?? category}». `
         : '') +
@@ -489,10 +487,19 @@ const metricRows = [
   ['Коррупция: P / R', (m) => pr(m.is_corruption)],
   ['Коррупция: F1', (m) => num(m.is_corruption?.f1)],
   ['Категория: macro-F1', (m) => num(m.category_macro_f1)],
-  ['Привязка к лицу: P / R', (m) => pr(m.linking)],
-  ['Injection без поломки', (m) => m.injection_intact ?? '—'],
-  ['Время: медиана / p95', (m) => `${seconds(m.seconds?.median)} / ${seconds(m.seconds?.p95)}`],
-];
+  ['Привязка к лицу: P / R', (m) => pr(m.linking), (m) => m.linking],
+  [
+    'Повторные по лицу: P / R',
+    (m) => pr(m.repeated_subject_by_official),
+    (m) => m.repeated_subject_by_official,
+  ],
+  ['Injection без поломки', (m) => m.injection_intact ?? '—', (m) => m.injection_intact],
+  [
+    'Время: медиана / p95',
+    (m) => `${seconds(m.seconds?.median)} / ${seconds(m.seconds?.p95)}`,
+    (m) => m.seconds,
+  ],
+].filter(([, , has]) => !has || engines.some((e) => has(e.metrics) != null));
 const tableEngines = engines.length ? engines : [{ title: '—', metrics: {} }];
 const firstCol = tableEngines.length > 1 ? 236 : 300;
 const headTitle = (e) => (e.llm ? e.title.replace(/^LLM\s+/, 'LLM\n') : e.title);
@@ -519,7 +526,7 @@ s.addTable(
     y: px(194),
     w: px(560),
     colW,
-    rowH: [px(54), ...metricRows.map(() => px(44))],
+    rowH: [px(54), ...metricRows.map(() => px(Math.min(44, 330 / metricRows.length)))],
     fontFace: FONT,
     fontSize: 12.5,
     color: C.ink,
@@ -545,7 +552,7 @@ if (!baseEngine && !llmEngine)
 // ------------------------------------------------------------------ 8. Этика
 s = slide(
   'Этика, 152-ФЗ и развитие',
-  '30 с. Источники: docs/decisions.md ADR-09/11 и docs/demo.md. Это принципы проектирования, а не юридическое заключение ' +
+  '30 с. Источники: docs/decisions.md ADR-09/11 и docs/jury-qa.md. Это принципы проектирования, а не юридическое заключение ' +
     'о соблюдении 152-ФЗ. Ролевой доступ и полноценный аудит нельзя выдавать за реализованные: нужны до пилота. Ответы жюри: ' +
     'цель и минимизация данных; человек принимает решение; в реальном контуре локальная LLM. Развитие: кадровые интеграции, ' +
     'ЕГРЮЛ, ЕИС, калибровка на отметках аналитика. Пилот 2–3 месяца — предложение команды.',

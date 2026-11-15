@@ -39,9 +39,10 @@ async def seed_appeals(
         # AI-06: сиды с предрасчётом. Оставшиеся `new` (демо-обращение) разбираются вживую.
         logger.info("Appeals have precomputed analysis: unanalyzed ones stay new")
         analyze = False
+    repository = AppealRepository(session)
     use_case = ImportAppealsUseCase(
-        AppealRepository(session),
-        AppealAnalysisService(analyzer, directory, get_person_matcher()),
+        repository,
+        AppealAnalysisService(analyzer, directory, get_person_matcher(), repository),
         SqlAlchemyUnitOfWork(session),
     )
     return await use_case.execute(appeals, analyze=analyze)

@@ -1,0 +1,210 @@
+name: Release
+
+# Релизный конвейер (OPS-09, docs/devops.md, раздел 7): тег → проверка, что коммит входит
+# в main → CI → образы в GHCR → production deploy по ssh с health/smoke и откатом.
+# Push в рабочие ветки, dev и main этот workflow не запускает: только теги.
+on:
+  push:
+    tags:
+      - "v*.*.*"
+      - "demo-v*"
+
+# Релизы выкладываются строго по одному, начатый деплой не отменяется.
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.check.outputs.tag }}
+      commit: ${{ steps.check.outputs.commit }}
+      production: ${{ steps.check.outputs.production }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      # Тег должен указывать на коммит, достижимый из origin/main. Иначе релиз падает
+      # здесь, до сборки образов и до любого деплоя.
+      - id: check
+        name: Tag points to main
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          if [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            production=true
+          elif [[ "$TAG" =~ ^demo-v[0-9]+(\.[0-9]+)*$ ]]; then
+            production=false
+          else
+            echo "::error::Тег $TAG не похож на vMAJOR.MINOR.PATCH или demo-vN"
+            exit 1
+          fi
+          git fetch --no-tags origin +refs/heads/main:refs/remotes/origin/main
+          commit=$(git rev-parse "refs/tags/$TAG^{commit}")
+          if ! git merge-base --is-ancestor "$commit" origin/main; then
+            echo "::error::Коммит $commit тега $TAG не входит в main: релиз только с main (docs/workflow.md, раздел 5)"
+            exit 1
+          fi
+          echo "Тег $TAG → $commit входит в origin/main"
+          {
+            echo "tag=$TAG"
+            echo "commit=$commit"
+            echo "production=$production"
+          } >> "$GITHUB_OUTPUT"
+
+  # Те же проверки, что и в PR: переиспользуем ci.yml (backend, frontend, data).
+  checks:
+    needs: verify
+    uses: ./.github/workflows/ci.yml
+    permissions:
+      contents: read
+
+  images:
+    needs: [verify, checks]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    strategy:
+      fail-fast: true
+      matrix:
+        component: [backend, frontend]
+    steps:
+      - uses: actions/checkout@v5
+
+      - id: image
+        name: Image name
+        env:
+          COMPONENT: ${{ matrix.component }}
+          TAG: ${{ needs.verify.outputs.tag }}
+        run: |
+          # GHCR принимает только нижний регистр.
+          prefix="ghcr.io/${GITHUB_REPOSITORY,,}"
+          echo "ref=$prefix/$COMPONENT:$TAG" >> "$GITHUB_OUTPUT"
+
+      - uses: docker/setup-buildx-action@v3
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # VITE_API_URL вшивается в бандл фронта. На стенде фронт и API за одним доменом
+      # (docs/devops.md, раздел 6), поэтому по умолчанию относительный /api/v1.
+      - uses: docker/build-push-action@v6
+        with:
+          context: ./${{ matrix.component }}
+          push: true
+          tags: ${{ steps.image.outputs.ref }}
+          build-args: ${{ matrix.component == 'frontend' && format('VITE_API_URL={0}', vars.PROD_VITE_API_URL || '/api/v1') || '' }}
+          labels: |
+            org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
+            org.opencontainers.image.revision=${{ needs.verify.outputs.commit }}
+            org.opencontainers.image.version=${{ needs.verify.outputs.tag }}
+          cache-from: type=gha,scope=${{ matrix.component }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.component }}
+
+  deploy:
+    needs: [verify, images]
+    # Production выкладывают только теги vMAJOR.MINOR.PATCH; demo-vN — снимок образов без деплоя.
+    if: needs.verify.outputs.production == 'true'
+    runs-on: ubuntu-latest
+    environment: production
+    permissions:
+      contents: read
+      packages: read
+    env:
+      DEPLOY_PATH: ${{ vars.DEPLOY_PATH || '/opt/kodprozr' }}
+    steps:
+      # Значения секретов не печатаются: проверяется только, заданы ли они.
+      - id: secrets
+        name: Deploy secrets
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+        run: |
+          missing=()
+          [ -n "$DEPLOY_HOST" ] || missing+=(DEPLOY_HOST)
+          [ -n "$DEPLOY_USER" ] || missing+=(DEPLOY_USER)
+          [ -n "$DEPLOY_SSH_KEY" ] || missing+=(DEPLOY_SSH_KEY)
+          if [ ${#missing[@]} -gt 0 ]; then
+            echo "::notice title=Deploy пропущен::В environment production не заданы секреты: ${missing[*]}. Образы опубликованы, деплой не выполнялся (docs/devops.md, раздел 7)."
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - if: steps.secrets.outputs.ready == 'true'
+        uses: actions/checkout@v5
+
+      - if: steps.secrets.outputs.ready == 'true'
+        name: SSH config
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          DEPLOY_KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+          DEPLOY_PORT: ${{ vars.DEPLOY_PORT || '22' }}
+        run: |
+          set -euo pipefail
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          if [ -n "$DEPLOY_KNOWN_HOSTS" ]; then
+            printf '%s\n' "$DEPLOY_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          else
+            echo "::warning::DEPLOY_KNOWN_HOSTS не задан: ключ хоста получен ssh-keyscan без проверки"
+            ssh-keyscan -p "$DEPLOY_PORT" "$DEPLOY_HOST" > ~/.ssh/known_hosts 2>/dev/null
+          fi
+          chmod 600 ~/.ssh/known_hosts
+          cat > ~/.ssh/config <<EOF
+          Host deploy
+            HostName $DEPLOY_HOST
+            User $DEPLOY_USER
+            Port $DEPLOY_PORT
+            IdentityFile ~/.ssh/deploy_key
+            IdentitiesOnly yes
+            BatchMode yes
+            StrictHostKeyChecking yes
+            ServerAliveInterval 30
+          EOF
+          chmod 600 ~/.ssh/config
+
+      # На хост попадают только файлы, нужные для запуска образов: compose, наложение,
+      # deploy.sh, smoke и синтетика для тома data/generated. .env хоста не трогается.
+      - if: steps.secrets.outputs.ready == 'true'
+        name: Upload release bundle
+        run: |
+          set -euo pipefail
+          # shellcheck disable=SC2029  # путь намеренно подставляется на стороне раннера.
+          tar czf - docker-compose.yml deploy scripts/smoke.py data/generated \
+            | ssh deploy "mkdir -p $(printf '%q' "$DEPLOY_PATH") && tar xzf - -C $(printf '%q' "$DEPLOY_PATH")"
+
+      # Токен GHCR уходит на stdin deploy.sh и в лог не попадает; после выкладки — docker logout.
+      - if: steps.secrets.outputs.ready == 'true'
+        name: Deploy, health, smoke (rollback on failure)
+        env:
+          TAG: ${{ needs.verify.outputs.tag }}
+          REGISTRY_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DEPLOY_SEED: ${{ vars.DEPLOY_SEED || 'false' }}
+          SMOKE_ARGS: ${{ vars.DEPLOY_SMOKE_ARGS || '--keep-demo' }}
+        run: |
+          set -euo pipefail
+          prefix="ghcr.io/${GITHUB_REPOSITORY,,}"
+          remote=$(printf 'cd %q && DEPLOY_SEED=%q SMOKE_ARGS=%q bash deploy/deploy.sh deploy %q %q %q' \
+            "$DEPLOY_PATH" "$DEPLOY_SEED" "$SMOKE_ARGS" "$TAG" "$prefix" "$GITHUB_ACTOR")
+          # shellcheck disable=SC2029  # команда собрана и экранирована выше через printf %q.
+          printf '%s\n' "$REGISTRY_TOKEN" | ssh deploy "$remote"
+          echo "### Production: $TAG выложен" >> "$GITHUB_STEP_SUMMARY"
+
+      - if: always() && steps.secrets.outputs.ready == 'true'
+        name: Remove SSH key
+        run: rm -f ~/.ssh/deploy_key

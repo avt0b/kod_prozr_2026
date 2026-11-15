@@ -24,10 +24,16 @@ SIGNALS: dict[str, str] = {
     "relative_mentioned": "упомянут родственник",
     "extortion": "вымогательство или давление",
     "evidence_available": "есть документы, записи или свидетели",
-    "repeated_subject": "служащий уже упоминался в других обращениях",
+    "repeated_subject": "служащий или компания уже упоминались в других обращениях",
     "vague_no_facts": "нет проверяемых фактов",
 }
-FACT_SIGNALS = frozenset(SIGNALS) - {"named_official", "named_position", "vague_no_facts"}
+# Ставит код по базе обращений (domain/repeats.py), а не анализатор: LLM другие обращения не видит.
+SYSTEM_SIGNALS = frozenset({"repeated_subject"})
+# Проверяемые факты в тексте: без них коррупционное обращение получает vague_no_facts.
+# Повтор служащего в других обращениях — не факт из текста.
+FACT_SIGNALS = (
+    frozenset(SIGNALS) - {"named_official", "named_position", "vague_no_facts"} - SYSTEM_SIGNALS
+)
 # Сущность в тексте сама по себе подтверждает сигнал.
 ENTITY_SIGNALS: dict[EntityType, str] = {
     EntityType.PERSON: "named_official",
@@ -110,8 +116,9 @@ def normalize_signals(
     codes: set[str] | frozenset[str], entities: tuple[ExtractedEntity, ...], is_corruption: bool
 ) -> tuple[Signal, ...]:
     """Только коды из закрытого списка; сигналы, подтверждённые сущностями, добавляются;
-    vague_no_facts — только у коррупционного обращения без проверяемых фактов."""
-    result = {code for code in codes if code in SIGNALS}
+    vague_no_facts — только у коррупционного обращения без проверяемых фактов.
+    Системные сигналы (repeated_subject) от анализатора отбрасываются: их ставит код."""
+    result = {code for code in codes if code in SIGNALS and code not in SYSTEM_SIGNALS}
     result |= {ENTITY_SIGNALS[e.type] for e in entities if e.type in ENTITY_SIGNALS}
     if result & FACT_SIGNALS or not is_corruption:
         result.discard("vague_no_facts")

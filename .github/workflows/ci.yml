@@ -6,6 +6,8 @@ on:
   pull_request:
     branches: [dev, main]
   workflow_dispatch:
+  # Те же проверки вызывает релизный workflow (release.yml) перед сборкой образов.
+  workflow_call:
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -107,7 +109,7 @@ jobs:
           LLM_BASE_URL: ""
         run: |
           uv run uvicorn src.web.main:app --port 8000 > /tmp/uvicorn.log 2>&1 &
-          for i in $(seq 60); do curl -fs http://localhost:8000/health && break; sleep 1; done
+          for _ in $(seq 60); do curl -fs http://localhost:8000/health && break; sleep 1; done
           python3 ../scripts/smoke.py --api http://localhost:8000 || (cat /tmp/uvicorn.log; exit 1)
 
   data:
