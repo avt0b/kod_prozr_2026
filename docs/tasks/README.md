@@ -63,63 +63,63 @@
 | --- | --- | --- | --- | --- | --- |
 | T-01 | Созвон по контракту, закрыть пробелы | Роман (ведёт), все | КТ0 | — | review |
 | T-03 | Регламент issues, веток и handoff ([#1](https://github.com/avt0b/kod_prozr_2026/issues/1)) | Миша | КТ1 | — | done |
-| T-02 | Демо-прогоны и репетиция ответов жюри | все | КТ4, КТ5 | КТ3 | todo |
+| T-02 | Демо-прогоны и репетиция ответов жюри | все | КТ4, КТ5 | КТ3 | wip |
 | B-01 | Каркас бэка по эталону | Роман | КТ0 | — | done |
 | B-02 | ORM-модели и первая миграция | Миша | КТ0 | T-01 | done |
 | B-03 | Загрузчик сидов `make seed` | Миша | КТ1 | B-02, AI-01 | done |
 | B-04 | Интерфейс риск-движка и скоринга | Роман | КТ1 | B-01 | done |
-| B-05 | `GET /officials` — рейтинг | Роман | КТ1 | B-02 | review |
-| B-06 | `GET /officials/{id}`, `GET /organs` | Роман | КТ1 | B-02 | review |
+| B-05 | `GET /officials` — рейтинг | Роман | КТ1 | B-02 | done |
+| B-06 | `GET /officials/{id}`, `GET /organs` | Роман | КТ1 | B-02 | done |
 | B-07 | `GET /stats/overview` | Роман | КТ2 | B-05 | done |
-| B-08 | Правила R01, R02 | Роман | КТ2 | B-03, B-04 | review |
-| B-09 | Правила R03, R04, R05 | Роман | КТ2 | B-08 | review |
+| B-08 | Правила R01, R02 | Роман | КТ2 | B-03, B-04 | done |
+| B-09 | Правила R03, R04, R05 | Роман | КТ2 | B-08 | done |
 | B-10 | `POST /risk/recompute`, `GET /officials/{id}/flags` | Роман | КТ2 | B-08 | done |
 | B-11 | `GET /officials/{id}/graph` | Миша | КТ2 | B-03 | done |
 | B-12 | LLM-порт: интерфейс, адаптер, фоллбэк | Миша | КТ2 | B-01 | done |
 | B-13 | Модуль обращений: API | Миша | КТ2 | B-12 | done |
-| B-14 | R07 и автопересчёт после обращения | Роман | КТ3 | B-10, B-13, AI-05 | review |
-| B-15 | R06 — концентрация поставщика | Роман | КТ3 | B-08 | review |
+| B-14 | R07 и автопересчёт после обращения | Роман | КТ3 | B-10, B-13, AI-05 | done |
+| B-15 | R06 — концентрация поставщика | Роман | КТ3 | B-08 | done |
 | B-16 | Докладная: `POST /reports`, `GET /reports/{id}` | Миша | КТ3 | B-10 | done |
-| B-17 | R08 в скоринге, калибровка весов | Роман | КТ4 | AI-07 | wip |
+| B-17 | R08 в скоринге, калибровка весов | Роман | КТ4 | AI-07 | done |
 | B-18 | Журнал действий аналитика | Миша | КТ4 | B-13 | done |
 | B-19 | `/assistant/ask` — если успеваем | Миша | после КТ3 | AI-10 | done |
-| F-01 | Каркас фронта, роутинг, layout ([#14](https://github.com/avt0b/kod_prozr_2026/issues/14)) | Влад Г. | КТ0 | — | review |
-| F-02 | Типы по контракту, API-клиент, моки ([#14](https://github.com/avt0b/kod_prozr_2026/issues/14)) | Влад Г. | КТ0 | T-01 | review |
-| F-03 | Главная: счётчики и топ-10 ([#14](https://github.com/avt0b/kod_prozr_2026/issues/14)) | Влад Г. | КТ1 | F-02 | review |
-| F-04 | Рейтинг служащих ([#14](https://github.com/avt0b/kod_prozr_2026/issues/14)) | Влад Г. | КТ1 | F-02 | review |
-| F-05 | Профиль: сведения ([#14](https://github.com/avt0b/kod_prozr_2026/issues/14)) | Влад Г. | КТ1 | F-02 | review |
-| F-06 | Профиль: флаги риска ([#14](https://github.com/avt0b/kod_prozr_2026/issues/14)) | Влад Г. | КТ2 | F-05 | review |
+| F-01 | Каркас фронта, роутинг, layout ([#14](https://github.com/avt0b/kod_prozr_2026/issues/14)) | Влад Г. | КТ0 | — | done |
+| F-02 | Типы по контракту, API-клиент, моки ([#14](https://github.com/avt0b/kod_prozr_2026/issues/14)) | Влад Г. | КТ0 | T-01 | done |
+| F-03 | Главная: счётчики и топ-10 ([#14](https://github.com/avt0b/kod_prozr_2026/issues/14)) | Влад Г. | КТ1 | F-02 | done |
+| F-04 | Рейтинг служащих ([#14](https://github.com/avt0b/kod_prozr_2026/issues/14)) | Влад Г. | КТ1 | F-02 | done |
+| F-05 | Профиль: сведения ([#14](https://github.com/avt0b/kod_prozr_2026/issues/14)) | Влад Г. | КТ1 | F-02 | done |
+| F-06 | Профиль: флаги риска ([#14](https://github.com/avt0b/kod_prozr_2026/issues/14)) | Влад Г. | КТ2 | F-05 | done |
 | F-07 | Переход на реальный API ([#14](https://github.com/avt0b/kod_prozr_2026/issues/14)) | Влад Г. | КТ2 | B-05, B-06, B-10 | wip |
-| F-08 | Экран докладной ([#14](https://github.com/avt0b/kod_prozr_2026/issues/14)) | Влад Г. | КТ3 | B-16 | review |
+| F-08 | Экран докладной ([#14](https://github.com/avt0b/kod_prozr_2026/issues/14)) | Влад Г. | КТ3 | B-16 | done |
 | F-09 | Полировка интерфейса ([#14](https://github.com/avt0b/kod_prozr_2026/issues/14)) | Влад Г. | КТ4 | КТ3 | wip |
 | F-10 | UI ассистента — если успеваем ([#14](https://github.com/avt0b/kod_prozr_2026/issues/14)) | Влад Г. | после КТ3 | B-19 | wip |
-| F-11 | Граф связей: базовый рендер ([#13](https://github.com/avt0b/kod_prozr_2026/issues/13)) | Егор | КТ1 | F-02 | review |
-| F-12 | Граф: подсветка цепочки флага, клики ([#13](https://github.com/avt0b/kod_prozr_2026/issues/13)) | Егор | КТ1 | F-11 | review |
-| F-13 | Список обращений ([#13](https://github.com/avt0b/kod_prozr_2026/issues/13)) | Егор | КТ2 | F-02 | review |
-| F-14 | Форма нового обращения ([#13](https://github.com/avt0b/kod_prozr_2026/issues/13)) | Егор | КТ2 | F-13 | review |
-| F-15 | Карточка обращения с разбором ([#13](https://github.com/avt0b/kod_prozr_2026/issues/13)) | Егор | КТ2 | F-13 | review |
+| F-11 | Граф связей: базовый рендер ([#13](https://github.com/avt0b/kod_prozr_2026/issues/13)) | Егор | КТ1 | F-02 | done |
+| F-12 | Граф: подсветка цепочки флага, клики ([#13](https://github.com/avt0b/kod_prozr_2026/issues/13)) | Егор | КТ1 | F-11 | done |
+| F-13 | Список обращений ([#13](https://github.com/avt0b/kod_prozr_2026/issues/13)) | Егор | КТ2 | F-02 | done |
+| F-14 | Форма нового обращения ([#13](https://github.com/avt0b/kod_prozr_2026/issues/13)) | Егор | КТ2 | F-13 | done |
+| F-15 | Карточка обращения с разбором ([#13](https://github.com/avt0b/kod_prozr_2026/issues/13)) | Егор | КТ2 | F-13 | done |
 | F-16 | Сквозной переход обращение → профиль → граф ([#13](https://github.com/avt0b/kod_prozr_2026/issues/13)) | Егор | КТ3 | F-12, F-15, B-14 | wip |
 | F-17 | Слайды ([#13](https://github.com/avt0b/kod_prozr_2026/issues/13)) | Егор | КТ4 | КТ3 | wip |
-| AI-01 | Генератор синтетики: структура и образцы ([#11](https://github.com/avt0b/kod_prozr_2026/issues/11)) | Влад О. | КТ0 | T-01 | review |
-| AI-02 | Генератор: полный объём, схемы, `_truth` ([#11](https://github.com/avt0b/kod_prozr_2026/issues/11)) | Влад О. | КТ1 | AI-01 | review |
+| AI-01 | Генератор синтетики: структура и образцы ([#11](https://github.com/avt0b/kod_prozr_2026/issues/11)) | Влад О. | КТ0 | T-01 | done |
+| AI-02 | Генератор: полный объём, схемы, `_truth` ([#11](https://github.com/avt0b/kod_prozr_2026/issues/11)) | Влад О. | КТ1 | AI-01 | done |
 | AI-03 | Выбор и проверка LLM ([#12](https://github.com/avt0b/kod_prozr_2026/issues/12)) | Влад О. | КТ0 | OPS-05 | wip |
-| AI-04 | Анализ обращения `analyze_appeal` ([#12](https://github.com/avt0b/kod_prozr_2026/issues/12)) | Влад О. | КТ2 | AI-03 | review |
-| AI-05 | Сопоставление лиц `match_persons` ([#12](https://github.com/avt0b/kod_prozr_2026/issues/12)) | Влад О. | КТ2 | AI-02 | review |
-| AI-06 | Предрасчёт анализа 100 обращений в сиды ([#12](https://github.com/avt0b/kod_prozr_2026/issues/12)) | Влад О. | КТ3 | AI-04, AI-05 | review |
-| AI-07 | R08: ML-аномалии относительно коллег ([#12](https://github.com/avt0b/kod_prozr_2026/issues/12)) | Влад О. | КТ4 | AI-02 | review |
-| AI-08 | Оценка качества `make eval` ([#12](https://github.com/avt0b/kod_prozr_2026/issues/12)) | Влад О. | КТ4 | AI-04, AI-07 | review |
-| AI-09 | LLM-текст докладной — если успеваем ([#12](https://github.com/avt0b/kod_prozr_2026/issues/12)) | Влад О. | после КТ3 | B-16 | review |
-| AI-10 | Ассистент на инструментах — если успеваем ([#12](https://github.com/avt0b/kod_prozr_2026/issues/12)) | Влад О. | после КТ3 | B-11 | review |
-| AI-11 | Вариант D: карта рисков должности — если успеваем | Влад О. | после КТ4 | — | todo |
-| OPS-01 | Монорепо, compose, Makefile, `.env.example` ([#15](https://github.com/avt0b/kod_prozr_2026/issues/15)) | Кирилл | КТ0 | — | review |
-| OPS-02 | Образы бэка и фронта, миграции на старте ([#15](https://github.com/avt0b/kod_prozr_2026/issues/15)) | Кирилл | КТ1 | B-01, F-01 | review |
-| OPS-03 | CI: линтеры, тесты, сборка ([#15](https://github.com/avt0b/kod_prozr_2026/issues/15)) | Кирилл | КТ1 | OPS-01 | review |
-| OPS-04 | Make-цели `seed`, `reset`, `data-check`, `eval` ([#15](https://github.com/avt0b/kod_prozr_2026/issues/15)) | Кирилл | КТ1 | B-03, AI-02 | review |
+| AI-04 | Анализ обращения `analyze_appeal` ([#12](https://github.com/avt0b/kod_prozr_2026/issues/12)) | Влад О. | КТ2 | AI-03 | done |
+| AI-05 | Сопоставление лиц `match_persons` ([#12](https://github.com/avt0b/kod_prozr_2026/issues/12)) | Влад О. | КТ2 | AI-02 | done |
+| AI-06 | Предрасчёт анализа 100 обращений в сиды ([#12](https://github.com/avt0b/kod_prozr_2026/issues/12)) | Влад О. | КТ3 | AI-04, AI-05 | wip |
+| AI-07 | R08: ML-аномалии относительно коллег ([#12](https://github.com/avt0b/kod_prozr_2026/issues/12)) | Влад О. | КТ4 | AI-02 | done |
+| AI-08 | Оценка качества `make eval` ([#12](https://github.com/avt0b/kod_prozr_2026/issues/12)) | Влад О. | КТ4 | AI-04, AI-07 | done |
+| AI-09 | LLM-текст докладной — если успеваем ([#12](https://github.com/avt0b/kod_prozr_2026/issues/12)) | Влад О. | после КТ3 | B-16 | done |
+| AI-10 | Ассистент на инструментах — если успеваем ([#12](https://github.com/avt0b/kod_prozr_2026/issues/12)) | Влад О. | после КТ3 | B-11 | done |
+| AI-11 | Вариант D: карта рисков должности — если успеваем | Влад О. | после КТ4 | — | wip |
+| OPS-01 | Монорепо, compose, Makefile, `.env.example` ([#15](https://github.com/avt0b/kod_prozr_2026/issues/15)) | Кирилл | КТ0 | — | done |
+| OPS-02 | Образы бэка и фронта, миграции на старте ([#15](https://github.com/avt0b/kod_prozr_2026/issues/15)) | Кирилл | КТ1 | B-01, F-01 | wip |
+| OPS-03 | CI: линтеры, тесты, сборка ([#15](https://github.com/avt0b/kod_prozr_2026/issues/15)) | Кирилл | КТ1 | OPS-01 | done |
+| OPS-04 | Make-цели `seed`, `reset`, `data-check`, `eval` ([#15](https://github.com/avt0b/kod_prozr_2026/issues/15)) | Кирилл | КТ1 | B-03, AI-02 | done |
 | OPS-05 | LLM-сервис для команды ([#15](https://github.com/avt0b/kod_prozr_2026/issues/15)) | Кирилл | 11.11, 12:00 | — | wip |
-| OPS-06 | Smoke-тест всех эндпоинтов ([#15](https://github.com/avt0b/kod_prozr_2026/issues/15)) | Кирилл | КТ2 | OPS-02 | review |
-| OPS-07 | Демо-стенд и резервный ноутбук | Кирилл | КТ4 | OPS-02 | todo |
+| OPS-06 | Smoke-тест всех эндпоинтов ([#15](https://github.com/avt0b/kod_prozr_2026/issues/15)) | Кирилл | КТ2 | OPS-02 | done |
+| OPS-07 | Демо-стенд и резервный ноутбук | Кирилл | КТ4 | OPS-02 | wip |
 | OPS-08 | Code freeze: тег, дамп БД, видео-бэкап ([#15](https://github.com/avt0b/kod_prozr_2026/issues/15)) | Кирилл | КТ5 | КТ4 | wip |
-| OPS-09 | Защита dev/main и deploy по тегу ([#2](https://github.com/avt0b/kod_prozr_2026/issues/2)) | Кирилл | до prod | T-03, OPS-03, OPS-07 | todo |
+| OPS-09 | Защита dev/main и deploy по тегу ([#2](https://github.com/avt0b/kod_prozr_2026/issues/2)) | Кирилл | до prod | T-03, OPS-03, OPS-07 | review |
 
 
 ### Завершение задач Миши (12.11, issue #7)
@@ -145,7 +145,7 @@ T-03 принят в PR #3. B-19 завершён отдельно по issue #8
 
 Проверено: бэкенд — ruff, mypy strict, import-linter, 128 тестов с e2e на PostgreSQL; фронт —
 lint, prettier, tsc, build, 14 unit-тестов; генератор — тесты и data-check. Демо-сценарий на полном
-наборе **без LLM**: Соколов 79 (3-е место) → 92 (1-е) после демо-обращения. Метрики `make eval`
+наборе **без LLM**: Соколов 79 (3-е место) → 92 (1-е) (на весах до ADR-16; после B-17 — 73 → 88, см. ниже) после демо-обращения. Метрики `make eval`
 (синтетика, оценка верхняя): R01–R06 P = R = 1.0, шум 19/19, R08 4/4 без ложных, precision@10 = 1.0;
 фоллбэк: F1 коррупционности 0.88, категории 0.87, привязка P 1.0 / R 0.88.
 
@@ -168,3 +168,32 @@ lint, prettier, tsc, build, 14 unit-тестов; генератор — тес�
 | F-17 | Егор | Пересобрать слайды: `docs/presentation/build.mjs` требует внутренний `@oai/artifact-tool`; обновить слайд 7 метриками из `eval/report.json`, скриншоты — с итогового стенда |
 | B-17 | Роман | Калибровка весов: с R08 у H1 есть `low` (+5); порядок демо держится, но запас 1 балл (79 против 80) |
 | T-02 | все | Прогон демо и репетиция ответов жюри |
+
+## Статус на 15.11 и точка продолжения
+
+Слиты в `dev`: #18 (CI чинён: сиды и smoke в отдельной БД), #19, #20, #27 (T-02: demo.md, jury-qa.md),
+#28 (B-17: веса ADR-16), #29 (OPS-09: release.yml, deploy/, sync-dev.yml), #30 (AI-04: `repeated_subject`).
+Закрыты issues #11, #13, #14, #15, #21; черновой PR #6 закрыт.
+
+**Демо (фоллбэк, полный набор, веса ADR-16):** Соколов 73 (3-е место) → 88 (1-е, отрыв 8). Выше до обращения —
+два кейса по 80, ниже — 60. C3/C4 вне общего топ-10 (11–13 место) — на демо показываются фильтром по правилу.
+Порядок фиксирует `backend/tests/e2e/risk/test_demo_ranking.py`.
+
+Работа 15.11 остановлена на середине. Каждая ветка ниже запушена, в ней лежит
+`docs/tasks/handoff/<issue>-*.md`: что сделано, что осталось, следующий шаг и запущенные процессы.
+
+| ID | Issue | Ветка | Что осталось |
+| --- | --- | --- | --- |
+| F-07, F-09, F-10, F-16 | #23 | `feat/tskfrntnd-23-demo-walkthrough` | e2e по demo.md зелёный на реальном стенде (фоллбэк), фронт-проверки зелёные. Осталось: PR с `Closes #23`, CI; баги бэка и расхождения с demo.md — в handoff |
+| F-17 | #24 | `feat/tskdocs-24-slides-rebuild` | PR #31. Сборка на pptxgenjs и слайд 7 из report.json готовы. Осталось: переснять скриншоты на чистой БД (`screenshots.mjs` упал после overview.png), обновить подписи 79 → 92 на 73 → 88, CI |
+| OPS-02, 05, 07, 08 | #25 | `feat/tskdvps-25-offline-dump-video` | OPS-02 готово: `make build` в сети хоста, `build && reset && smoke` — 45 OK, `reset` больше не удаляет том модели. Цели `llm-up/llm-check/offline-bundle/offline-load/dump/restore/video` написаны; не проверены offline и restore. Не дописаны devops.md §5, §6, §9. Стек на 15432/18000/3000 (5432/8000 заняты другим проектом). PR не открыт |
+| AI-11 | #22 | `feat/tskai-22-position-risk-map` | Сделано целиком (`GET /risk-map`, экран, контракт, smoke 50 проверок), PR #32: дождаться CI, ревью, слить |
+| AI-03 | #12 | `feat/tskai-12-llm-benchmark` | Ollama 0.12.6 нативно на GPU (`~/.local/share/ollama-bin`, 127.0.0.1:11434), модель скачана. Осталось: `scripts/bench_llm.py`, проверка `engine=llm`, `eval --llm --limit 30` → `eval/report.llm.json`, ai.md §8, PR |
+| AI-06 | #12 | — | После AI-03: `make precompute` с LLM, закоммитить `appeals.json`, проверить, что Соколов не 1-й до обращения (ADR-16) |
+| OPS-09 | #2 | слит в #29 | Владельцу: защита `main`/`dev`, environment `production` с секретами, разрешить Actions создавать PR (devops.md §7) |
+| T-02 | #26 | слит в #27 | Живой прогон по чек-листу demo.md после финального стенда |
+| Релиз | — | — | Последним: релизный PR `dev → main` и тег `demo-v1` (согласовано), видео `make video` |
+
+Бэк: недоступная LLM при молча отбрасывающем файрволе вешает запрос на 180 с — нужен короткий connect-timeout в LLM-адаптере (новая задача B).
+
+Порядок продолжения: AI-03 → AI-06 → #25 и #23 → #24 (скриншоты с финального стенда) → #22 → прогон T-02 → релиз.
