@@ -78,7 +78,14 @@
 | `make logs`       | показывает логи всех сервисов; один сервис: `make logs s=backend`            |
 | `make ps`         | показывает состояние контейнеров и healthchecks                             |
 | `make migrate`    | `alembic upgrade head` в одноразовом контейнере backend                      |
-| `make seed`       | загружает синтетические данные (в контейнере backend)                        |
+| `make seed`       | загружает `data/generated` с предрасчётом обращений и пересчитывает риск      |
+| `make reset`      | сносит тома, поднимает стек с миграциями и сидами — состояние «как перед демо» |
+| `make smoke`      | smoke всех эндпоинтов + демо-обращение (меняет данные: затем `make reset`)    |
+| `make data`       | пересоздаёт синтетику генератором (`seed 42`), затем нужен `make precompute`  |
+| `make data-check` | проверки данных data.md §7 (полный набор и `sample/`)                         |
+| `make precompute` | предрасчёт анализа обращений в сиды (AI-06), демо-обращение остаётся `new`    |
+| `make eval`       | метрики качества по БД после сидов, `eval/report.json`                        |
+| `make test-data`  | тесты генератора                                                             |
 | `make test-back`  | `uv run pytest` в `backend/` на хосте                                       |
 | `make lint-back`  | `ruff check` + `ruff format --check` в `backend/` на хосте                  |
 | `make lint-front` | `npm run lint` в `frontend/` на хосте                                        |
@@ -86,7 +93,16 @@
 
 Команды бэка и фронта вынесены в переменные в начале `Makefile` (`MIGRATE_CMD`, `SEED_CMD`,
 `BACK_TEST_CMD`, `BACK_LINT_CMD`, `FRONT_LINT_CMD`). Переопределить команду можно без правки файла:
-`make seed SEED_CMD="python -m app.seed"`.
+`make seed SEED_CMD="python -m src.seed --dir data/example"`.
+
+`precompute` и `eval` выполняются на хосте через `uv` и ходят в Postgres из compose на
+`localhost:5432` (`HOST_DB`). `data/generated` монтируется в бэкенд только на чтение.
+
+Порядок перед демо: `make reset` → `make smoke` → `make reset` (smoke отправляет демо-обращение
+и поднимает Соколова на 1-е место, а на показе это делается вживую).
+
+Версии образов закреплены в `.env.example` (`POSTGRES_IMAGE`, `OLLAMA_IMAGE`) и в Dockerfile'ах
+(`python:3.12-slim`, `node:22-alpine`, `nginx:1.27-alpine`).
 
 Полный сброс вместе с данными: `docker compose --profile llm down -v`. Эта команда удаляет и БД,
 и скачанные модели.
@@ -162,7 +178,10 @@ curl http://localhost:11434/v1/chat/completions \
 - На слабом ноутбуке подойдёт `qwen2.5:3b-instruct` (около 2 ГБ): поменяйте `LLM_MODEL` и
   снова выполните `make llm-up`.
 - Для NVIDIA GPU раскомментируйте блок `deploy.resources` у сервиса `ollama` в
-  `docker-compose.yml`. На хосте нужен nvidia-container-toolkit.
+  `docker-compose.yml`. На хосте нужен nvidia-container-toolkit (`docker info` должен
+  показывать runtime `nvidia`); без него Ollama молча работает на CPU.
+- `LLM_TIMEOUT_SECONDS=90`: 7B на CPU отвечает десятки секунд, фронт ждёт до 150 с. При
+  недоступной LLM бэк сразу уходит на фоллбэк, демо не встаёт.
 - Если Ollama уже установлена на хосте, контейнер не нужен:
   `LLM_BASE_URL=http://host.docker.internal:11434/v1`. На Linux для этого добавьте бэку
   `extra_hosts: ["host.docker.internal:host-gateway"]`.

@@ -10,7 +10,7 @@ name: kodprozr
 
 services:
   postgres:
-    image: postgres:16-alpine
+    image: ${POSTGRES_IMAGE:-postgres:16.15-alpine}
     container_name: kodprozr_postgres
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-kodprozr}
@@ -44,11 +44,7 @@ services:
       # DATABASE_URL в .env уже смотрит на postgres:5432 (имя сервиса), но задаём
       # и здесь, чтобы стек поднимался даже без .env.
       DATABASE_URL: ${DATABASE_URL:-postgresql+asyncpg://kodprozr:kodprozr@postgres:5432/kodprozr}
-    # Миграции перед стартом, затем uvicorn.
-    # TODO(Кирилл): сверить с backend/README.md, когда каркас бэка будет готов:
-    #   - команду миграций (предполагаем alembic; venv образа в PATH, поэтому без `uv run`;
-    #     если в образе остаётся uv — можно `uv run --no-sync alembic upgrade head`);
-    #   - путь к ASGI-приложению (BACKEND_APP, по умолчанию как в optimus: src.web.main:app).
+    # Миграции перед стартом, затем uvicorn (venv образа в PATH, uv в рантайме не нужен).
     command:
       [
         "sh",
@@ -57,6 +53,10 @@ services:
       ]
     ports:
       - "${BIND_HOST:-127.0.0.1}:8000:8000"
+    # Синтетика с предрасчётом анализа: make seed читает /app/data/generated.
+    # Пример backend/data/example остаётся в образе.
+    volumes:
+      - ./data/generated:/app/data/generated:ro
     depends_on:
       postgres:
         condition: service_healthy
@@ -89,7 +89,7 @@ services:
       - "${BIND_HOST:-127.0.0.1}:3000:80"
     depends_on:
       backend:
-        condition: service_started
+        condition: service_healthy
     healthcheck:
       # nginx:alpine: wget есть в busybox; 127.0.0.1, а не localhost — nginx может не слушать ::1.
       test: ["CMD", "wget", "-qO-", "http://127.0.0.1/"]
@@ -102,7 +102,7 @@ services:
   #   make llm-up   (или docker compose --profile llm up -d ollama)
   # Бэку в .env: LLM_BASE_URL=http://ollama:11434/v1, LLM_API_KEY=ollama (любая непустая строка).
   ollama:
-    image: ${OLLAMA_IMAGE:-ollama/ollama:latest}
+    image: ${OLLAMA_IMAGE:-ollama/ollama:0.12.6}
     container_name: kodprozr_ollama
     profiles: ["llm"]
     ports:

@@ -87,6 +87,53 @@ jobs:
       - name: Pytest
         run: uv run pytest || [ $? -eq 5 ]
 
+      # Полный набор синтетики с предрасчётом, затем smoke всех эндпоинтов (OPS-06).
+      # LLM в CI нет: разбор обращений и докладные идут по фоллбэку.
+      # e2e-тесты создают таблицы через create_all в основной БД, поэтому миграции,
+      # сиды и smoke идут в отдельной чистой БД kodprozr_smoke.
+      - name: Seed full synthetic data
+        env:
+          LLM_BASE_URL: ""
+          PGPASSWORD: kodprozr
+        run: |
+          psql -h localhost -U kodprozr -d kodprozr -c "CREATE DATABASE kodprozr_smoke"
+          echo "DATABASE_URL=postgresql+asyncpg://kodprozr:kodprozr@localhost:5432/kodprozr_smoke" >> "$GITHUB_ENV"
+          export DATABASE_URL=postgresql+asyncpg://kodprozr:kodprozr@localhost:5432/kodprozr_smoke
+          uv run alembic upgrade head
+          uv run python -m src.seed --dir ../data/generated
+
+      - name: Smoke
+        env:
+          LLM_BASE_URL: ""
+        run: |
+          uv run uvicorn src.web.main:app --port 8000 > /tmp/uvicorn.log 2>&1 &
+          for i in $(seq 60); do curl -fs http://localhost:8000/health && break; sleep 1; done
+          python3 ../scripts/smoke.py --api http://localhost:8000 || (cat /tmp/uvicorn.log; exit 1)
+
+  data:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Generator tests
+        run: python -m unittest discover -s data/tests -t .
+
+      - name: Data check
+        run: |
+          python -m data.generator.check data/generated
+          python -m data.generator.check data/generated/sample --partial
+
+      # Набор в git совпадает с генератором (кроме appeals.json: там предрасчёт AI-06).
+      - name: Deterministic generator
+        run: |
+          python -m data.generator --seed 42 --out /tmp/generated
+          diff -r --exclude=appeals.json /tmp/generated data/generated
+          diff /tmp/generated/sample/appeals.json data/generated/sample/appeals.json
+
   frontend:
     needs: detect
     if: needs.detect.outputs.frontend == 'true'
