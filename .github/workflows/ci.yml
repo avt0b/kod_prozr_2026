@@ -89,10 +89,16 @@ jobs:
 
       # Полный набор синтетики с предрасчётом, затем smoke всех эндпоинтов (OPS-06).
       # LLM в CI нет: разбор обращений и докладные идут по фоллбэку.
+      # e2e-тесты создают таблицы через create_all в основной БД, поэтому миграции,
+      # сиды и smoke идут в отдельной чистой БД kodprozr_smoke.
       - name: Seed full synthetic data
         env:
           LLM_BASE_URL: ""
+          PGPASSWORD: kodprozr
         run: |
+          psql -h localhost -U kodprozr -d kodprozr -c "CREATE DATABASE kodprozr_smoke"
+          echo "DATABASE_URL=postgresql+asyncpg://kodprozr:kodprozr@localhost:5432/kodprozr_smoke" >> "$GITHUB_ENV"
+          export DATABASE_URL=postgresql+asyncpg://kodprozr:kodprozr@localhost:5432/kodprozr_smoke
           uv run alembic upgrade head
           uv run python -m src.seed --dir ../data/generated
 
