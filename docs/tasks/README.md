@@ -186,12 +186,14 @@ lint, prettier, tsc, build, 14 unit-тестов; генератор — тес�
 | --- | --- | --- | --- |
 | F-07, F-09, F-10, F-16 | #23 | `feat/tskfrntnd-23-demo-walkthrough` | e2e по demo.md зелёный на реальном стенде (фоллбэк), фронт-проверки зелёные. Осталось: PR с `Closes #23`, CI; баги бэка и расхождения с demo.md — в handoff |
 | F-17 | #24 | `feat/tskdocs-24-slides-rebuild` | PR #31. Сборка на pptxgenjs и слайд 7 из report.json готовы. Осталось: переснять скриншоты на чистой БД (`screenshots.mjs` упал после overview.png), обновить подписи 79 → 92 на 73 → 88, CI |
-| OPS-02, 05, 07, 08 | #25 | `feat/tskdvps-25-offline-dump-video` | `make build && make reset` с нуля, `offline-bundle/load`, `dump/restore`, `video`, PR |
+| OPS-02, 05, 07, 08 | #25 | `feat/tskdvps-25-offline-dump-video` | OPS-02 готово: `make build` в сети хоста, `build && reset && smoke` — 45 OK, `reset` больше не удаляет том модели. Цели `llm-up/llm-check/offline-bundle/offline-load/dump/restore/video` написаны; не проверены offline и restore. Не дописаны devops.md §5, §6, §9. Стек на 15432/18000/3000 (5432/8000 заняты другим проектом). PR не открыт |
 | AI-11 | #22 | `feat/tskai-22-position-risk-map` | Сделано целиком (`GET /risk-map`, экран, контракт, smoke 50 проверок), PR #32: дождаться CI, ревью, слить |
 | AI-03 | #12 | `feat/tskai-12-llm-benchmark` | Ollama 0.12.6 нативно на GPU (`~/.local/share/ollama-bin`, 127.0.0.1:11434), модель скачана. Осталось: `scripts/bench_llm.py`, проверка `engine=llm`, `eval --llm --limit 30` → `eval/report.llm.json`, ai.md §8, PR |
 | AI-06 | #12 | — | После AI-03: `make precompute` с LLM, закоммитить `appeals.json`, проверить, что Соколов не 1-й до обращения (ADR-16) |
 | OPS-09 | #2 | слит в #29 | Владельцу: защита `main`/`dev`, environment `production` с секретами, разрешить Actions создавать PR (devops.md §7) |
 | T-02 | #26 | слит в #27 | Живой прогон по чек-листу demo.md после финального стенда |
 | Релиз | — | — | Последним: релизный PR `dev → main` и тег `demo-v1` (согласовано), видео `make video` |
+
+Бэк: недоступная LLM при молча отбрасывающем файрволе вешает запрос на 180 с — нужен короткий connect-timeout в LLM-адаптере (новая задача B).
 
 Порядок продолжения: AI-03 → AI-06 → #25 и #23 → #24 (скриншоты с финального стенда) → #22 → прогон T-02 → релиз.
