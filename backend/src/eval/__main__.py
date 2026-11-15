@@ -25,11 +25,13 @@ from src.core.infrastructure.logger import configure_logging
 from src.core.utils.json_files import read_models
 from src.modules.appeals.application.interfaces.appeal_analyzer import AppealAnalyzer
 from src.modules.appeals.application.services.appeal_analysis import AppealAnalysisService
+from src.modules.appeals.domain.repeats import REPEAT_WINDOW
 from src.modules.appeals.infrastructure.adapters.fallback_analyzer import FallbackAppealAnalyzer
 from src.modules.appeals.infrastructure.adapters.llm_analyzer import LLMAppealAnalyzer
 from src.modules.appeals.infrastructure.adapters.rule_based_analyzer import (
     RuleBasedAppealAnalyzer,
 )
+from src.modules.appeals.infrastructure.repositories.appeal_repository import AppealRepository
 from src.modules.appeals.presentation.dependencies import get_person_matcher
 from src.modules.appeals.presentation.schemas.seed import AppealSeed
 from src.web import wiring
@@ -102,15 +104,39 @@ async def rules_metrics(session: Any, truth: dict[str, Any]) -> dict[str, Any]:
 
 
 # ------------------------------------------------------------------ appeals
+def repeated_truth(seeds: list[AppealSeed], labels: dict[str, Any]) -> set[str]:
+    """repeated_subject по разметке: у более раннего обращения за REPEAT_WINDOW тот же
+    привязанный служащий. Компании в разметке нет — метрика только по служащим."""
+    result = set()
+    for seed in seeds:
+        linked = set(labels[str(seed.id)]["linked_person_ids"])
+        if not linked:
+            continue
+        since = seed.received_at - REPEAT_WINDOW
+        for other in seeds:
+            if (
+                other.id != seed.id
+                and since <= other.received_at < seed.received_at
+                and linked & set(labels[str(other.id)]["linked_person_ids"])
+            ):
+                result.add(str(seed.id))
+                break
+    return result
+
+
 async def appeals_metrics(
     session: Any, data_dir: Path, truth: dict[str, Any], analyzer: AppealAnalyzer, limit: int | None
 ) -> dict[str, Any]:
     labels = {label["appeal_id"]: label for label in truth["appeals_labels"]}
     seeds = read_models(AppealSeed, data_dir / "appeals.json")
+    want_repeated = repeated_truth(seeds, labels)
     if limit:
         seeds = seeds[:limit]
     service = AppealAnalysisService(
-        analyzer, wiring.appeals_person_directory(session), get_person_matcher()
+        analyzer,
+        wiring.appeals_person_directory(session),
+        get_person_matcher(),
+        AppealRepository(session),
     )
     corruption = Counter[str]()
     confusion: dict[str, Counter[str]] = defaultdict(Counter)
@@ -120,6 +146,7 @@ async def appeals_metrics(
     engines = Counter[str]()
     durations: list[float] = []
     candidates_only = 0
+    repeated = Counter[str]()
     for seed in seeds:
         label = labels[str(seed.id)]
         appeal = seed.model_copy(update={"analysis": None, "status": "new"}).to_entity()
@@ -139,6 +166,12 @@ async def appeals_metrics(
         link["fn"] += len(want_links - got_links)
         if match.candidates and not match.linked:
             candidates_only += 1
+        # Повторы ищутся по предрасчёту в БД после make seed (более ранние обращения).
+        repeat = await service.repeats(analysis, appeal, match.linked)
+        truth_has, got_has = str(seed.id) in want_repeated, bool(repeat and repeat.person_ids)
+        key = "tp" if truth_has and got_has else "fp" if got_has else "fn" if truth_has else ""
+        if key:
+            repeated[key] += 1
         codes = analysis.signal_codes
         for code in SIGNAL_CODES:
             truth_has, got_has = code in label["signals"], code in codes
@@ -168,6 +201,7 @@ async def appeals_metrics(
         "signals": {
             code: prf(c["tp"], c["fp"], c["fn"]) for code, c in signals.items() if sum(c.values())
         },
+        "repeated_subject_by_official": prf(repeated["tp"], repeated["fp"], repeated["fn"]),
         "injection_intact": f"{injection['intact']}/{injection['total']}",
         "seconds": {
             "median": round(statistics.median(durations), 3),
@@ -204,6 +238,11 @@ def print_report(report: dict[str, Any]) -> None:
         print(
             f"  привязка лиц: P {link['precision']} R {link['recall']}, "
             f"только кандидаты: {link['candidates_without_link_share']}"
+        )
+        r = m["repeated_subject_by_official"]
+        print(
+            f"  repeated_subject (по служащим): P {r['precision']} R {r['recall']} "
+            f"({r['tp']} из {r['tp'] + r['fn']})"
         )
         print(f"  prompt injection без поломки разметки: {m['injection_intact']}")
         print(f"  время анализа, с: медиана {m['seconds']['median']}, p95 {m['seconds']['p95']}")

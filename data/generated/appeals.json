@@ -674,6 +674,10 @@
     {
      "code": "relative_mentioned",
      "text": "упомянут родственник"
+    },
+    {
+     "code": "repeated_subject",
+     "text": "компания уже упоминалась в других обращениях за 12 месяцев: 1"
     }
    ],
    "specificity": 0.65,
@@ -2740,6 +2744,10 @@
     {
      "code": "money_amount",
      "text": "указана сумма"
+    },
+    {
+     "code": "repeated_subject",
+     "text": "служащий уже упоминался в других обращениях за 12 месяцев: 1"
     }
    ],
    "specificity": 0.7,
@@ -3247,6 +3255,10 @@
     {
      "code": "relative_mentioned",
      "text": "упомянут родственник"
+    },
+    {
+     "code": "repeated_subject",
+     "text": "служащий уже упоминался в других обращениях за 12 месяцев: 1"
     }
    ],
    "specificity": 0.3,
