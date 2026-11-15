@@ -1,3 +1,4 @@
+import re
 from dataclasses import dataclass, field
 from uuid import UUID
 
@@ -159,8 +160,11 @@ def route_of(
 def entity_spans(text: str, items: list[tuple[EntityType, str]]) -> tuple[ExtractedEntity, ...]:
     """Смещения сущностей ищет код: LLM в позициях ошибается (ai.md §2).
 
-    Сущность, которой нет в тексте дословно, выбрасывается как галлюцинация. Повторяющийся
-    текст получает следующее вхождение; пересекающиеся сущности не дублируются.
+    Сначала ищем дословное вхождение. LLM часто ставит ФИО в именительный падеж
+    («Ефимов А. Л.» при «Ефимову А. Л.» в тексте) — тогда ищем те же слова с другими
+    окончаниями и берём фрагмент из текста. Сущность, которой нет в тексте и в такой
+    форме, выбрасывается как галлюцинация. Повторяющийся текст получает следующее
+    вхождение; пересекающиеся сущности не дублируются.
     """
     taken: list[tuple[int, int]] = []
     result: list[ExtractedEntity] = []
@@ -168,12 +172,54 @@ def entity_spans(text: str, items: list[tuple[EntityType, str]]) -> tuple[Extrac
         value = raw.strip().strip(".,;:!?")
         if len(value) < 2:
             continue
-        start = text.find(value)
-        while start >= 0 and any(start < e and s < start + len(value) for s, e in taken):
-            start = text.find(value, start + 1)
-        if start < 0:
+        span = _free_span(text, value, taken)
+        if span is None:
             continue
-        end = start + len(value)
+        start, end = span
         taken.append((start, end))
-        result.append(ExtractedEntity(entity_type, value, start, end))
+        result.append(ExtractedEntity(entity_type, text[start:end], start, end))
     return tuple(sorted(result, key=lambda e: e.start))
+
+
+_ENTITY_WORD = re.compile(r"\w+")
+_ENDING = 3  # падежное окончание в русском — до трёх букв («-ому», «-ами»)
+_SUFFIX = r"\w{0,4}"
+_SEPARATOR = r"[\s.,«»\"'()-]{1,4}"
+
+
+def _free_span(text: str, value: str, taken: list[tuple[int, int]]) -> tuple[int, int] | None:
+    def free(start: int, end: int) -> bool:
+        return not any(start < e and s < end for s, e in taken)
+
+    start = text.find(value)
+    while start >= 0:
+        if free(start, start + len(value)):
+            return start, start + len(value)
+        start = text.find(value, start + 1)
+    pattern = _inflected(value)
+    if pattern is None:
+        return None
+    for match in pattern.finditer(text):
+        if free(match.start(), match.end()):
+            return match.start(), match.end()
+    return None
+
+
+def _inflected(value: str) -> re.Pattern[str] | None:
+    """Те же слова в том же порядке, окончания длинных слов любые (до четырёх букв), е = ё."""
+    words = _ENTITY_WORD.findall(value)
+    if not words:
+        return None
+    parts = []
+    for word in words:
+        if len(word) <= _ENDING:
+            parts.append(_letters(word))  # инициалы и аббревиатуры — как есть
+        else:
+            # Отрезаем треть слова, но не больше окончания: «Ефимов» → «Ефим», «Ефимову».
+            stem = word[: len(word) - min(_ENDING, len(word) // 3)]
+            parts.append(_letters(stem) + _SUFFIX)
+    return re.compile(r"(?<!\w)" + _SEPARATOR.join(parts) + r"(?!\w)", re.IGNORECASE)
+
+
+def _letters(stem: str) -> str:
+    return "".join("[её]" if c in "еёЕЁ" else re.escape(c) for c in stem)

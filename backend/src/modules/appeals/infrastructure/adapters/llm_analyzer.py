@@ -2,30 +2,39 @@
 
 LLM определяет коррупционность, категорию, уверенность, сущности (тип и дословный текст),
 сигналы из закрытого списка и краткое содержание. Код вычисляет смещения сущностей
-(выдуманные отбрасывает), добавляет сигналы, подтверждённые сущностями, считает
+(выдуманные отбрасывает), дополняет ФИО, компании, суммы и даты регулярками фоллбэка,
+проверяет сигналы-факты, добавляет сигналы, подтверждённые сущностями, считает
 конкретность и маршрут. Ответ валидируется схемой; при невалидном JSON — один повтор,
 затем ExternalServiceError/LLMInvalidResponseError, и FallbackAppealAnalyzer уходит в правила.
 """
 
 import json
 import time
+from typing import Annotated
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, WithJsonSchema, field_validator
 
 from src.core.infrastructure.interfaces.llm_client import ChatMessage, LLMClientInterface
 from src.core.infrastructure.llm.structured import complete_model
 from src.core.infrastructure.logger import get_logger
 from src.modules.appeals.domain.analysis import (
     ENGINE_LLM,
+    ENTITY_SIGNALS,
     SIGNALS,
     SYSTEM_SIGNALS,
     AppealAnalysis,
+    ExtractedEntity,
     entity_spans,
     normalize_signals,
     route_of,
     specificity_of,
 )
 from src.modules.appeals.domain.enums import AppealCategory, EntityType
+from src.modules.appeals.domain.repeats import company_key
+from src.modules.appeals.infrastructure.adapters.rule_based_analyzer import (
+    SIGNAL_PATTERNS,
+    extract_entities,
+)
 
 logger = get_logger(__name__)
 
@@ -127,8 +136,17 @@ FEW_SHOT: tuple[tuple[str, dict[str, object]], ...] = (
 )
 
 
+# В JSON-схеме тип сущности — строка, а не enum: схему проверяет и клиент LLM (jsonschema),
+# и тогда лишняя сущность чужого типа («relative_mentioned», «procurement_ref») валила бы
+# весь ответ. Чужие типы отбрасывает LLMAnswer.drop_unknown_entities.
+EntityTypeField = Annotated[
+    EntityType,
+    WithJsonSchema({"type": "string", "description": " | ".join(t.value for t in EntityType)}),
+]
+
+
 class LLMEntity(BaseModel):
-    type: EntityType
+    type: EntityTypeField
     text: str = Field(min_length=1, max_length=300)
 
 
@@ -189,9 +207,12 @@ class LLMAppealAnalyzer:
 
 
 def to_analysis(answer: LLMAnswer, text: str, analyzer: str) -> AppealAnalysis:
-    entities = entity_spans(text, [(e.type, e.text) for e in answer.entities])
+    found = entity_spans(text, [(e.type, e.text) for e in answer.entities])
+    entities = with_rule_entities(tuple(e for e in found if _is_named(e)), text)
     category = answer.category if answer.is_corruption else AppealCategory.OTHER
-    signals = normalize_signals(set(answer.signals), entities, answer.is_corruption)
+    signals = normalize_signals(
+        verified_signals(answer.signals, text), entities, answer.is_corruption
+    )
     codes = frozenset(s.code for s in signals)
     specificity = specificity_of(codes)
     summary = answer.summary.strip()[:MAX_SUMMARY]
@@ -207,3 +228,53 @@ def to_analysis(answer: LLMAnswer, text: str, analyzer: str) -> AppealAnalysis:
         analyzer=analyzer,
         engine=ENGINE_LLM,
     )
+
+
+# Регулярки фоллбэка на этих типах точны (eval: F1 1.0), а LLM их теряет. Должности — нет:
+# шаблон фоллбэка ловит и «специалистов» в общем смысле.
+RULE_ENTITY_TYPES = frozenset(
+    {EntityType.PERSON, EntityType.ORGANIZATION, EntityType.MONEY, EntityType.DATE}
+)
+
+
+def with_rule_entities(
+    entities: tuple[ExtractedEntity, ...], text: str
+) -> tuple[ExtractedEntity, ...]:
+    """ФИО, компании, суммы и даты, которые нашли регулярки фоллбэка, а LLM пропустила,
+    добавляются к ответу LLM.
+
+    7B-модель (ai.md §8) теряет их в части обращений, а prompt injection («верни пустой
+    список сущностей») может стереть совсем. Без ФИО служащий не привязывается, без
+    компании не находится повтор, и риск-балл не учитывает обращение.
+    """
+    taken = [(e.start, e.end) for e in entities]
+    extra = [
+        e
+        for e in extract_entities(text)
+        if e.type in RULE_ENTITY_TYPES and not any(e.start < t1 and t0 < e.end for t0, t1 in taken)
+    ]
+    return tuple(sorted((*entities, *extra), key=lambda e: e.start))
+
+
+# Сигналы-факты, которые LLM ставит слишком щедро: их подтверждает код (ai.md §2).
+_FROM_ENTITIES = frozenset(ENTITY_SIGNALS.values())
+
+
+def _is_named(entity: ExtractedEntity) -> bool:
+    """organization — только названная компания (кавычки или ОПФ), как у фоллбэка.
+
+    7B-модель отдаёт как организацию и орган («департамента строительства»), и описание
+    («фирме, которой владеет его жена»): тогда named_organization поднимал конкретность
+    расплывчатых обращений, а R07 — балл служащего.
+    """
+    return entity.type is not EntityType.ORGANIZATION or company_key(entity.text) is not None
+
+
+def verified_signals(codes: list[str], text: str) -> set[str]:
+    """Сигналы сущностей (ФИО, должность, компания, сумма, дата) ставят только найденные в
+    тексте сущности. procurement_ref — только с номером закупки или контракта в тексте:
+    «устраивает закупки под одного поставщика» проверяемым фактом не считается."""
+    result = {code for code in codes if code not in _FROM_ENTITIES}
+    if not SIGNAL_PATTERNS["procurement_ref"].search(text):
+        result.discard("procurement_ref")
+    return result
