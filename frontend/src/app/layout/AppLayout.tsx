@@ -14,6 +14,7 @@ import { useDisclosure } from '@mantine/hooks';
 import {
   IconChartBar,
   IconListNumbers,
+  IconMap2,
   IconMessageChatbot,
   IconMoon,
   IconShieldSearch,
@@ -27,6 +28,7 @@ import { routes } from '@/shared/config/routes';
 const NAV = [
   { to: routes.overview(), label: 'Обзор', icon: IconChartBar, end: true },
   { to: routes.officials(), label: 'Рейтинг служащих', icon: IconListNumbers, end: false },
+  { to: routes.riskMap(), label: 'Карта рисков', icon: IconMap2, end: false },
   { to: routes.appeals(), label: 'Обращения', icon: IconMail, end: false },
   { to: routes.assistant(), label: 'Ассистент', icon: IconMessageChatbot, end: false },
 ];

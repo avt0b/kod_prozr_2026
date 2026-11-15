@@ -23,6 +23,8 @@ import type {
   Paginated,
   RecomputeResult,
   ReportDraft,
+  RiskMap,
+  RiskMapQuery,
   StatsOverview,
   UUID,
 } from './types';
@@ -60,6 +62,8 @@ export const api = {
 
   risk: {
     recompute: () => request<RecomputeResult>('POST', '/risk/recompute'),
+    map: (query: RiskMapQuery = {}) =>
+      request<RiskMap>('GET', '/risk-map', { query: { ...query } }),
   },
 
   appeals: {

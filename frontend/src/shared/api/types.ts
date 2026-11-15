@@ -377,3 +377,73 @@ export interface AssistantAnswer {
   answer: string;
   sources: AssistantSource[];
 }
+
+/* ---------- Карта рисков должностей (GET /risk-map, вариант D) ---------- */
+
+/** Уровень риска должности по её полномочиям, без учёта людей. */
+export type PositionRiskLevel = 'high' | 'medium' | 'low';
+
+/** Типовой коррупционный риск полномочия. rule_codes — правила, которыми система его ищет. */
+export interface TypicalRisk {
+  code: string;
+  title: string;
+  description: string;
+  authority: AuthorityKind;
+  rule_codes: RuleCode[];
+  legal_ref: string;
+}
+
+export interface RuleCount {
+  rule_code: RuleCode;
+  /** Число служащих группы с флагом этого правила. */
+  count: number;
+}
+
+export interface RiskMapOfficial {
+  id: UUID;
+  full_name: string;
+  risk_score: number;
+}
+
+/** Сводка риска группы служащих (должность или орган). */
+export interface RiskAggregate {
+  officials_total: number;
+  officials_with_flags: number;
+  /** Доля служащих с флагами, 0–1. */
+  flagged_share: number;
+  avg_score: number;
+  max_score: number;
+  top_rules: RuleCount[];
+  top_officials: RiskMapOfficial[];
+}
+
+export interface PositionRisk extends RiskAggregate {
+  position_id: UUID;
+  title: string;
+  department: string;
+  organ_id: UUID;
+  organ: string;
+  is_corruption_risky: boolean;
+  authorities: AuthorityKind[];
+  risk_level: PositionRiskLevel;
+  typical_risks: TypicalRisk[];
+}
+
+export interface OrganRisk extends RiskAggregate {
+  organ_id: UUID;
+  organ: string;
+  positions_total: number;
+}
+
+export interface RiskMap {
+  items: PositionRisk[];
+  total: number;
+  organs: OrganRisk[];
+  computed_at: ISODate | null;
+}
+
+export interface RiskMapQuery {
+  organ_id?: UUID;
+  limit?: number;
+  offset?: number;
+}
