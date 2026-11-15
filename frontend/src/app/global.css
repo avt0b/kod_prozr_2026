@@ -2,3 +2,19 @@
 body {
   background: var(--mantine-color-body);
 }
+
+/* Печать докладной: только сам документ, без меню и кнопок. */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .report-document,
+  .report-document * {
+    visibility: visible;
+  }
+  .report-document {
+    position: absolute;
+    inset: 0;
+    border: none !important;
+  }
+}

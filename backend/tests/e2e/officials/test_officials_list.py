@@ -84,3 +84,16 @@ async def test_unknown_sort_is_422(client: AsyncClient) -> None:
     response = await client.get("/api/v1/officials", params={"sort": "salary"})
 
     assert response.status_code == 422
+
+
+async def test_rule_code_keeps_only_officials_with_that_flag(client: AsyncClient) -> None:
+    body = await _list(client, rule_code="R01")
+
+    assert [i["id"] for i in body["items"]] == [IVANOV]
+    assert body["total"] == 1
+    assert (await _list(client, rule_code="R04"))["total"] == 0
+
+
+async def test_unknown_rule_code_is_422(client: AsyncClient) -> None:
+    response = await client.get("/api/v1/officials", params={"rule_code": "R99"})
+    assert response.status_code == 422

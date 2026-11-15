@@ -217,6 +217,9 @@ export function listOfficials(q: OfficialsQuery) {
   }
   if (q.organ_id) items = items.filter((o) => o.organ_id === q.organ_id);
   if (q.min_score != null) items = items.filter((o) => o.risk_score >= Number(q.min_score));
+  if (q.rule_code) {
+    items = items.filter((o) => flagsOf(o.id).some((f) => f.rule_code === q.rule_code));
+  }
 
   const sort = q.sort ?? '-risk_score';
   const dir = sort.startsWith('-') ? -1 : 1;
