@@ -73,10 +73,19 @@ export function FlagList({ flags, selectedId, onSelect }: Props) {
                   <Fragment key={e.node_id}>
                     {i > 0 && <IconChevronRight size={12} />}
                     <Badge
-                      size="xs"
+                      size="sm"
                       variant="outline"
                       color="gray"
-                      title={NODE_TYPE_LABELS[e.type]}
+                      tt="none"
+                      radius="sm"
+                      fw={500}
+                      h="auto"
+                      py={2}
+                      maw="100%"
+                      title={`${NODE_TYPE_LABELS[e.type]}: ${e.label}`}
+                      styles={{
+                        label: { whiteSpace: 'normal', overflow: 'visible', textAlign: 'left' },
+                      }}
                     >
                       {e.label}
                     </Badge>

@@ -5,3 +5,9 @@ dist
 .env.*
 !.env.example
 *.tsbuildinfo
+
+# Результаты e2e (Playwright): скриншоты, видео, трассы, отчёт
+e2e/screenshots/
+e2e/test-results/
+e2e/playwright-report/
+test-results/
