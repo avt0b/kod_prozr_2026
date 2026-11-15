@@ -187,7 +187,7 @@ lint, prettier, tsc, build, 14 unit-тестов; генератор — тес�
 | F-07, F-09, F-10, F-16 | #23 | `feat/tskfrntnd-23-demo-walkthrough` | Playwright-сценарий всего demo.md на 1920×1080, починка найденных багов, PR |
 | F-17 | #24 | `feat/tskdocs-24-slides-rebuild` | Сборка на pptxgenjs, метрики из `eval/report.json`, `screenshots.mjs`, PR |
 | OPS-02, 05, 07, 08 | #25 | `feat/tskdvps-25-offline-dump-video` | `make build && make reset` с нуля, `offline-bundle/load`, `dump/restore`, `video`, PR |
-| AI-11 | #22 | `feat/tskai-22-position-risk-map` | Карта рисков должности: API, контракт, экран, PR |
+| AI-11 | #22 | `feat/tskai-22-position-risk-map` | Сделано целиком (`GET /risk-map`, экран, контракт, smoke 50 проверок), PR #32: дождаться CI, ревью, слить |
 | AI-03 | #12 | `feat/tskai-12-llm-benchmark` | Ollama + `qwen2.5:7b-instruct` (загрузка продолжается в фоне), замеры, `eval --llm`, ai.md §8 |
 | AI-06 | #12 | — | После AI-03: `make precompute` с LLM, закоммитить `appeals.json`, проверить, что Соколов не 1-й до обращения (ADR-16) |
 | OPS-09 | #2 | слит в #29 | Владельцу: защита `main`/`dev`, environment `production` с секретами, разрешить Actions создавать PR (devops.md §7) |
