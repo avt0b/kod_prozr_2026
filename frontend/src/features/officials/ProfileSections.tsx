@@ -134,7 +134,8 @@ export function CompaniesSection({ profile }: { profile: OfficialProfile }) {
                       {c.company.name}
                     </Text>
                     <Text size="xs" c="dimmed">
-                      ИНН {c.company.inn} · ОКВЭД {c.company.okved}
+                      ИНН {c.company.inn}
+                      {c.company.okved && ` · ОКВЭД ${c.company.okved}`}
                     </Text>
                   </Table.Td>
                   <Table.Td>
@@ -151,8 +152,8 @@ export function CompaniesSection({ profile }: { profile: OfficialProfile }) {
                     </Text>
                   </Table.Td>
                   <Table.Td>
-                    <Text size="sm">{c.contracts_count}</Text>
-                    {c.contracts_amount > 0 && (
+                    <Text size="sm">{c.contracts_count ?? 'Нет данных'}</Text>
+                    {c.contracts_amount != null && c.contracts_amount > 0 && (
                       <Text size="xs" c="dimmed">
                         {formatMoneyShort(c.contracts_amount)}
                       </Text>

@@ -380,7 +380,7 @@ export function appealDetails(id: UUID): AppealDetails | null {
 
 const CATEGORY_KEYWORDS: [AppealCategory, RegExp][] = [
   ['bribe', /взятк|потребовал|вымога|благодарн|вознагражд|откат|деньг|«помочь»/i],
-  ['conflict_of_interest', /жена|муж|супруг|родствен|брат|сестр|учредител|совладел/i],
+  ['conflict_of_interest', /жен[аеуы]|муж|супруг|родствен|брат|сестр|учредител|совладел/i],
   ['procurement', /закупк|аукцион|тендер|контракт|техническое задание|поставщик/i],
   ['abuse_of_power', /превыш|давлени|угрож|злоупотреб|незаконн/i],
 ];
@@ -410,7 +410,9 @@ export function analyzeText(text: string): { analysis: AppealAnalysis; linked: U
       /[А-ЯЁ][а-яё]+(?:ов|ев|ин|ын|ова|ева|ина|ына|ский|ская)\s[А-ЯЁ]\.\s?[А-ЯЁ]\./g,
       'person',
     ),
-    ...collectMatches(text, /(?:ООО|АО|ПАО|ИП)\s«[^»]+»/g, 'organization'),
+    ...collectMatches(text, /(?:ООО|АО|ПАО|ИП|фирме)\s«[^»]+»/g, 'organization'),
+    ...collectMatches(text, /[А-ЯЁ][а-яё]+\s[А-ЯЁ][а-яё]+\s[А-ЯЁ][а-яё]+(?:вич|вна)/g, 'person'),
+    ...collectMatches(text, /[Нн]ачальник отдела закупок/g, 'position'),
     ...collectMatches(
       text,
       /\d[\d\s]*(?:[.,]\d+)?\s?(?:тыс\.|млн|млрд)?\s?(?:руб(?:лей|\.)?|₽)/g,
@@ -455,6 +457,9 @@ export function analyzeText(text: string): { analysis: AppealAnalysis; linked: U
       summary: isCorruption
         ? `Обращение с признаками коррупции (категория определена по ключевым словам). Найдено сигналов: ${signals.length}.`
         : 'Признаков коррупции не выявлено, обращение направляется по компетенции.',
+      engine: 'fallback',
+      analyzer: 'rules',
+      candidates: [],
     },
   };
 }

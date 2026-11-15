@@ -1,14 +1,37 @@
-import { Badge, Card, Group, List, Progress, Stack, Text, Title } from '@mantine/core';
+import { Badge, Card, Group, List, Progress, Stack, Text, Title, Tooltip } from '@mantine/core';
 import { IconRoute } from '@tabler/icons-react';
 import type { AppealAnalysis } from '@/shared/api';
 import { formatPercent } from '@/shared/lib/format';
 import { AppealCategoryBadge } from './AppealBadges';
 
+function EngineBadge({ analysis }: { analysis: AppealAnalysis }) {
+  if (!analysis.engine) return null;
+  const llm = analysis.engine === 'llm';
+  return (
+    <Tooltip
+      label={
+        llm
+          ? `Разбор сделала языковая модель (${analysis.analyzer?.replace('llm:', '') ?? 'LLM'}); ответ проверен по схеме`
+          : 'LLM недоступна: разбор на правилах и словарях. Качество ниже, но поток обращений не встаёт'
+      }
+      multiline
+      w={280}
+    >
+      <Badge color={llm ? 'violet' : 'gray'} variant="light">
+        {llm ? 'Разбор: LLM' : 'Разбор: правила (фоллбэк)'}
+      </Badge>
+    </Tooltip>
+  );
+}
+
 export function AppealAnalysisPanel({ analysis }: { analysis: AppealAnalysis }) {
   return (
     <Card>
       <Stack gap="sm">
-        <Title order={4}>Анализ</Title>
+        <Group justify="space-between">
+          <Title order={4}>Анализ</Title>
+          <EngineBadge analysis={analysis} />
+        </Group>
         <Group gap="xs">
           <Badge color={analysis.is_corruption ? 'red' : 'green'} variant="filled">
             {analysis.is_corruption ? 'Признаки коррупции' : 'Без признаков коррупции'}

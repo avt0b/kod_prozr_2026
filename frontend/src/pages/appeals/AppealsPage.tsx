@@ -7,14 +7,24 @@ import { useAppeals } from '@/features/appeals/api';
 import type { AppealCategory, AppealStatus } from '@/shared/api';
 import { routes } from '@/shared/config/routes';
 import { PageHeader, QueryState } from '@/shared/ui';
+import { APPEAL_CATEGORY_LABELS, APPEAL_STATUS_LABELS } from '@/shared/lib/labels';
 
 const PAGE_SIZE = 20;
 
 export function AppealsPage() {
   const [params, setParams] = useSearchParams();
-  const status = params.get('status') as AppealStatus | null;
-  const category = params.get('category') as AppealCategory | null;
-  const page = Number(params.get('page') ?? 1);
+  const rawStatus = params.get('status');
+  const rawCategory = params.get('category');
+  const status =
+    rawStatus && Object.hasOwn(APPEAL_STATUS_LABELS, rawStatus)
+      ? (rawStatus as AppealStatus)
+      : null;
+  const category =
+    rawCategory && Object.hasOwn(APPEAL_CATEGORY_LABELS, rawCategory)
+      ? (rawCategory as AppealCategory)
+      : null;
+  const rawPage = Number(params.get('page') ?? 1);
+  const page = Number.isSafeInteger(rawPage) && rawPage > 0 && rawPage <= 1_000_000 ? rawPage : 1;
 
   const appeals = useAppeals({
     status: status ?? undefined,
