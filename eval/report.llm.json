@@ -1,0 +1,339 @@
+{
+  "data": "data/generated",
+  "note": "метрики на синтетике: оценка верхняя",
+  "rules": {
+    "per_rule": {
+      "R01": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      },
+      "R02": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "tp": 5,
+        "fp": 0,
+        "fn": 0
+      },
+      "R03": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "tp": 4,
+        "fp": 0,
+        "fn": 0
+      },
+      "R04": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "tp": 3,
+        "fp": 0,
+        "fn": 0
+      },
+      "R05": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "tp": 5,
+        "fp": 0,
+        "fn": 0
+      },
+      "R06": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "tp": 5,
+        "fp": 0,
+        "fn": 0
+      }
+    },
+    "noise_cases": {
+      "total": 19,
+      "without_false_flags": 19
+    },
+    "R08": {
+      "recall": 1.0,
+      "found": 4,
+      "planted": 4,
+      "flags_on_clean_officials": 0
+    },
+    "ranking": {
+      "precision@10": 1.0,
+      "precision@20": 0.95
+    }
+  },
+  "appeals": {
+    "fallback": {
+      "appeals": 30,
+      "engines": {
+        "fallback": 30
+      },
+      "is_corruption": {
+        "precision": 0.944,
+        "recall": 0.81,
+        "f1": 0.872,
+        "tp": 17,
+        "fp": 1,
+        "fn": 4
+      },
+      "category_macro_f1": 0.917,
+      "category_confusion": {
+        "conflict_of_interest": {
+          "other": 4,
+          "conflict_of_interest": 4
+        },
+        "bribe": {
+          "bribe": 5
+        },
+        "abuse_of_power": {
+          "abuse_of_power": 3
+        },
+        "procurement": {
+          "procurement": 5
+        }
+      },
+      "linking": {
+        "precision": 1.0,
+        "recall": 0.727,
+        "f1": 0.842,
+        "tp": 8,
+        "fp": 0,
+        "fn": 3,
+        "candidates_without_link_share": 0.033
+      },
+      "signals": {
+        "named_official": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "tp": 11,
+          "fp": 0,
+          "fn": 0
+        },
+        "named_position": {
+          "precision": 0.846,
+          "recall": 1.0,
+          "f1": 0.917,
+          "tp": 11,
+          "fp": 2,
+          "fn": 0
+        },
+        "money_amount": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "tp": 7,
+          "fp": 0,
+          "fn": 0
+        },
+        "relative_mentioned": {
+          "precision": 0.5,
+          "recall": 1.0,
+          "f1": 0.667,
+          "tp": 4,
+          "fp": 4,
+          "fn": 0
+        },
+        "vague_no_facts": {
+          "precision": 0.75,
+          "recall": 0.273,
+          "f1": 0.4,
+          "tp": 3,
+          "fp": 1,
+          "fn": 8
+        },
+        "extortion": {
+          "precision": 0.0,
+          "recall": 1.0,
+          "f1": 0.0,
+          "tp": 0,
+          "fp": 5,
+          "fn": 0
+        },
+        "named_organization": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "tp": 5,
+          "fp": 0,
+          "fn": 0
+        },
+        "procurement_ref": {
+          "precision": 1.0,
+          "recall": 0.333,
+          "f1": 0.5,
+          "tp": 1,
+          "fp": 0,
+          "fn": 2
+        },
+        "specific_date": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "tp": 4,
+          "fp": 0,
+          "fn": 0
+        },
+        "evidence_available": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "tp": 1,
+          "fp": 0,
+          "fn": 0
+        }
+      },
+      "repeated_subject_by_official": {
+        "precision": 1.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "tp": 0,
+        "fp": 0,
+        "fn": 1
+      },
+      "injection_intact": "0/1",
+      "seconds": {
+        "median": 0.0,
+        "p95": 0.001
+      }
+    },
+    "llm:qwen2.5:7b-instruct": {
+      "appeals": 30,
+      "engines": {
+        "llm": 30
+      },
+      "is_corruption": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "tp": 21,
+        "fp": 0,
+        "fn": 0
+      },
+      "category_macro_f1": 1.0,
+      "category_confusion": {
+        "conflict_of_interest": {
+          "conflict_of_interest": 8
+        },
+        "bribe": {
+          "bribe": 5
+        },
+        "abuse_of_power": {
+          "abuse_of_power": 3
+        },
+        "procurement": {
+          "procurement": 5
+        }
+      },
+      "linking": {
+        "precision": 1.0,
+        "recall": 0.727,
+        "f1": 0.842,
+        "tp": 8,
+        "fp": 0,
+        "fn": 3,
+        "candidates_without_link_share": 0.067
+      },
+      "signals": {
+        "named_official": {
+          "precision": 0.786,
+          "recall": 1.0,
+          "f1": 0.88,
+          "tp": 11,
+          "fp": 3,
+          "fn": 0
+        },
+        "named_position": {
+          "precision": 0.769,
+          "recall": 0.909,
+          "f1": 0.833,
+          "tp": 10,
+          "fp": 3,
+          "fn": 1
+        },
+        "money_amount": {
+          "precision": 0.875,
+          "recall": 1.0,
+          "f1": 0.933,
+          "tp": 7,
+          "fp": 1,
+          "fn": 0
+        },
+        "relative_mentioned": {
+          "precision": 0.5,
+          "recall": 1.0,
+          "f1": 0.667,
+          "tp": 4,
+          "fp": 4,
+          "fn": 0
+        },
+        "extortion": {
+          "precision": 0.0,
+          "recall": 1.0,
+          "f1": 0.0,
+          "tp": 0,
+          "fp": 3,
+          "fn": 0
+        },
+        "vague_no_facts": {
+          "precision": 1.0,
+          "recall": 0.364,
+          "f1": 0.533,
+          "tp": 4,
+          "fp": 0,
+          "fn": 7
+        },
+        "named_organization": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "tp": 5,
+          "fp": 0,
+          "fn": 0
+        },
+        "procurement_ref": {
+          "precision": 1.0,
+          "recall": 0.333,
+          "f1": 0.5,
+          "tp": 1,
+          "fp": 0,
+          "fn": 2
+        },
+        "specific_date": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "tp": 4,
+          "fp": 0,
+          "fn": 0
+        },
+        "evidence_available": {
+          "precision": 0.5,
+          "recall": 1.0,
+          "f1": 0.667,
+          "tp": 1,
+          "fp": 1,
+          "fn": 0
+        }
+      },
+      "repeated_subject_by_official": {
+        "precision": 1.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "tp": 0,
+        "fp": 0,
+        "fn": 1
+      },
+      "injection_intact": "1/1",
+      "seconds": {
+        "median": 2.158,
+        "p95": 4.938
+      }
+    }
+  }
+}

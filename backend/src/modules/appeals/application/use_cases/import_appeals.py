@@ -51,4 +51,11 @@ class ImportAppealsUseCase:
             analyzed += len(batch)
             logger.info("Seed: analyzed {} appeals", analyzed)
 
-        return {"appeals": len(appeals), "appeals_analyzed": analyzed}
+        # appeals_precomputed — анализ пришёл из сидов (AI-06), appeals_analyzed — разобраны
+        # сейчас. С предрасчётом второе 0: это норма, а не потерянный анализ.
+        precomputed = sum(1 for a in appeals if a.analysis is not None)
+        return {
+            "appeals": len(appeals),
+            "appeals_precomputed": precomputed,
+            "appeals_analyzed": analyzed,
+        }

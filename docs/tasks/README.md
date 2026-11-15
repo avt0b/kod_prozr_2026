@@ -102,10 +102,10 @@
 | F-17 | Слайды ([#13](https://github.com/avt0b/kod_prozr_2026/issues/13)) | Егор | КТ4 | КТ3 | wip |
 | AI-01 | Генератор синтетики: структура и образцы ([#11](https://github.com/avt0b/kod_prozr_2026/issues/11)) | Влад О. | КТ0 | T-01 | done |
 | AI-02 | Генератор: полный объём, схемы, `_truth` ([#11](https://github.com/avt0b/kod_prozr_2026/issues/11)) | Влад О. | КТ1 | AI-01 | done |
-| AI-03 | Выбор и проверка LLM ([#12](https://github.com/avt0b/kod_prozr_2026/issues/12)) | Влад О. | КТ0 | OPS-05 | wip |
+| AI-03 | Выбор и проверка LLM ([#12](https://github.com/avt0b/kod_prozr_2026/issues/12)) | Влад О. | КТ0 | OPS-05 | review |
 | AI-04 | Анализ обращения `analyze_appeal` ([#12](https://github.com/avt0b/kod_prozr_2026/issues/12)) | Влад О. | КТ2 | AI-03 | done |
 | AI-05 | Сопоставление лиц `match_persons` ([#12](https://github.com/avt0b/kod_prozr_2026/issues/12)) | Влад О. | КТ2 | AI-02 | done |
-| AI-06 | Предрасчёт анализа 100 обращений в сиды ([#12](https://github.com/avt0b/kod_prozr_2026/issues/12)) | Влад О. | КТ3 | AI-04, AI-05 | wip |
+| AI-06 | Предрасчёт анализа 100 обращений в сиды ([#12](https://github.com/avt0b/kod_prozr_2026/issues/12)) | Влад О. | КТ3 | AI-04, AI-05 | review |
 | AI-07 | R08: ML-аномалии относительно коллег ([#12](https://github.com/avt0b/kod_prozr_2026/issues/12)) | Влад О. | КТ4 | AI-02 | done |
 | AI-08 | Оценка качества `make eval` ([#12](https://github.com/avt0b/kod_prozr_2026/issues/12)) | Влад О. | КТ4 | AI-04, AI-07 | done |
 | AI-09 | LLM-текст докладной — если успеваем ([#12](https://github.com/avt0b/kod_prozr_2026/issues/12)) | Влад О. | после КТ3 | B-16 | done |
@@ -153,8 +153,8 @@ lint, prettier, tsc, build, 14 unit-тестов; генератор — тес�
 
 | ID | Кто | Что |
 | --- | --- | --- |
-| AI-03 | Влад О. | Скачать `qwen2.5:7b-instruct` (`make llm-up`), замерить время и `make eval EVAL_ARGS="--llm --limit 30"`, вписать в ai.md §8. Загрузку 14.11 остановили: медленная сеть. Без nvidia-container-toolkit Ollama в Docker идёт только на CPU |
-| AI-06 | Влад О. | Предрасчёт в `data/generated/appeals.json` сделан фоллбэком. При поднятой LLM повторить `make precompute` и закоммитить |
+| AI-03 | Влад О. | Сделано 15.11 (PR в `dev` по #12): `qwen2.5:7b-instruct` на GPU, замеры и метрики в ai.md §8. Осталось: проверить Ollama на демо-стенде (OPS-07) |
+| AI-06 | Влад О. | Сделано 15.11: `data/generated/appeals.json` предрасчитан LLM (105 обращений, демо-обращение `new`), порядок демо ADR-16 сохранён |
 | AI-04 | Влад О. | Сигнал `repeated_subject` не реализован (нужен запрос к другим обращениям) |
 | AI-11 | Влад О. | Вариант D не начинали (по плану — после КТ4) |
 | OPS-02 | Кирилл | `make build && make reset` с нуля не проверены: сборка образов 14.11 не прошла из-за сети. Проверить и закрыть. Тег `ollama/ollama:0.12.6` в `.env.example` сверить с реально скачанной версией |
@@ -188,8 +188,8 @@ lint, prettier, tsc, build, 14 unit-тестов; генератор — тес�
 | F-17 | #24 | `feat/tskdocs-24-slides-rebuild` | PR #31. Сборка на pptxgenjs и слайд 7 из report.json готовы. Осталось: переснять скриншоты на чистой БД (`screenshots.mjs` упал после overview.png), обновить подписи 79 → 92 на 73 → 88, CI |
 | OPS-02, 05, 07, 08 | #25 | `feat/tskdvps-25-offline-dump-video` | OPS-02 готово: `make build` в сети хоста, `build && reset && smoke` — 45 OK, `reset` больше не удаляет том модели. Цели `llm-up/llm-check/offline-bundle/offline-load/dump/restore/video` написаны; не проверены offline и restore. Не дописаны devops.md §5, §6, §9. Стек на 15432/18000/3000 (5432/8000 заняты другим проектом). PR не открыт |
 | AI-11 | #22 | `feat/tskai-22-position-risk-map` | Сделано целиком (`GET /risk-map`, экран, контракт, smoke 50 проверок), PR #32: дождаться CI, ревью, слить |
-| AI-03 | #12 | `feat/tskai-12-llm-benchmark` | Ollama 0.12.6 нативно на GPU (`~/.local/share/ollama-bin`, 127.0.0.1:11434), модель скачана. Осталось: `scripts/bench_llm.py`, проверка `engine=llm`, `eval --llm --limit 30` → `eval/report.llm.json`, ai.md §8, PR |
-| AI-06 | #12 | — | После AI-03: `make precompute` с LLM, закоммитить `appeals.json`, проверить, что Соколов не 1-й до обращения (ADR-16) |
+| AI-03 | #12 | `feat/tskai-12-llm-benchmark` | Сделано: замеры, `engine=llm` вживую, `eval/report.llm.json`, ai.md §8 (выбрана `qwen2.5:7b-instruct`). Осталось: ревью и слияние PR из этой ветки |
+| AI-06 | #12 | `feat/tskai-12-llm-benchmark` | Сделано: LLM-предрасчёт в `appeals.json`, Соколов 73 (3-й) → 88 (1-й), e2e порядка демо зелёный |
 | OPS-09 | #2 | слит в #29 | Владельцу: защита `main`/`dev`, environment `production` с секретами, разрешить Actions создавать PR (devops.md §7) |
 | T-02 | #26 | слит в #27 | Живой прогон по чек-листу demo.md после финального стенда |
 | Релиз | — | — | Последним: релизный PR `dev → main` и тег `demo-v1` (согласовано), видео `make video` |

@@ -49,7 +49,7 @@ data/generated/
 
 - id: `uuid5(NAMESPACE, f"{entity}:{key}")`, чтобы ссылки на демо-кейсы были стабильными.
 - `_truth/` бэкенд не загружает. Он нужен только для оценки качества ([ai.md](ai.md)) и калибровки весов.
-- В `appeals.json` поле `analysis = null`, `status = "new"`, `linked_person_ids = []`. Анализ заполняется при сидировании (предрасчёт, ADR-05).
+- Генератор пишет в `appeals.json` `analysis = null`, `status = "new"`, `linked_person_ids = []`. В git лежит предрасчёт AI-06 (`make precompute`, с 15.11 — LLM `qwen2.5:7b-instruct`): `analysis`, привязка и `status = "analyzed"` у всех обращений, кроме демо-обращения (`new`). `make seed` его загружает и анализ не повторяет (лог: `appeals_precomputed: 105, appeals_analyzed: 0`), поэтому `make data` требует повторного `make precompute`.
 - ИНН и ОГРН — с корректными контрольными суммами. ФИО, адреса и телефоны — собственные списки (без Faker, чтобы не тянуть зависимость).
 - **→ в контракт:** значения `Contract.method` — `auction | tender | quotation | single_supplier`. Значения `Appeal.channel` — `web | email | letter | hotline`.
 - Порог для «закупки чуть ниже порога» задаём параметром генератора (`--threshold`) и тем же параметром в бэкенде. Конкретную сумму в коде жёстко не прописываем.
