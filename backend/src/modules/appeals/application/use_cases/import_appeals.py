@@ -40,12 +40,14 @@ class ImportAppealsUseCase:
             batch = await self._repository.list_unanalyzed(ANALYZE_BATCH)
             if not batch:
                 break
+            # По одному и по порядку received_at: repeated_subject ищет более ранние
+            # обращения в БД, поэтому каждое сохраняется до разбора следующего.
             for appeal in batch:
                 await self._analysis.analyze(appeal)
                 appeal.clear_events()
-            async with self._unit_of_work:
-                await self._repository.upsert_many(batch)
-                await self._unit_of_work.commit()
+                async with self._unit_of_work:
+                    await self._repository.save(appeal)
+                    await self._unit_of_work.commit()
             analyzed += len(batch)
             logger.info("Seed: analyzed {} appeals", analyzed)
 

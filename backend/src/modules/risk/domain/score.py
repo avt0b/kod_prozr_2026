@@ -24,7 +24,7 @@ class RiskScore:
 
 
 _ML_WEIGHTS: Mapping[Severity, float] = MappingProxyType(
-    {Severity.LOW: 5.0, Severity.MEDIUM: 10.0, Severity.HIGH: 10.0}
+    {Severity.LOW: 3.0, Severity.MEDIUM: 5.0, Severity.HIGH: 5.0}
 )
 
 
@@ -32,20 +32,23 @@ _ML_WEIGHTS: Mapping[Severity, float] = MappingProxyType(
 class ScorePolicy:
     """Методика балла (ADR-04, docs/backend.md) — единственное место, где заданы веса.
 
-    Вес флага: high 40, medium 20, low 7. R08 (ML) весит 5 (low) или 10 (medium и выше):
-    ML в одиночку не выводит служащего в топ.
+    Вес флага: high 40, medium 20, low 5. R08 (ML) весит 3 (low) или 5 (medium и выше):
+    ML в одиночку не выводит служащего в топ и не тяжелее самого лёгкого правила.
 
     Балл: score = min(100, Σ вклад правил).
       Вклад правила = вес его самого тяжёлого флага + половина веса каждого следующего флага
       того же правила, но не больше двух весов самого тяжёлого флага. Так десять однотипных
       связей не перевешивают две разные схемы.
 
-    Веса предварительные: при калибровке (B-17) меняем только константы и тест эталонных случаев.
+    Калибровка B-17 (ADR-16): слабые сигналы (два low и R08 medium) вместе не больше
+    medium − 5 = 15. Так серия расплывчатых подсказок не перевешивает отдельную схему, а одно
+    конкретное обращение (R07 low -> medium) перевешивает. Пересчитывать при смене весов:
+    tests/unit/risk/test_engine_and_score.py и tests/e2e/risk/test_demo_ranking.py.
     """
 
     high: float = 40.0
     medium: float = 20.0
-    low: float = 7.0
+    low: float = 5.0
     ml_weights: Mapping[Severity, float] = field(default_factory=lambda: _ML_WEIGHTS)
     repeat_factor: float = 0.5
     rule_cap_factor: float = 2.0

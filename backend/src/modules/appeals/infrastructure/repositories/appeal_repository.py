@@ -1,7 +1,8 @@
 from collections.abc import Sequence
+from datetime import datetime
 from uuid import UUID
 
-from sqlalchemy import func, select
+from sqlalchemy import func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.core.dto import Page, PageRequest
@@ -10,7 +11,8 @@ from src.modules.appeals.application.interfaces.appeal_repository import (
     AppealRepositoryInterface,
 )
 from src.modules.appeals.domain.appeal import Appeal
-from src.modules.appeals.domain.enums import AppealCategory, AppealStatus
+from src.modules.appeals.domain.enums import AppealCategory, AppealStatus, EntityType
+from src.modules.appeals.domain.repeats import PriorAppeal, company_keys
 from src.modules.appeals.infrastructure.database.models import AppealModel
 
 MAX_LINKED = 10_000
@@ -57,6 +59,47 @@ class AppealRepository(AppealRepositoryInterface):
             .limit(MAX_LINKED)
         )
         return [r.to_entity() for r in rows]
+
+    async def prior_subjects(
+        self,
+        exclude_id: UUID,
+        since: datetime,
+        before: datetime,
+        person_ids: Sequence[UUID],
+        with_companies: bool,
+    ) -> list[PriorAppeal]:
+        subjects = []
+        if person_ids:
+            subjects.append(AppealModel.linked_person_ids.overlap(list(person_ids)))
+        if with_companies:
+            organization = {"entities": [{"type": EntityType.ORGANIZATION.value}]}
+            subjects.append(AppealModel.analysis.contains(organization))
+        if not subjects:
+            return []
+        rows = await self._session.scalars(
+            select(AppealModel)
+            .where(
+                AppealModel.id != exclude_id,
+                AppealModel.analysis.is_not(None),
+                AppealModel.received_at >= since,
+                AppealModel.received_at < before,
+                or_(*subjects),
+            )
+            .order_by(AppealModel.received_at.desc())
+            .limit(MAX_LINKED)
+        )
+        result = []
+        for row in rows:
+            appeal = row.to_entity()
+            result.append(
+                PriorAppeal(
+                    id=appeal.id,
+                    received_at=appeal.received_at,
+                    linked_person_ids=appeal.linked_person_ids,
+                    companies=company_keys(appeal.analysis),
+                )
+            )
+        return result
 
     async def list_unanalyzed(self, limit: int) -> list[Appeal]:
         rows = await self._session.scalars(
