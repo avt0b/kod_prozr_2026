@@ -12,7 +12,7 @@
 #   OLLAMA_MODELS_DIR  каталог моделей на хосте (например ~/.ollama/models), если модель
 #                      скачана не в том compose; по умолчанию берётся том kodprozr_ollama_models
 #   WITH_MODELS        auto | 1 | 0 — то же для моделей
-# Подробности и пошаговая инструкция — docs/devops.md §7.
+# Подробности и пошаговая инструкция — docs/devops.md §9.
 set -euo pipefail
 
 ROOT=$(cd "$(dirname "$0")/.." && pwd)
@@ -110,7 +110,7 @@ bundle() {
         echo
         echo "Загрузка: распаковать kodprozr-src.tar.gz, затем в его корне"
         echo "  make offline-load OFFLINE_DIR=<путь к этому каталогу> && make reset OFFLINE=1"
-        echo "Подробно: docs/devops.md §7."
+        echo "Подробно: docs/devops.md §9."
     } >"$dir/MANIFEST.txt"
     find "$dir" -type d -empty -delete
     (cd "$dir" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum >SHA256SUMS)
