@@ -49,6 +49,8 @@ DB_DIR ?= dist/db
 VIDEO_DIR ?= dist/video
 OFFLINE_DIR ?= dist/offline
 VIDEO_SPEC ?= e2e/demo.spec.ts
+# Задержка между действиями браузера в видео, мс (frontend/playwright.config.ts, #23).
+DEMO_SLOWMO ?= 400
 
 # --- Команды бэка и фронта --------------------------------------------------
 # Любую можно переопределить без правки файла: make seed SEED_CMD="python -m src.seed --dir ..."
@@ -171,7 +173,8 @@ video: ## Видео-бэкап: Playwright-сценарий демо проти
 	@test -d frontend/node_modules/@playwright/test || { echo "Нет Playwright: cd frontend && npm ci && npx playwright install chromium"; exit 1; }
 	@curl -fsS -m 5 -o /dev/null $(FRONT_URL) || { echo "Стенд не отвечает на $(FRONT_URL): сначала make reset"; exit 1; }
 	@stamp=$$(mktemp); \
-	(cd frontend && DEMO_VIDEO=1 BASE_URL=$(FRONT_URL) npx playwright test $(VIDEO_SPEC)); rc=$$?; \
+	(cd frontend && DEMO_VIDEO=1 DEMO_SLOWMO=$(DEMO_SLOWMO) BASE_URL=$(FRONT_URL) API_URL=$(API_URL)/api/v1 \
+		npx playwright test $(VIDEO_SPEC)); rc=$$?; \
 	mkdir -p $(VIDEO_DIR); ts=$$(date +%Y%m%d-%H%M%S); n=0; \
 	while IFS= read -r v; do n=$$((n+1)); cp "$$v" "$(VIDEO_DIR)/demo-$$ts-$$n.$${v##*.}"; done \
 		< <(find frontend -path frontend/node_modules -prune -o -type f \( -name '*.webm' -o -name '*.mp4' \) -newer "$$stamp" -print); \
