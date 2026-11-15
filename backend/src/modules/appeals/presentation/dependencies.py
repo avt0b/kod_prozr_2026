@@ -78,8 +78,9 @@ def get_appeal_analysis_service(
     analyzer: Annotated[AppealAnalyzer, Depends(get_appeal_analyzer)],
     directory: Annotated[PersonDirectoryInterface, Depends(get_person_directory)],
     matcher: Annotated[PersonMatcherInterface, Depends(get_person_matcher)],
+    repository: Annotated[AppealRepositoryInterface, Depends(get_appeal_repository)],
 ) -> AppealAnalysisService:
-    return AppealAnalysisService(analyzer, directory, matcher)
+    return AppealAnalysisService(analyzer, directory, matcher, repository)
 
 
 def get_create_appeal_use_case(
