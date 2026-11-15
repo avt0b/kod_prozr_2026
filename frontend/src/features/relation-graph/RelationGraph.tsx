@@ -16,6 +16,19 @@ import { compactPositions, evidenceEdge, graphElements } from './graphModel';
 import { groupContracts } from './contractGroups';
 import { NODE_TYPE_LABELS } from '@/shared/lib/labels';
 
+/** Самый крупный масштаб при вписывании: короткая цепочка (R07 из 3 узлов) не раздувается на весь экран. */
+const MAX_FIT_ZOOM = 1.4;
+
+/** Вписывает подсвеченную цепочку, а если её нет — весь граф. */
+function fitGraph(cy: Core) {
+  const target = cy.elements('.hl').length ? cy.elements('.hl') : cy.elements();
+  cy.fit(target, 45);
+  if (cy.zoom() > MAX_FIT_ZOOM) {
+    cy.zoom(MAX_FIT_ZOOM);
+    cy.center(target);
+  }
+}
+
 interface Props {
   graph: OfficialGraph;
   /** Узел, вокруг которого построен граф (крупнее остальных). */
@@ -100,7 +113,7 @@ export function RelationGraph({ graph, rootId, highlight, onNodeClick, height = 
     cyRef.current = cy;
     const observer = new ResizeObserver(() => {
       cy.resize();
-      cy.fit(cy.elements('.hl').length ? cy.elements('.hl') : undefined, 45);
+      fitGraph(cy);
     });
     observer.observe(containerRef.current);
     return () => {
@@ -127,7 +140,7 @@ export function RelationGraph({ graph, rootId, highlight, onNodeClick, height = 
         .removeClass('faded')
         .addClass('hl');
     });
-    cy.fit(highlight?.length ? cy.elements('.hl') : undefined, 45);
+    fitGraph(cy);
   }, [highlight, elements, dark, prepared, layout]);
 
   return (
@@ -149,7 +162,7 @@ export function RelationGraph({ graph, rootId, highlight, onNodeClick, height = 
           size="xs"
           onClick={() => {
             const cy = cyRef.current;
-            if (cy) cy.fit(cy.elements('.hl').length ? cy.elements('.hl') : undefined, 45);
+            if (cy) fitGraph(cy);
           }}
         >
           Вписать граф

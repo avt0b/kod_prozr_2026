@@ -128,7 +128,8 @@ export function CompaniesSection({ profile }: { profile: OfficialProfile }) {
             </Table.Thead>
             <Table.Tbody>
               {profile.companies.map((c) => (
-                <Table.Tr key={`${c.company.id}-${c.via_person_id}-${c.role}`}>
+                // Одна компания может встретиться дважды: два периода работы в ней
+                <Table.Tr key={`${c.company.id}-${c.via_person_id}-${c.role}-${c.started_at}`}>
                   <Table.Td>
                     <Text size="sm" fw={500}>
                       {c.company.name}
