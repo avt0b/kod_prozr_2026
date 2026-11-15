@@ -1,9 +1,9 @@
 # DevOps: запуск, dev-режим, LLM, деплой
 
 Процесс команды — [workflow.md](workflow.md). Две постоянные ветки: `dev` для интеграции,
-`main` для релизов. Целевой прод-деплой: тег `vMAJOR.MINOR.PATCH` на коммите из `main`,
-ключ только в GitHub Secrets. Конвейер и защита веток внедряются Кириллом отдельной задачей;
-локальные команды ниже сами по себе не являются разрешением деплоя в прод.
+`main` для релизов. Прод-деплой: тег `vMAJOR.MINOR.PATCH` на коммите из `main`, ключ только
+в GitHub Secrets. Конвейер, откат и ручное включение защиты веток описаны в разделе 7.
+Локальные команды ниже сами по себе не дают разрешения на деплой в прод.
 
 Ответственный — Кирилл. Срок сдачи — 13 ноября 2026. Порты и переменные задаёт
 [contracts.md](contracts.md); если они меняются, этот файл обновляется вместе с ним.
@@ -269,6 +269,10 @@ DNS: A-запись домена указывает на IP VPS. Caddy выпу�
 
 ### Обновление и бэкап
 
+Штатное обновление прода — релизный тег (раздел 7): образы из GHCR, бэкап перед миграциями,
+health/smoke и откат. Ручной вариант ниже подходит для резервного ноутбука или для стенда,
+где конвейер ещё не настроен.
+
 ```bash
 cd /opt/kodprozr && git pull && make up              # пересборка и перезапуск; миграции применятся при старте
 docker compose exec postgres pg_dump -U kodprozr kodprozr | gzip > backup_$(date +%F_%H%M).sql.gz
@@ -276,7 +280,268 @@ docker compose exec postgres pg_dump -U kodprozr kodprozr | gzip > backup_$(date
 
 Восстановление: `gunzip -c backup.sql.gz | docker compose exec -T postgres psql -U kodprozr kodprozr`.
 
-## 7. Чеклист Кирилла (10–13 ноября)
+## 7. Релиз и деплой
+
+Production выкладывается только по релизному тегу. Push в рабочие ветки, в `dev` и в `main`
+деплой не запускает: `release.yml` слушает только теги, `ci.yml` деплоя не содержит.
+
+```
+PR → dev ──► релизный PR dev → main (merge commit) ──► sync-dev.yml: служебный PR main → dev
+                                   │
+                    тег vX.Y.Z на коммите main
+                                   ▼
+release.yml: verify ─► checks (ci.yml) ─► images (GHCR) ─► deploy (environment production)
+             тег в main?   backend/frontend/data   backend, frontend   ssh: pull, бэкап, migrate,
+                                                                       up, health, smoke, откат
+```
+
+### Workflow
+
+| Файл | Триггер | Что делает |
+| --- | --- | --- |
+| `.github/workflows/ci.yml` | PR и push в `dev`/`main`, `workflow_call` | проверки `backend`, `frontend`, `data`; без деплоя |
+| `.github/workflows/release.yml` | push тега `v*.*.*` или `demo-v*` | релизный конвейер, см. ниже |
+| `.github/workflows/sync-dev.yml` | push в `main`, ручной запуск | служебный PR `main → dev` |
+| `.github/workflows/workflow-policy.yml` | PR в `dev`/`main` | проверка `policy`: ветка, issue, сообщения |
+
+Задания `release.yml`:
+
+1. **verify.** Тег должен иметь вид `vMAJOR.MINOR.PATCH` или `demo-vN`, а его коммит должен быть
+   достижим из `origin/main` (`git merge-base --is-ancestor`). Иначе релиз падает здесь, до сборки
+   и до деплоя. Тег на коммите из `dev` или рабочей ветки отклоняется.
+2. **checks.** Вызывает `ci.yml` через `workflow_call`, то есть те же проверки, что и в PR.
+3. **images.** Собирает и публикует `ghcr.io/<owner>/<repo>/backend:<tag>` и
+   `ghcr.io/<owner>/<repo>/frontend:<tag>` (имя в нижнем регистре, сейчас
+   `ghcr.io/avt0b/kod_prozr_2026/...`). Используется `GITHUB_TOKEN` с `packages: write`.
+   `VITE_API_URL` фронта берётся из переменной `PROD_VITE_API_URL` и по умолчанию равен `/api/v1`,
+   потому что на стенде фронт и API находятся за одним доменом (раздел 6).
+4. **deploy.** Выполняется только для тегов `v*` (тег `demo-vN` публикует снимок образов без
+   деплоя, см. workflow.md) и только в environment `production`. Если секреты `DEPLOY_HOST`,
+   `DEPLOY_USER` или `DEPLOY_SSH_KEY` не заданы, job пишет notice «Deploy пропущен» и
+   завершается успешно, релиз при этом остаётся зелёным. Если секреты заданы, по ssh на хост
+   копируются `docker-compose.yml`, `deploy/`, `scripts/smoke.py` и `data/generated` в
+   `DEPLOY_PATH`, после чего запускается `deploy/deploy.sh deploy <tag> <prefix> <actor>`.
+
+Один релиз выполняется за раз (`concurrency: release`), начатый деплой не отменяется.
+
+### Environment, секреты и переменные
+
+Значения задаются в **Settings → Environments → `production`**. В репозиторий, issues и
+handoff-файлы они не попадают. В логе Actions секреты маскируются, а workflow проверяет только,
+заданы ли они, и их не печатает. Токен GHCR передаётся `deploy.sh` через stdin, после выкладки
+выполняется `docker logout`.
+
+| Имя | Тип | Обязателен | Назначение |
+| --- | --- | --- | --- |
+| `DEPLOY_HOST` | secret | да | адрес VPS |
+| `DEPLOY_USER` | secret | да | ssh-пользователь, входит в группу `docker` |
+| `DEPLOY_SSH_KEY` | secret | да | приватный ключ (ed25519) только для деплоя, без пароля |
+| `DEPLOY_KNOWN_HOSTS` | secret | рекомендуется | строка `ssh-keyscan` хоста; без неё ключ хоста принимается без проверки (warning) |
+| `DEPLOY_PORT` | variable | нет | порт ssh, по умолчанию `22` |
+| `DEPLOY_PATH` | variable | нет | каталог деплоя на хосте, по умолчанию `/opt/kodprozr` |
+| `PROD_VITE_API_URL` | variable (repo) | нет | адрес API для бандла фронта, по умолчанию `/api/v1` |
+| `DEPLOY_SEED` | variable | нет | `true` — залить `data/generated` после миграций; только для первого деплоя на пустую БД |
+| `DEPLOY_SMOKE_ARGS` | variable | нет | аргументы `smoke.py`, по умолчанию `--keep-demo` |
+| `SYNC_PR_TOKEN` | secret (repo) | нет | fine-grained PAT (Contents: read, Pull requests: write) для служебного PR, чтобы на нём сразу стартовали CI и policy |
+
+`PROD_VITE_API_URL` — переменная уровня репозитория, потому что job `images` работает без
+environment. Остальные значения можно хранить в environment. Если тариф не даёт environment
+для приватного репо, те же имена работают и как секреты/переменные репозитория.
+
+Настройка владельцем (значения подставляются локально и в git не попадают):
+
+```bash
+REPO=avt0b/kod_prozr_2026
+# environment: деплой разрешён только с тегов v*.*.*
+gh api -X PUT "repos/$REPO/environments/production" --input - <<'JSON'
+{"deployment_branch_policy": {"protected_branches": false, "custom_branch_policies": true}}
+JSON
+gh api -X POST "repos/$REPO/environments/production/deployment-branch-policies" \
+  -f name='v*.*.*' -f type=tag
+# Required reviewers (по желанию) включаются в Settings → Environments → production.
+
+ssh-keygen -t ed25519 -N '' -C kodprozr-deploy -f ./deploy_key   # публичную часть — в authorized_keys хоста
+gh secret set DEPLOY_SSH_KEY --env production --repo "$REPO" < ./deploy_key
+gh secret set DEPLOY_HOST --env production --repo "$REPO"        # значение вводится интерактивно
+gh secret set DEPLOY_USER --env production --repo "$REPO"
+ssh-keyscan -t ed25519 <хост> | gh secret set DEPLOY_KNOWN_HOSTS --env production --repo "$REPO"
+gh variable set PROD_VITE_API_URL --repo "$REPO" --body /api/v1
+rm ./deploy_key
+```
+
+### Подготовка хоста
+
+Хост готовится по разделу 6: Docker, Caddy, ufw, DNS. Вместо `git clone` достаточно каталога
+`DEPLOY_PATH` с `.env`, остальные файлы туда кладёт релиз. Если в каталоге уже лежит клон
+репозитория, релиз перезапишет `docker-compose.yml` версией из тега. Требования:
+
+- `.env` стенда лежит в `DEPLOY_PATH`, без него `deploy.sh` откажется работать;
+- `DEPLOY_USER` состоит в группе `docker`, на хосте есть `python3` и `curl` (Ubuntu 24.04 — есть);
+- первый деплой на пустую БД выполняется с переменной `DEPLOY_SEED=true`; после успеха её надо
+  удалить, иначе сиды будут заливаться при каждом релизе.
+
+### Что делает `deploy/deploy.sh`
+
+`deploy.sh deploy <tag> <prefix> [<user>]` выполняет шаги по порядку:
+
+1. Входит в GHCR, если токен передан на stdin.
+2. Скачивает образы `<prefix>/{backend,frontend}:<tag>` и поднимает `postgres`.
+3. Снимает дамп `backups/pre-<tag>-<время>.sql.gz` и выполняет `alembic upgrade head`.
+4. Поднимает `backend` и `frontend` с `--wait` по healthcheck.
+5. Проверяет `GET /health` и запускает `python3 scripts/smoke.py --api http://127.0.0.1:8000 --keep-demo`.
+
+Образы подставляет наложение `deploy/docker-compose.release.yml`, в него передаются
+`BACKEND_IMAGE` и `FRONTEND_IMAGE`. Локальный `make up` это наложение не использует и по-прежнему
+собирает образы сам.
+
+Smoke с `--keep-demo` не отправляет демо-обращение, но выполняет `risk/recompute` и создаёт одну
+докладную. Это записи журнала, данные демо при этом не ломаются. Для smoke нужна залитая
+синтетика.
+
+Состояние релизов хранится в `DEPLOY_PATH/.release/`: `current_tag` (текущий успешный),
+`previous_tag`, `image_prefix` и `history.log`.
+
+### Откат
+
+- **Автоматический.** Если health или smoke нового тега не прошли, `deploy.sh` поднимает
+  `previous_tag` теми же шагами (без нового бэкапа и сидов), записывает исход в `history.log`
+  и завершается с ошибкой. Job `deploy` и релиз становятся красными, `current_tag` при этом
+  не меняется.
+- **Ручной на хосте**, если проблема всплыла после успешного релиза:
+
+  ```bash
+  cd /opt/kodprozr
+  deploy/deploy.sh status      # текущий/предыдущий тег, контейнеры, история
+  deploy/deploy.sh rollback    # поднять previous_tag; current и previous меняются местами
+  ```
+
+  Без входа в GHCR используются уже скачанные образы. Если образа на хосте нет, сначала
+  выполните `docker login ghcr.io` (PAT с `read:packages`).
+- **Через Actions.** Можно перезапустить (Re-run all jobs) релиз прошлого тега. Новый тег на
+  старом коммите не нужен.
+- **Миграции не откатываются.** Если новая миграция несовместима со старым кодом, после отката
+  восстановите дамп, снятый перед ней:
+
+  ```bash
+  cd /opt/kodprozr
+  docker compose stop backend frontend
+  docker compose exec -T postgres psql -U kodprozr -d kodprozr \
+    -c 'DROP SCHEMA public CASCADE; CREATE SCHEMA public;'
+  gunzip -c backups/pre-<tag>-<время>.sql.gz \
+    | docker compose exec -T postgres psql -U kodprozr -d kodprozr -v ON_ERROR_STOP=1
+  docker compose start backend frontend   # те же контейнеры текущего (откатанного) тега
+  ```
+
+  Поэтому миграции пишем обратно совместимыми: в одном релизе столбец или таблицу добавляем,
+  а удаляем только в следующем.
+
+### Выпуск релиза (Кирилл)
+
+```bash
+git fetch origin
+git switch --detach origin/main            # проверенный коммит после релизного PR dev → main
+git tag -a v1.0.0 -m 'Релиз v1.0.0'
+git push origin v1.0.0                     # запускает release.yml
+gh run watch "$(gh run list --workflow Release --limit 1 --json databaseId --jq '.[0].databaseId')"
+```
+
+Тег ставится только после merge релизного PR и зелёного CI на `main`. Тег `demo-vN` ставится так же,
+он публикует образы, но не деплоит.
+
+### Синхронизация main → dev
+
+После каждого push в `main` (merge релизного PR) `sync-dev.yml` проверяет, содержит ли `dev` уже
+`main`. Если нет и служебный PR ещё не открыт, workflow открывает PR `main → dev`. Номер release
+issue он берёт из строки `Issue: #N` релизного PR. Сам workflow ничего не пушит; PR сливается
+обычным **merge commit** после CI и ревью. Squash и rebase не подходят: после них `main` не станет
+предком `dev`, и PR откроется снова.
+
+- Чтобы `GITHUB_TOKEN` мог открыть PR, владелец включает **Settings → Actions → General →
+  Workflow permissions → Allow GitHub Actions to create and approve pull requests**
+  (`gh api -X PUT repos/$REPO/actions/permissions/workflow -f default_workflow_permissions=read -F can_approve_pull_request_reviews=true`).
+- PR, открытый `GITHUB_TOKEN`, сам CI не запускает. Есть два способа: задать секрет `SYNC_PR_TOKEN`
+  или после открытия закрыть и снова открыть PR (это запустит CI и policy). Policy можно также
+  запустить отдельно: **Actions → Workflow policy → Run workflow**, `pr=<номер>`.
+
+### Защита веток (включает владелец репозитория вручную)
+
+Workflow настройки репозитория не меняют. Защиту `main` и `dev` включает владелец (`avt0b`), когда
+проверки `backend`, `frontend` (workflow `CI`) и `policy` (workflow `Workflow policy`) уже хотя бы
+раз прошли на PR. До первого запуска GitHub не предлагает их в списке required checks.
+
+Branch protection и rulesets для **приватного** репозитория требуют тарифа GitHub Pro/Team
+(для личного аккаунта владельца — Pro). На Free настройки ниже вернут 403; тогда репозиторий
+нужно сделать публичным или сменить тариф.
+
+**Через UI**: Settings → Branches → Add branch ruleset (или Add classic branch protection rule)
+для `main` и отдельно для `dev`:
+
+1. Branch name pattern: `main` (затем `dev`).
+2. Require a pull request before merging; Required approvals: 1; Dismiss stale approvals.
+3. Require status checks to pass: `backend`, `frontend`, `policy`. Для `main` также включить
+   Require branches to be up to date.
+4. Require conversation resolution before merging.
+5. Do not allow bypassing the above settings (Include administrators).
+6. Allow force pushes и Allow deletions оставить **выключенными**.
+7. Для `main` в Settings → General → Pull Requests оставить включённым Allow merge commits,
+   потому что релиз и синхронизация идут merge commit.
+
+**Через `gh api`** (classic branch protection, выполняет владелец):
+
+```bash
+REPO=avt0b/kod_prozr_2026
+protect() {  # $1 — ветка, $2 — strict (true: ветка должна быть актуальна перед merge)
+  gh api -X PUT "repos/$REPO/branches/$1/protection" \
+    -H 'Accept: application/vnd.github+json' --input - <<JSON
+{
+  "required_status_checks": {
+    "strict": $2,
+    "checks": [{"context": "backend"}, {"context": "frontend"}, {"context": "policy"}]
+  },
+  "enforce_admins": true,
+  "required_pull_request_reviews": {
+    "required_approving_review_count": 1,
+    "dismiss_stale_reviews": true
+  },
+  "restrictions": null,
+  "required_conversation_resolution": true,
+  "allow_force_pushes": false,
+  "allow_deletions": false
+}
+JSON
+}
+protect main true
+protect dev false
+
+# проверка
+gh api "repos/$REPO/branches/main/protection" \
+  --jq '{checks: [.required_status_checks.checks[].context], reviews: .required_pull_request_reviews.required_approving_review_count, admins: .enforce_admins.enabled, force: .allow_force_pushes.enabled, delete: .allow_deletions.enabled}'
+```
+
+Если проверка `backend` или `frontend` пропущена (каталога ещё нет и `detect` вернул `false`),
+GitHub считает её успешной. Это ожидаемо.
+
+Дополнительно можно запретить ставить и удалять релизные теги всем, кроме владельца
+(ruleset для тегов):
+
+```bash
+gh api -X POST "repos/$REPO/rulesets" --input - <<'JSON'
+{
+  "name": "release-tags",
+  "target": "tag",
+  "enforcement": "active",
+  "conditions": {"ref_name": {"include": ["refs/tags/v*.*.*"], "exclude": []}},
+  "rules": [{"type": "creation"}, {"type": "update"}, {"type": "deletion"}],
+  "bypass_actors": [{"actor_id": 5, "actor_type": "RepositoryRole", "bypass_mode": "always"}]
+}
+JSON
+```
+
+`actor_id: 5` — роль Admin репозитория: только она может ставить и двигать теги `v*.*.*`.
+Если релизы ставит Кирилл без прав Admin, выдайте ему роль Maintain и добавьте в
+`bypass_actors` запись `{"actor_id": 2, "actor_type": "RepositoryRole", "bypass_mode": "always"}`.
+
+## 8. Чеклист Кирилла (10–13 ноября)
 
 ### День 1 — 10.11: локальный стек
 

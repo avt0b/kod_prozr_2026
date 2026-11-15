@@ -1,0 +1,87 @@
+name: Sync main to dev
+
+# После релизного merge dev → main открывает служебный PR main → dev (docs/workflow.md, раздел 5).
+# Ничего не пушит сам: история сохраняется, merge PR — обычным merge commit после CI и ревью.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: sync-main-dev
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      # PR от GITHUB_TOKEN не запускает CI и policy. Если задан секрет SYNC_PR_TOKEN
+      # (fine-grained PAT: contents read, pull requests write), PR открывается им и проверки идут сразу.
+      - name: Open sync PR main → dev
+        env:
+          GH_TOKEN: ${{ secrets.SYNC_PR_TOKEN || github.token }}
+          USES_PAT: ${{ secrets.SYNC_PR_TOKEN != '' }}
+          REPO: ${{ github.repository }}
+          SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          git fetch --no-tags origin +refs/heads/main:refs/remotes/origin/main +refs/heads/dev:refs/remotes/origin/dev
+          if git merge-base --is-ancestor origin/main origin/dev; then
+            echo "::notice::dev уже содержит main, синхронизация не нужна"
+            exit 0
+          fi
+          existing=$(gh pr list --repo "$REPO" --base dev --head main --state open --json url --jq '.[0].url // empty')
+          if [ -n "$existing" ]; then
+            echo "::notice::Служебный PR main → dev уже открыт: $existing"
+            exit 0
+          fi
+
+          # Release issue берём из релизного PR, который принёс этот коммит в main.
+          issue=$(gh api "repos/$REPO/commits/$SHA/pulls" \
+            --jq '[.[] | select(.base.ref == "main") | .body // ""] | first // ""' \
+            | grep -oP '^Issue:\s*#\K[1-9][0-9]*' | head -n 1 || true)
+          if [ -n "$issue" ]; then
+            issue_line="Issue: #$issue"
+            title="chore(release): синхронизировать main → dev (#$issue)"
+          else
+            echo "::warning::В релизном PR нет строки Issue: #N — укажите release issue в описании служебного PR"
+            issue_line="Issue: #УКАЗАТЬ_RELEASE_ISSUE"
+            title="chore(release): синхронизировать main → dev"
+          fi
+
+          cat > "$RUNNER_TEMP/sync-pr.md" <<EOF
+          $issue_line
+
+          ## Результат
+
+          Служебная синхронизация после релиза: main (\`${SHA:0:8}\`) вливается в dev,
+          чтобы релизный merge commit и хотфиксы main были в интеграционной ветке.
+          Новых задач не содержит.
+
+          ## Область и ответственный
+
+          DevOps, release issue выше. Сливать обычным merge commit (не squash, не rebase),
+          без force-push: иначе main не станет предком dev и PR откроется снова.
+
+          ## Проверки
+
+          CI и Workflow policy по этому PR.
+
+          ## Зависимости и интеграция
+
+          Источник main, база dev, тот же release issue (docs/workflow.md, раздел 5).
+          EOF
+
+          url=$(gh pr create --repo "$REPO" --base dev --head main --title "$title" --body-file "$RUNNER_TEMP/sync-pr.md")
+          echo "::notice::Открыт служебный PR: $url"
+          if [ "$USES_PAT" != "true" ]; then
+            echo "::warning::PR открыт GITHUB_TOKEN: CI и policy на нём не стартуют сами. Запустите их вручную (Workflow policy → Run workflow с номером PR; CI — закрыть и открыть PR) или задайте секрет SYNC_PR_TOKEN"
+          fi
