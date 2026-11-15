@@ -55,6 +55,10 @@ from src.modules.stats.infrastructure.adapters.acl import (
     OfficialsCounterACLAdapter,
     RiskCounterACLAdapter,
 )
+from src.modules.stats.infrastructure.adapters.risk_map_acl import (
+    OfficialPlacementsACLAdapter,
+    OfficialRiskProfilesACLAdapter,
+)
 
 # --- Published language модулей --------------------------------------------------------------
 
@@ -140,6 +144,14 @@ def stats_risk_counter(session: AsyncSession) -> RiskCounterACLAdapter:
 
 def stats_appeals_counter(session: AsyncSession) -> AppealsCounterACLAdapter:
     return AppealsCounterACLAdapter(appeals_query(session))
+
+
+def stats_official_placements(session: AsyncSession) -> OfficialPlacementsACLAdapter:
+    return OfficialPlacementsACLAdapter(officials_query(session))
+
+
+def stats_official_risk_profiles(session: AsyncSession) -> OfficialRiskProfilesACLAdapter:
+    return OfficialRiskProfilesACLAdapter(risk_query(session))
 
 
 def assistant_tools(session: AsyncSession) -> AssistantToolsACL:

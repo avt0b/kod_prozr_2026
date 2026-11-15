@@ -149,6 +149,23 @@ def run(api: str, send_demo: bool) -> Smoke:
     )
     s.expect(keys(answer, "answer", "sources"), "/assistant/ask: нет полей")
 
+    risk_map = s.call("GET", f"{v1}/risk-map")
+    s.expect(
+        keys(risk_map, "items", "total", "organs", "computed_at") and risk_map["total"] >= 1,
+        "/risk-map: пусто или нет полей",
+    )
+    if risk_map and risk_map.get("items"):
+        cell = risk_map["items"][0]
+        s.expect(
+            keys(cell, "position_id", "organ_id", "risk_level", "typical_risks", "officials_total",
+                 "officials_with_flags", "flagged_share", "avg_score", "max_score", "top_rules",
+                 "top_officials"),
+            "/risk-map: нет полей должности",
+        )  # fmt: skip
+        h1_cell = [i for i in risk_map["items"] if pid in {o["id"] for o in i["top_officials"]}]
+        s.expect(bool(h1_cell), "/risk-map: H1 нет среди служащих своей должности")
+    s.call("GET", f"{v1}/risk-map?limit=1000", expect=422)
+
     if send_demo:
         text = DEMO_TEXT_FILE.read_text("utf-8").strip()
         before = h1["risk_score"]
