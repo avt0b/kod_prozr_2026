@@ -282,6 +282,12 @@ Ollama слушает только `127.0.0.1` (условие 1). Если от
   Порог живого показа 20 с не выполняется ни в одном случае. Вывод: на демо LLM включаем только
   на GPU (вариант А с nvidia-container-toolkit или вариант Б). Без GPU показываем фоллбэк.
   Докладная от LLM не зависит: `TemplateReportWriter` (AI-09 выключен), ответ за 11 мс.
+- **Замер 16.11, вариант А на GPU** на той же машине (RTX 4060 Ti 8 ГБ, драйвер 615.78) после
+  `sudo pacman -S nvidia-container-toolkit && sudo nvidia-ctk runtime configure --runtime=docker
+  && sudo systemctl restart docker`. `make llm-up` сам подключил `docker-compose.gpu.yml`,
+  `ollama ps` → `100% GPU`, VRAM 6,5 ГБ. `make smoke` → 50 проверок: демо-обращение 5,4 с
+  (`engine=llm`), `reanalyze` 4,2 с, `/assistant/ask` 1,0 с. Порог 20 с выполняется с запасом.
+  Перезапуск Docker останавливает все контейнеры: без `restart: unless-stopped` они сами не встают.
 - **Модель без сети.** Если контейнер не достаёт `registry.ollama.ai` (16.11 `ollama pull` из
   docker-сети упал по `i/o timeout`), а на хосте модель уже есть в `~/.ollama/models`, её можно
   скопировать в том: `docker run --rm -v kodprozr_ollama_models:/v -v ~/.ollama/models:/src:ro
