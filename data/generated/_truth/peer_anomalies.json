@@ -1,0 +1,30 @@
+[
+ {
+  "person_id": "8d8d19d9-8fa3-5ac2-86e1-42c77162384e",
+  "features": [
+   "share_near_threshold",
+   "young_supplier_share"
+  ]
+ },
+ {
+  "person_id": "28cf6237-801f-5705-8223-908f2f999f56",
+  "features": [
+   "young_supplier_share",
+   "share_single_supplier"
+  ]
+ },
+ {
+  "person_id": "24c97c5f-6380-5853-946d-ddc78dbc9f22",
+  "features": [
+   "share_round_amounts",
+   "share_single_supplier"
+  ]
+ },
+ {
+  "person_id": "30f746f2-6dca-51bb-b671-27083e1bdc6b",
+  "features": [
+   "share_near_threshold",
+   "nominee_director_share"
+  ]
+ }
+]

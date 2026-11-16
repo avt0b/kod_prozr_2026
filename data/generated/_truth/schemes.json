@@ -1,0 +1,630 @@
+[
+ {
+  "case_id": "H1",
+  "rule_codes": [
+   "R01",
+   "R05",
+   "R06",
+   "R07"
+  ],
+  "person_id": "4d32a594-1325-5c9d-bed1-cfec43b131a2",
+  "evidence_ids": [
+   "4d32a594-1325-5c9d-bed1-cfec43b131a2",
+   "389166ea-9188-55a7-9888-e167c8675437",
+   "9af31fd9-ec57-514c-a271-0023c96da37f",
+   "31faa367-f69d-5add-8e40-40bfee1eae75",
+   "522953d0-b1ce-5b11-9594-04f33a0a131b",
+   "4dae5724-3486-59a4-9385-25239ab59b73",
+   "0f8bc2af-a3d0-5e6c-8e69-332e90f4f219",
+   "f26984fa-c147-5442-ad32-255f7e669170",
+   "b1104e41-e62d-5002-80d2-73e40a3ca0be",
+   "79370703-4d1a-5905-bef5-d10f0e3e45cf",
+   "551d2938-8ae2-5ce2-a31d-e95c5d1a5caf"
+  ],
+  "note": "Супруга — учредитель ООО «ДорСтройРесурс» (за 4 мес. до первого контракта), директор-номинал Ершов К. Л. (7 компаний), 5 контрактов O1 на 38 млн ₽, 3 у единственного поставщика; телефон ООО = телефон брата супруги; доля ООО в 42.11 ~60 %."
+ },
+ {
+  "case_id": "C2",
+  "rule_codes": [
+   "R02"
+  ],
+  "person_id": "c39d5cae-091f-5b73-af39-6fbb6b9a613e",
+  "evidence_ids": [
+   "c39d5cae-091f-5b73-af39-6fbb6b9a613e",
+   "22650ed8-aa4d-5009-9a21-3081732f732b",
+   "07ca6da8-949a-5803-8a45-e013799aa220"
+  ],
+  "note": "Учредитель и директор действующего ООО «МедТехСнаб»."
+ },
+ {
+  "case_id": "C3",
+  "rule_codes": [
+   "R03"
+  ],
+  "person_id": "fb05291e-c81e-5e5c-b2be-db310f0a2fbb",
+  "evidence_ids": [
+   "fb05291e-c81e-5e5c-b2be-db310f0a2fbb",
+   "b1fc37ba-0cea-5a86-ae59-5b72bad25bc0",
+   "65787408-c26c-5536-878b-33ac6de1864e",
+   "b28dc234-5819-59db-a24d-821d68f92f1a",
+   "33ac4511-0411-56eb-926a-f29739ab5e7e",
+   "3ee417c4-ce35-52c5-a9bd-55065b06f268",
+   "1bb82d50-f21f-5eb0-aac2-06f90c60f4ad",
+   "b63ba636-089c-5429-8066-6f3ce719b352",
+   "2e40144a-fd5e-50a9-8571-8415c48afc90",
+   "03be07e3-4ba1-5465-8461-d1d82f472c82",
+   "1bd285d3-be98-5b61-99a9-aa879e703ce0",
+   "8a2a21f7-ffb8-5ad9-bc52-bbe493fc8eca",
+   "218a391e-a67a-5fe0-ad05-7820d9df4ce7",
+   "1d26701f-1409-56a6-af4f-206fc695f1ca"
+  ],
+  "note": "До назначения (03.2024) работал в ООО «ЖилКомСервис»; с 2024 года у ООО 11 контрактов с O3."
+ },
+ {
+  "case_id": "C4",
+  "rule_codes": [
+   "R04"
+  ],
+  "person_id": "c66a841f-e902-56e7-a4a1-8a8047961cac",
+  "evidence_ids": [
+   "c66a841f-e902-56e7-a4a1-8a8047961cac",
+   "033541ec-eb0e-52f0-98ad-d5d6b1b50591",
+   "fe5f4a76-8630-596d-b544-08ac93e0250e",
+   "6fe5c21a-329d-5cb2-83bc-496715792214",
+   "1e0a72de-039d-55d6-b93e-df6f8c9bd626",
+   "db02bff9-559c-5a38-a841-6d4b1f906708",
+   "ad3cd748-cbac-5e0d-9602-4947edf65e34",
+   "614d24c2-5d13-52c5-a50b-026c09f327ba",
+   "212cf201-3ae5-520d-ad9f-c2076aec8109",
+   "07ca6da8-949a-5803-8a45-e013799aa220"
+  ],
+  "note": "Уволился 06.2025, с 10.2025 — заместитель директора ООО «ФармЛогистик», получившего при нём 7 контрактов O2."
+ },
+ {
+  "case_id": "C5",
+  "rule_codes": [
+   "R05",
+   "R06"
+  ],
+  "person_id": "3f06dada-686f-580b-874e-58593097933f",
+  "evidence_ids": [
+   "3f06dada-686f-580b-874e-58593097933f",
+   "4fc67869-37fa-55a9-a0d8-345b59a3d8eb",
+   "9e3528e5-7ae9-51f7-820f-f4fcd13f1cfb",
+   "be440d76-7ee7-5614-9dff-9486ff0fe391",
+   "118e1d4e-a594-5d6b-a082-a718539e2735",
+   "a6e33772-1885-52ec-8910-b9c81fb50522",
+   "d2e26e02-d579-557f-b443-26b20c7bc038",
+   "4d862a41-dc1e-536e-9f48-e0f5ad1a23a6",
+   "864350d7-3bc6-5b8f-8bf2-d2b042eb00b9",
+   "5bc45ca0-9ead-56ed-8f78-2c484ad7f526",
+   "81b7c59e-2279-5692-a6ee-f7ef2e2690b2",
+   "a6f983ee-b5e3-50e3-8143-aa1ed7f8bc36",
+   "7090ccf6-9616-575d-ba0e-c4011a4f2d2a",
+   "9bfe95ad-6b94-5e2f-9e72-b5446412b7db",
+   "5e4fbd70-ad2c-55cd-8fd7-9ce5e429f41e",
+   "bec7b79e-9d7e-54a3-889e-2ff0dad56c8e",
+   "a31f1850-6b9c-5b15-9d54-7ef101162845",
+   "1d26701f-1409-56a6-af4f-206fc695f1ca"
+  ],
+  "note": "Адрес ООО «Чистый Двор» совпадает с адресом матери; доля ООО ~65 % по 81.29."
+ },
+ {
+  "case_id": "C6",
+  "rule_codes": [
+   "R08"
+  ],
+  "person_id": "8d8d19d9-8fa3-5ac2-86e1-42c77162384e",
+  "evidence_ids": [
+   "8d8d19d9-8fa3-5ac2-86e1-42c77162384e",
+   "b1104e41-e62d-5002-80d2-73e40a3ca0be"
+  ],
+  "note": "Правила молчат: 40 % закупок чуть ниже порога, поставщики зарегистрированы менее чем за 3 месяца до контракта."
+ },
+ {
+  "case_id": "N1",
+  "rule_codes": [
+   "R07"
+  ],
+  "person_id": "12b5fe9f-4f46-52d7-b758-a3ae1f18cf32",
+  "evidence_ids": [
+   "12b5fe9f-4f46-52d7-b758-a3ae1f18cf32"
+  ],
+  "note": "Чистый служащий: одно эмоциональное обращение без фактов (ложное обвинение) даёт только R07 low."
+ },
+ {
+  "case_id": "X1",
+  "rule_codes": [
+   "R01",
+   "R02"
+  ],
+  "person_id": "4d351fe6-f601-58d5-97c4-6ab37dba98a4",
+  "evidence_ids": [
+   "4d351fe6-f601-58d5-97c4-6ab37dba98a4",
+   "a26796b0-4055-5915-ab30-e19b09beea72",
+   "c292e0d0-c690-55ae-ba40-b003168b0733",
+   "c5234058-0b1c-5455-9096-fe074ab1daf3"
+  ],
+  "note": "Супруга — директор подрядчика O1 по 41.20; служащий руководит своим ООО."
+ },
+ {
+  "case_id": "X2",
+  "rule_codes": [
+   "R01",
+   "R03",
+   "R05"
+  ],
+  "person_id": "334bacfa-24f7-516e-bf46-aa41e4a54562",
+  "evidence_ids": [
+   "334bacfa-24f7-516e-bf46-aa41e4a54562",
+   "0008a2e5-a460-5758-9c99-14be02644a45",
+   "7053022a-51c8-5e5c-b19a-f63e4442ebf5",
+   "74e28cb8-e170-5bd2-b8c1-f0dbd446ed6e",
+   "ef0f353b-f8a3-507f-b81d-7117d4c57490",
+   "fa476569-e1ce-53de-a939-7559290bba80",
+   "d56a4e94-c174-5958-a30e-7d5a950da1b9",
+   "374bee0e-f097-5333-a024-29ae405c7eb5"
+  ],
+  "note": "Брат — учредитель подрядчика по 71.12, общий телефон; бывший работодатель поставляет щебень в O1."
+ },
+ {
+  "case_id": "R01-CHILD",
+  "rule_codes": [
+   "R01"
+  ],
+  "person_id": "f4bf02c4-794c-5e3c-8c38-40dd45bb3b00",
+  "evidence_ids": [
+   "f4bf02c4-794c-5e3c-8c38-40dd45bb3b00",
+   "5a703b80-56d9-5389-91de-dc1ba397f05d",
+   "60879963-dc01-5211-bb22-ad28ccbb56df"
+  ],
+  "note": "Родственник (child) — founder подрядчика органа в сфере 86.90."
+ },
+ {
+  "case_id": "R01-INLAW",
+  "rule_codes": [
+   "R01"
+  ],
+  "person_id": "af36a00a-ac27-50e2-9198-827c28486ef3",
+  "evidence_ids": [
+   "af36a00a-ac27-50e2-9198-827c28486ef3",
+   "48c83231-2ba0-5fc2-b5d4-17561bf73be0",
+   "07fb1bcb-4e62-5e7f-a26b-faec6575a0da"
+  ],
+  "note": "Родственник (in_law) — founder подрядчика органа в сфере 81.30."
+ },
+ {
+  "case_id": "R01-SPOUSE",
+  "rule_codes": [
+   "R01"
+  ],
+  "person_id": "e9521d31-a099-57c2-a796-c04c3d79144e",
+  "evidence_ids": [
+   "e9521d31-a099-57c2-a796-c04c3d79144e",
+   "62ab940a-cc4b-58b3-959c-bee00edf01a4",
+   "156ae479-4f75-5f16-9ac7-f2ccb7b29ee4"
+  ],
+  "note": "Родственник (spouse) — founder подрядчика органа в сфере 43.22."
+ },
+ {
+  "case_id": "R02-B",
+  "rule_codes": [
+   "R02"
+  ],
+  "person_id": "8ae40810-435e-5a8a-84a3-5a24b30f062d",
+  "evidence_ids": [
+   "8ae40810-435e-5a8a-84a3-5a24b30f062d",
+   "c3309636-bf4f-503d-8abe-92cf7fbdb5b0"
+  ],
+  "note": "Руководит действующей коммерческой организацией."
+ },
+ {
+  "case_id": "R02-C",
+  "rule_codes": [
+   "R02"
+  ],
+  "person_id": "695daea3-1a4f-58bf-84cd-c8e69790f3e7",
+  "evidence_ids": [
+   "695daea3-1a4f-58bf-84cd-c8e69790f3e7",
+   "2baf74d1-f1b5-5c6c-abc0-bfc7bfa34131"
+  ],
+  "note": "Руководит действующей коммерческой организацией."
+ },
+ {
+  "case_id": "R03-B",
+  "rule_codes": [
+   "R03"
+  ],
+  "person_id": "4db8bf1e-523d-5648-bca9-9a61183d28d4",
+  "evidence_ids": [
+   "4db8bf1e-523d-5648-bca9-9a61183d28d4",
+   "6b749d1a-9f03-5224-b69c-8b50cc714d30",
+   "c89be60e-b52c-5f66-85b5-24ac1e1abdf6",
+   "d8de564d-6587-5b37-99ae-a8bc5cf58129",
+   "6bac3d42-7328-5d06-bbcb-493e2e0cff9f",
+   "3d7a734f-c825-5e0d-b79e-5b71a5259f7f",
+   "437e7724-9232-55c6-b0c7-893fd2f31d41"
+  ],
+  "note": "Бывший работодатель (ушёл менее 3 лет назад) — подрядчик органа."
+ },
+ {
+  "case_id": "R03-C",
+  "rule_codes": [
+   "R03"
+  ],
+  "person_id": "c850538b-16eb-5b68-9881-3d9deb10c01b",
+  "evidence_ids": [
+   "c850538b-16eb-5b68-9881-3d9deb10c01b",
+   "c34fba82-e43f-544f-a1d1-942b96ca0dd3",
+   "15a13c64-e3e3-5c5e-b270-0565eb3d64c1",
+   "37d3008e-bc3d-5f8b-a11e-e21c1e4cbfac",
+   "056d4206-0dc0-5cc8-bbe8-efb8e654f34e",
+   "6168c7a7-4470-5659-968a-cefb14ed8f29",
+   "ca6ae5df-6bba-563d-9805-6493695ef3c3"
+  ],
+  "note": "Бывший работодатель (ушёл менее 3 лет назад) — подрядчик органа."
+ },
+ {
+  "case_id": "R04-A",
+  "rule_codes": [
+   "R04"
+  ],
+  "person_id": "d837535d-84d2-5522-8a31-ef5548bfb602",
+  "evidence_ids": [
+   "d837535d-84d2-5522-8a31-ef5548bfb602",
+   "a0d467c3-7d33-57f6-9cf0-74233c633b58",
+   "823d2ffc-aba5-5918-8a1c-f23ffceac72a",
+   "3ae3177f-8da6-5729-9ec6-b9c5b4d8aeeb",
+   "0fb222ea-f562-559d-b22a-5e62205c89ca",
+   "92b70efd-6271-5515-bc80-000079abfb7c"
+  ],
+  "note": "После увольнения перешёл в компанию, получавшую контракты органа."
+ },
+ {
+  "case_id": "R04-B",
+  "rule_codes": [
+   "R04"
+  ],
+  "person_id": "ebdef1d4-f2d0-5d1a-abf7-a9819d8b4d6c",
+  "evidence_ids": [
+   "ebdef1d4-f2d0-5d1a-abf7-a9819d8b4d6c",
+   "e2857be9-dca9-59e6-ad4b-5cc5916eea09",
+   "a8bdc933-3510-5b2a-b89c-73c4f495c0f7",
+   "40375dd1-ff0d-58a5-bc63-a7c64f95b295",
+   "797bcad2-9430-51fe-87ac-7d72a146c335",
+   "ac85908c-775b-51ac-987f-9b3d2b92c506"
+  ],
+  "note": "После увольнения перешёл в компанию, получавшую контракты органа."
+ },
+ {
+  "case_id": "R05-PHONE",
+  "rule_codes": [
+   "R05"
+  ],
+  "person_id": "3e708e21-db98-568d-add6-bc4cedb1c5ba",
+  "evidence_ids": [
+   "3e708e21-db98-568d-add6-bc4cedb1c5ba",
+   "3cc29e86-12bc-5e3f-b046-4649e3a0b796",
+   "61c6e8dc-66ca-5025-92df-4d2674c3787e",
+   "74174e3f-2f3f-5a1c-a15a-449f79b6609b",
+   "358ab5e9-6ec1-54dc-b65b-673841d77dee",
+   "52222e10-a4fe-54f0-b156-b27b841a3e0b"
+  ],
+  "note": "Телефон матери совпадает с телефоном подрядчика органа."
+ },
+ {
+  "case_id": "R05-ADDRESS",
+  "rule_codes": [
+   "R05"
+  ],
+  "person_id": "e4d79dc8-6503-5abb-b8ab-99785104e5b6",
+  "evidence_ids": [
+   "e4d79dc8-6503-5abb-b8ab-99785104e5b6",
+   "c9dfc130-3a1e-53b5-bd13-867321129c86",
+   "787fa07b-18e8-54ee-a0bf-09ba7313bcc4",
+   "0a605c17-9418-5ccc-a246-1880ee2d950b",
+   "a8e75919-9b57-535d-98c7-78085a7f6bf9",
+   "7c753030-6f6f-5b26-b73d-5bb062549c9d"
+  ],
+  "note": "Адрес сестры совпадает с адресом подрядчика органа."
+ },
+ {
+  "case_id": "R06-A",
+  "rule_codes": [
+   "R06"
+  ],
+  "person_id": "831f3967-cb1c-59c3-b99d-fcb2d161432e",
+  "evidence_ids": [
+   "831f3967-cb1c-59c3-b99d-fcb2d161432e",
+   "f4df9016-0213-54f6-940f-e150e4ea0915",
+   "f4822985-76f3-598a-8002-2098c5f72c15",
+   "2cb45d6d-a1db-5dc0-945a-9f817621f1b0",
+   "22bd6d33-8280-5d63-882c-75258083fc41",
+   "94554f2a-0c2f-5fa5-b951-f21bf2f89d3a",
+   "4a8fae99-7916-5b44-9239-d9fbf67c2494",
+   "219645c5-7a5b-5f60-8c53-35e170a2f589",
+   "62880644-d6d9-5572-b719-c3135f1d7b9d",
+   "e5e29a65-5de1-54c3-9ec2-e46be7ecb589",
+   "cc33d361-f3ec-551e-b272-39801fe48501",
+   "a175b515-b96b-54d9-a0aa-9f5a21e6a3b0"
+  ],
+  "note": "Один поставщик забирает больше 60 % закупок по 33.13."
+ },
+ {
+  "case_id": "R06-B",
+  "rule_codes": [
+   "R06"
+  ],
+  "person_id": "ac060958-2c08-5ceb-bbf7-efb4bf4eaf7c",
+  "evidence_ids": [
+   "ac060958-2c08-5ceb-bbf7-efb4bf4eaf7c",
+   "ed98f45f-411a-5662-a54a-850aad584f79",
+   "caa1ec78-c2d1-56ce-a25b-5623815594f1",
+   "6144c0cc-e9f4-5cd2-8d76-b676d3d1b1cf",
+   "f1b3f0a1-6092-5dfb-bc0b-b326049dced6",
+   "5704bdb1-9234-5c1c-8000-7b4495ed08d0",
+   "10440054-aeb8-51f8-bf47-57a5aa0d1c1a",
+   "43ef9e6a-e6fe-5867-909f-9505448775ad",
+   "254ef579-7c31-5563-9a24-aecc307bada3",
+   "c8fbde80-087c-5389-8e5d-fbd3750b354d",
+   "543a828b-eaa0-514d-96b8-0f919c8fb6f1",
+   "fd096cd8-3d69-5399-9109-68c93cc1a8aa",
+   "57fa8a35-c715-5808-b546-c09d47630cad",
+   "4acc586f-0511-5789-a9c8-e8907195ef7d"
+  ],
+  "note": "Один поставщик забирает больше 60 % закупок по 42.21."
+ },
+ {
+  "case_id": "R08-A",
+  "rule_codes": [
+   "R08"
+  ],
+  "person_id": "28cf6237-801f-5705-8223-908f2f999f56",
+  "evidence_ids": [
+   "28cf6237-801f-5705-8223-908f2f999f56"
+  ],
+  "note": "Признаки закупок аномальны относительно коллег: young_supplier_share, share_single_supplier"
+ },
+ {
+  "case_id": "R08-B",
+  "rule_codes": [
+   "R08"
+  ],
+  "person_id": "24c97c5f-6380-5853-946d-ddc78dbc9f22",
+  "evidence_ids": [
+   "24c97c5f-6380-5853-946d-ddc78dbc9f22"
+  ],
+  "note": "Признаки закупок аномальны относительно коллег: share_round_amounts, share_single_supplier"
+ },
+ {
+  "case_id": "R08-C",
+  "rule_codes": [
+   "R08"
+  ],
+  "person_id": "30f746f2-6dca-51bb-b671-27083e1bdc6b",
+  "evidence_ids": [
+   "30f746f2-6dca-51bb-b671-27083e1bdc6b"
+  ],
+  "note": "Признаки закупок аномальны относительно коллег: share_near_threshold, nominee_director_share"
+ },
+ {
+  "case_id": "N-R01-OUT-N-R01-SCOPE",
+  "rule_codes": [],
+  "person_id": "1f4e9157-76bb-5f26-b691-4d689dc93b1e",
+  "evidence_ids": [
+   "1f4e9157-76bb-5f26-b691-4d689dc93b1e",
+   "bae48121-0705-5fa0-a00a-bf9d251c7a4f",
+   "48c3c467-ae30-5dd9-9a1c-b1c9dc7a4bf8"
+  ],
+  "note": "R01 не срабатывает: компания супруги поставляет в O1 вне ОКПД2 служащего."
+ },
+ {
+  "case_id": "N-R01-OUT-N-R06-MAKER",
+  "rule_codes": [],
+  "person_id": "1254886a-c4b6-50a7-8300-20a5137fa9dc",
+  "evidence_ids": [
+   "1254886a-c4b6-50a7-8300-20a5137fa9dc",
+   "91ddea5f-17e9-50d7-becc-b5fd4606c139",
+   "a453de4e-380f-5410-b277-beffb135666f"
+  ],
+  "note": "R01 не срабатывает: компания брата поставляет в другой орган (O1)."
+ },
+ {
+  "case_id": "N-R01-OUT-R08-B",
+  "rule_codes": [],
+  "person_id": "24c97c5f-6380-5853-946d-ddc78dbc9f22",
+  "evidence_ids": [
+   "24c97c5f-6380-5853-946d-ddc78dbc9f22",
+   "95debb7c-7cd2-51ac-8b29-9d73248e96df",
+   "3e1826c9-97b9-5836-90da-5646c6f51e7f"
+  ],
+  "note": "R01 не срабатывает: компания сына поставляет в другой орган (O3)."
+ },
+ {
+  "case_id": "N-R01-OUT-N-R01-NAMESAKE-2",
+  "rule_codes": [],
+  "person_id": "f4e76d75-2661-5101-8c2d-3e12323e68f5",
+  "evidence_ids": [
+   "f4e76d75-2661-5101-8c2d-3e12323e68f5",
+   "8439db9a-1ebe-5956-bff4-5961f6439cd7",
+   "3a9e76f5-bcd0-54a4-b34e-2a58e71a897a"
+  ],
+  "note": "R01 не срабатывает: компания супруги поставляет в другой орган (O2)."
+ },
+ {
+  "case_id": "N-R01-BEFORE-C4-SUCCESSOR",
+  "rule_codes": [],
+  "person_id": "4caf7ce1-8294-512a-b047-000c75758be4",
+  "evidence_ids": [
+   "4caf7ce1-8294-512a-b047-000c75758be4",
+   "ead59529-da28-5c21-8f63-fb02844af292",
+   "eeaecaa5-845f-58be-9b45-546da8b5f047"
+  ],
+  "note": "R01 не срабатывает: контракты заключены до назначения служащего."
+ },
+ {
+  "case_id": "N-R01-BEFORE-N-R01-BEFORE",
+  "rule_codes": [],
+  "person_id": "48eaf100-0750-569f-804f-b19a968c953c",
+  "evidence_ids": [
+   "48eaf100-0750-569f-804f-b19a968c953c",
+   "bd0b64a9-7e6d-583f-995e-3552378a20ed",
+   "56fb9fea-97a7-54cc-8155-177a76ea576a"
+  ],
+  "note": "R01 не срабатывает: контракты заключены до назначения служащего."
+ },
+ {
+  "case_id": "N-R02-LIQ-1",
+  "rule_codes": [],
+  "person_id": "a7aacc85-c07d-5d35-80bd-48ac141069b1",
+  "evidence_ids": [
+   "a7aacc85-c07d-5d35-80bd-48ac141069b1",
+   "09f4b78f-d6df-5e45-8720-7135321543f9"
+  ],
+  "note": "R02 не срабатывает: компания ликвидирована."
+ },
+ {
+  "case_id": "N-R02-LIQ-2",
+  "rule_codes": [],
+  "person_id": "cc01a3d9-b2a7-52ce-8ba7-2a2f44d13585",
+  "evidence_ids": [
+   "cc01a3d9-b2a7-52ce-8ba7-2a2f44d13585",
+   "875a2d30-35de-5d78-8aed-1a3f18816010"
+  ],
+  "note": "R02 не срабатывает: компания ликвидирована."
+ },
+ {
+  "case_id": "N-R02-TRUST",
+  "rule_codes": [
+   "R02"
+  ],
+  "person_id": "42a17b66-f721-5db0-80a8-3cd4641a74b9",
+  "evidence_ids": [
+   "42a17b66-f721-5db0-80a8-3cd4641a74b9",
+   "2318d6c4-5ff8-546f-b717-d3b07f489e1e"
+  ],
+  "note": "Только учредитель (35 %), не руководит: R02 medium, проверить передачу доли в доверительное управление."
+ },
+ {
+  "case_id": "N-R03-LATE-1",
+  "rule_codes": [],
+  "person_id": "d53bedc3-2b98-5ef9-b578-dce52bd841f1",
+  "evidence_ids": [
+   "d53bedc3-2b98-5ef9-b578-dce52bd841f1",
+   "7d9f0241-b5ea-5543-83b2-ae811dfbb55b"
+  ],
+  "note": "R03 не срабатывает: от увольнения до контрактов больше 5 лет."
+ },
+ {
+  "case_id": "N-R03-LATE-2",
+  "rule_codes": [],
+  "person_id": "b1001af7-a1ab-5161-b6e6-d3334e158436",
+  "evidence_ids": [
+   "b1001af7-a1ab-5161-b6e6-d3334e158436",
+   "4f762a56-cc7b-59a6-83a6-fb1f98ec1cc6"
+  ],
+  "note": "R03 не срабатывает: от увольнения до контрактов больше 5 лет."
+ },
+ {
+  "case_id": "N-R05-MASS-1",
+  "rule_codes": [],
+  "person_id": "67a3304b-ee55-54ff-a6c7-168a44597854",
+  "evidence_ids": [
+   "67a3304b-ee55-54ff-a6c7-168a44597854",
+   "6ca16794-3800-569c-afda-0144732f3d9d"
+  ],
+  "note": "R05 подавлен: совпадение с адресом массовой регистрации."
+ },
+ {
+  "case_id": "N-R05-MASS-2",
+  "rule_codes": [],
+  "person_id": "8b0dd305-a05b-586c-b054-eb5aff63a9ef",
+  "evidence_ids": [
+   "8b0dd305-a05b-586c-b054-eb5aff63a9ef",
+   "c3e37043-29c8-5813-975e-ff1111d5fe75"
+  ],
+  "note": "R05 подавлен: совпадение с адресом массовой регистрации."
+ },
+ {
+  "case_id": "N-R05-MASS-3",
+  "rule_codes": [],
+  "person_id": "f1d4adf5-89f2-5a54-b0e4-5488bd6c92b1",
+  "evidence_ids": [
+   "f1d4adf5-89f2-5a54-b0e4-5488bd6c92b1",
+   "cd0cda44-0efc-52a2-8bb9-b9ee8cbf15c9"
+  ],
+  "note": "R05 подавлен: совпадение с адресом массовой регистрации."
+ },
+ {
+  "case_id": "N-R01-NAMESAKE-N-R01-SCOPE",
+  "rule_codes": [],
+  "person_id": "1f4e9157-76bb-5f26-b691-4d689dc93b1e",
+  "evidence_ids": [
+   "1f4e9157-76bb-5f26-b691-4d689dc93b1e",
+   "a6d90ef4-05d1-5d41-9584-739c569afe13",
+   "c2ac570c-2e09-5070-98d3-371e2a26d011",
+   "3d08c360-87eb-5b20-aab8-29e691479541"
+  ],
+  "note": "R01 не срабатывает: учредитель — полный тёзка родственника, другой человек."
+ },
+ {
+  "case_id": "N-R01-NAMESAKE-N-R01-NAMESAKE-2",
+  "rule_codes": [],
+  "person_id": "f4e76d75-2661-5101-8c2d-3e12323e68f5",
+  "evidence_ids": [
+   "f4e76d75-2661-5101-8c2d-3e12323e68f5",
+   "f33a7e7f-30f6-5eef-9de5-69ad4d1474a6",
+   "e226d22a-f3a8-5ce3-b15a-b386420e7113",
+   "694a425a-a6c0-5979-8f07-8dc6b41c3dfb"
+  ],
+  "note": "R01 не срабатывает: учредитель — полный тёзка родственника, другой человек."
+ },
+ {
+  "case_id": "N-R06-MAKER",
+  "rule_codes": [
+   "R06"
+  ],
+  "person_id": "1254886a-c4b6-50a7-8300-20a5137fa9dc",
+  "evidence_ids": [
+   "1254886a-c4b6-50a7-8300-20a5137fa9dc",
+   "4c143cef-ba54-5e03-9f92-9bc6bdd42d16"
+  ],
+  "note": "Крупный единственный производитель: R06 low без других флагов."
+ },
+ {
+  "case_id": "IVANOV-1",
+  "rule_codes": [],
+  "person_id": "c1860b3f-db84-5d70-a76e-06a5cd7e2bbc",
+  "evidence_ids": [
+   "c1860b3f-db84-5d70-a76e-06a5cd7e2bbc"
+  ],
+  "note": "Однофамилец в том же органе: обращение по фамилии не привязывается."
+ },
+ {
+  "case_id": "IVANOV-2",
+  "rule_codes": [],
+  "person_id": "064b49e2-817f-52b5-a3ae-45463c9d5ea8",
+  "evidence_ids": [
+   "064b49e2-817f-52b5-a3ae-45463c9d5ea8"
+  ],
+  "note": "Однофамилец в том же органе: обращение по фамилии не привязывается."
+ },
+ {
+  "case_id": "TARASOV-1",
+  "rule_codes": [],
+  "person_id": "559f2781-81d6-5d41-b09d-f84a6165d34d",
+  "evidence_ids": [
+   "559f2781-81d6-5d41-b09d-f84a6165d34d"
+  ],
+  "note": "Однофамилец в том же органе: обращение по фамилии не привязывается."
+ },
+ {
+  "case_id": "TARASOV-2",
+  "rule_codes": [],
+  "person_id": "43cccfa0-b801-556e-83c6-922ce446792b",
+  "evidence_ids": [
+   "43cccfa0-b801-556e-83c6-922ce446792b"
+  ],
+  "note": "Однофамилец в том же органе: обращение по фамилии не привязывается."
+ }
+]

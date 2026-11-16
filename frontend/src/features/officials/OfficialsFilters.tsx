@@ -1,13 +1,21 @@
-import { Group, NumberInput, TextInput } from '@mantine/core';
+import { Group, NumberInput, Select, TextInput } from '@mantine/core';
 import { useDebouncedCallback } from '@mantine/hooks';
 import { IconSearch } from '@tabler/icons-react';
 import { useState } from 'react';
 import { OrganSelect } from '@/features/organs/OrganSelect';
+import type { RuleCode } from '@/shared/api';
+import { RULE_TITLES } from '@/shared/lib/labels';
+
+const RULE_OPTIONS = (Object.keys(RULE_TITLES) as RuleCode[]).map((code) => ({
+  value: code,
+  label: `${code} — ${RULE_TITLES[code]}`,
+}));
 
 export interface OfficialsFilterValues {
   query: string;
   organId: string | null;
   minScore: number | null;
+  ruleCode: RuleCode | null;
 }
 
 interface Props {
@@ -47,6 +55,15 @@ export function OfficialsFilters({ value, onChange }: Props) {
         value={value.minScore ?? ''}
         onChange={(v) => onChange({ ...value, minScore: v === '' ? null : Number(v) })}
         w={120}
+      />
+      <Select
+        label="Правило"
+        placeholder="Любое"
+        data={RULE_OPTIONS}
+        value={value.ruleCode}
+        onChange={(v) => onChange({ ...value, ruleCode: (v as RuleCode | null) ?? null })}
+        clearable
+        w={340}
       />
     </Group>
   );

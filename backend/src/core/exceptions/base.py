@@ -28,3 +28,11 @@ class InfrastructureError(Exception):
 
 class ExternalServiceError(InfrastructureError):
     """Внешний сервис (LLM) недоступен или ответил мусором -> 503."""
+
+
+class LLMUnavailableError(ExternalServiceError):
+    """The model could not be reached."""
+
+
+class LLMInvalidResponseError(ExternalServiceError):
+    """The model response failed validation."""

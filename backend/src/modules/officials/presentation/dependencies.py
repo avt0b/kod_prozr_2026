@@ -3,7 +3,9 @@ from typing import Annotated
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.core.infrastructure.dependencies import get_session
+from src.core.infrastructure.dependencies import get_audit_log, get_session, get_unit_of_work
+from src.core.infrastructure.interfaces.audit_log import AuditLogInterface
+from src.core.infrastructure.interfaces.unit_of_work import UnitOfWorkInterface
 from src.modules.officials.application.interfaces.appointment_repository import (
     AppointmentRepositoryInterface,
 )
@@ -91,5 +93,7 @@ def get_official_profile_use_case(
     snapshots: Annotated[GetOfficialSnapshotsUseCase, Depends(get_official_snapshots_use_case)],
     company_links: Annotated[CompanyLinksSourceInterface, Depends(get_company_links_source)],
     risk_source: Annotated[RiskSourceInterface, Depends(get_risk_source)],
+    audit: Annotated[AuditLogInterface, Depends(get_audit_log)],
+    unit_of_work: Annotated[UnitOfWorkInterface, Depends(get_unit_of_work)],
 ) -> GetOfficialProfileUseCase:
-    return GetOfficialProfileUseCase(snapshots, company_links, risk_source)
+    return GetOfficialProfileUseCase(snapshots, company_links, risk_source, audit, unit_of_work)

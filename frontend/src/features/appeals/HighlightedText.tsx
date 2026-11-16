@@ -2,12 +2,13 @@ import { Mark, Text, Tooltip } from '@mantine/core';
 import type { ReactNode } from 'react';
 import type { AppealEntity } from '@/shared/api';
 import { ENTITY_COLORS, ENTITY_LABELS } from '@/shared/lib/labels';
+import { entityRanges } from './entityRanges';
 
 /** Подсвечивает сущности в тексте по смещениям start/end (пересекающиеся отбрасываются). */
 export function HighlightedText({ text, entities }: { text: string; entities: AppealEntity[] }) {
   const parts: ReactNode[] = [];
   let cursor = 0;
-  const sorted = [...entities].sort((a, b) => a.start - b.start);
+  const sorted = entityRanges(text, entities);
 
   for (const e of sorted) {
     if (e.start < cursor || e.end > text.length || e.start >= e.end) continue;

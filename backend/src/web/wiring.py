@@ -9,11 +9,13 @@ ACL-адаптером модуля-потребителя. Использует
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.core.infrastructure.database.unit_of_work import SqlAlchemyUnitOfWork
+from src.core.infrastructure.repositories.audit_log_repository import AuditLogRepository
 from src.modules.appeals.application.use_cases.query_appeals import QueryAppealsUseCase
 from src.modules.appeals.infrastructure.adapters.officials_acl import (
     OfficialsDirectoryACLAdapter,
 )
 from src.modules.appeals.infrastructure.repositories.appeal_repository import AppealRepository
+from src.modules.assistant.infrastructure.adapters.data_acl import AssistantToolsACL
 from src.modules.counterparties.application.use_cases.query_counterparties import (
     QueryCounterpartiesUseCase,
 )
@@ -47,10 +49,15 @@ from src.modules.risk.infrastructure.adapters.counterparties_acl import (
 )
 from src.modules.risk.infrastructure.adapters.officials_acl import OfficialsACLAdapter
 from src.modules.risk.infrastructure.repositories.risk_repository import RiskRepository
+from src.modules.risk.presentation.dependencies import get_peer_anomaly_detector
 from src.modules.stats.infrastructure.adapters.acl import (
     AppealsCounterACLAdapter,
     OfficialsCounterACLAdapter,
     RiskCounterACLAdapter,
+)
+from src.modules.stats.infrastructure.adapters.risk_map_acl import (
+    OfficialPlacementsACLAdapter,
+    OfficialRiskProfilesACLAdapter,
 )
 
 # --- Published language модулей --------------------------------------------------------------
@@ -107,7 +114,12 @@ def recompute_risk_use_case(session: AsyncSession) -> RecomputeRiskUseCase:
         risk_appeals_source(session),
     )
     return RecomputeRiskUseCase(
-        loader, RiskEngine(default_rules()), RiskRepository(session), SqlAlchemyUnitOfWork(session)
+        loader,
+        RiskEngine(default_rules()),
+        RiskRepository(session),
+        SqlAlchemyUnitOfWork(session),
+        get_peer_anomaly_detector(),
+        AuditLogRepository(session),
     )
 
 
@@ -115,11 +127,11 @@ def recompute_risk_use_case(session: AsyncSession) -> RecomputeRiskUseCase:
 
 
 def appeals_person_directory(session: AsyncSession) -> OfficialsDirectoryACLAdapter:
-    return OfficialsDirectoryACLAdapter(officials_query(session))
+    return OfficialsDirectoryACLAdapter(officials_query(session), risk_query(session))
 
 
 def reports_dossier_source(session: AsyncSession) -> DossierACLAdapter:
-    return DossierACLAdapter(officials_query(session), risk_query(session))
+    return DossierACLAdapter(officials_query(session), risk_query(session), appeals_query(session))
 
 
 def stats_officials_counter(session: AsyncSession) -> OfficialsCounterACLAdapter:
@@ -132,3 +144,20 @@ def stats_risk_counter(session: AsyncSession) -> RiskCounterACLAdapter:
 
 def stats_appeals_counter(session: AsyncSession) -> AppealsCounterACLAdapter:
     return AppealsCounterACLAdapter(appeals_query(session))
+
+
+def stats_official_placements(session: AsyncSession) -> OfficialPlacementsACLAdapter:
+    return OfficialPlacementsACLAdapter(officials_query(session))
+
+
+def stats_official_risk_profiles(session: AsyncSession) -> OfficialRiskProfilesACLAdapter:
+    return OfficialRiskProfilesACLAdapter(risk_query(session))
+
+
+def assistant_tools(session: AsyncSession) -> AssistantToolsACL:
+    return AssistantToolsACL(
+        officials_query(session),
+        risk_query(session),
+        appeals_query(session),
+        counterparties_query(session),
+    )

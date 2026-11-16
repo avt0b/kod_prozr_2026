@@ -128,13 +128,15 @@ export function CompaniesSection({ profile }: { profile: OfficialProfile }) {
             </Table.Thead>
             <Table.Tbody>
               {profile.companies.map((c) => (
-                <Table.Tr key={`${c.company.id}-${c.via_person_id}-${c.role}`}>
+                // Одна компания может встретиться дважды: два периода работы в ней
+                <Table.Tr key={`${c.company.id}-${c.via_person_id}-${c.role}-${c.started_at}`}>
                   <Table.Td>
                     <Text size="sm" fw={500}>
                       {c.company.name}
                     </Text>
                     <Text size="xs" c="dimmed">
-                      ИНН {c.company.inn} · ОКВЭД {c.company.okved}
+                      ИНН {c.company.inn}
+                      {c.company.okved && ` · ОКВЭД ${c.company.okved}`}
                     </Text>
                   </Table.Td>
                   <Table.Td>
@@ -151,8 +153,8 @@ export function CompaniesSection({ profile }: { profile: OfficialProfile }) {
                     </Text>
                   </Table.Td>
                   <Table.Td>
-                    <Text size="sm">{c.contracts_count}</Text>
-                    {c.contracts_amount > 0 && (
+                    <Text size="sm">{c.contracts_count ?? 'Нет данных'}</Text>
+                    {c.contracts_amount != null && c.contracts_amount > 0 && (
                       <Text size="xs" c="dimmed">
                         {formatMoneyShort(c.contracts_amount)}
                       </Text>

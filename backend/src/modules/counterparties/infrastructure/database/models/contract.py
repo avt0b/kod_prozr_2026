@@ -3,7 +3,7 @@ from decimal import Decimal
 from typing import Any
 from uuid import UUID
 
-from sqlalchemy import Date, ForeignKey, Numeric, String, Uuid
+from sqlalchemy import Date, ForeignKey, Index, Numeric, String, Uuid
 from sqlalchemy.orm import Mapped, mapped_column
 
 from src.core.infrastructure.database.base import Base
@@ -14,7 +14,10 @@ from src.modules.counterparties.infrastructure.database.schema import COUNTERPAR
 
 class ContractModel(Base, UUIDMixin):
     __tablename__ = "contracts"
-    __table_args__ = {"schema": COUNTERPARTIES_SCHEMA}
+    __table_args__ = (
+        Index("ix_contracts_supplier_customer", "supplier_company_id", "customer_organ_id"),
+        {"schema": COUNTERPARTIES_SCHEMA},
+    )
 
     reg_number: Mapped[str] = mapped_column(String(64), nullable=False, index=True)
     # Орган живёт в контексте officials: id без внешнего ключа.

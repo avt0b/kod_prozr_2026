@@ -44,16 +44,17 @@ Healthcheck бэка: `GET /health` → `200 {"status": "ok"}`.
 | `Organ`         | id, name, inn, region                                                            |
 | `Position`      | id, organ_id, title, department, is_corruption_risky                             |
 | `Appointment`   | id, person_id, position_id, started_at, ended_at? — замещение должности          |
-| `Authority`     | id, position_id, kind (`procurement`/`permits`/`inspection`/`budget`/`hr`), scope (коды ОКПД2/ОКВЭД, территория) |
+| `Authority`     | id, position_id, kind (`procurement`/`permits`/`inspection`/`budget`/`hr`), scope `{okpd2: string[], okved: string[], territory: string \| null}`. Пустой список кодов = любые коды |
 | `Kinship`       | id, person_id, relative_id, kind (`spouse`/`child`/`parent`/`sibling`/`in_law`/`other`) |
-| `Company`       | id, inn, ogrn, name, okved, address, phone, registered_at, status                |
+| `Company`       | id, inn, ogrn, name, okved, address, phone, registered_at, status (`active`/`liquidating`/`liquidated`) |
 | `CompanyRole`   | id, company_id, person_id, role (`founder`/`director`), share?, started_at, ended_at? |
 | `Employment`    | id, person_id, company_id, started_at, ended_at? — прошлые места работы вне госслужбы |
-| `Contract`      | id, reg_number, customer_organ_id, supplier_company_id, amount, signed_at, okpd2, method |
-| `RiskFlag`      | id, person_id, rule_code, severity (`low`/`medium`/`high`), weight, explanation, evidence (цепочка узлов графа), legal_ref |
+| `Contract`      | id, reg_number, customer_organ_id, supplier_company_id, amount, signed_at, okpd2, method (`auction`/`tender`/`quotation`/`single_supplier`) |
+| `RiskFlag`      | id, person_id, rule_code, rule_name, severity (`low`/`medium`/`high`), weight, explanation, evidence, legal_ref?, computed_at. `evidence` — цепочка узлов графа `[{node_id, type, label}]`, `node_id` совпадает с `id` узла из `/officials/{id}/graph`, `type` — тип узла графа |
 | `RiskScore`     | person_id, score (0–100), flags_count, computed_at                              |
-| `Appeal`        | id, received_at, channel, text, status (`new`/`analyzed`/`routed`/`closed`), analysis (см. ниже), linked_person_ids |
+| `Appeal`        | id, received_at, channel (`web`/`email`/`letter`/`hotline`/`personal`), text, status (`new`/`analyzed`/`routed`/`closed`), analysis (см. ниже, `null` в статусе `new`), linked_person_ids |
 | `ReportDraft`   | id, person_id, text, created_at                                                  |
+| `AuditLog`      | id, actor, action (`open_profile`/`create_report`/`recompute_risk`/`submit_appeal`), object_type, object_id?, at. `object_id = null` только для общего пересчёта риска. Аутентификации нет, `actor = "analyst"` (ADR-09) |
 
 «Служащий» = `Person`, у которого есть хотя бы одно `Appointment`.
 
@@ -67,10 +68,17 @@ Healthcheck бэка: `GET /health` → `200 {"status": "ok"}`.
   "entities": [{"type": "person|organization|position|money|date|address", "text": "...", "start": 10, "end": 25}],
   "signals": [{"code": "named_official", "text": "назван конкретный служащий"}],
   "specificity": 0.7,
-  "route_to": "отдел по профилактике коррупционных правонарушений",
-  "summary": "..."
+  "route_to": "Подразделение по профилактике коррупционных правонарушений",
+  "summary": "...",
+  "engine": "llm | fallback",
+  "candidates": [{"person_id": "...", "full_name": "...", "score": 0.82}]
 }
 ```
+
+- `engine` — чем сделан разбор: LLM или фоллбэк на правилах (ADR-05). UI показывает это честно.
+- `candidates` — найденные служащие, которых не привязали автоматически (однофамильцы, упоминание
+  только по должности). Привязанные лежат в `Appeal.linked_person_ids`. Эндпоинт подтверждения
+  привязки — если успеваем.
 
 ## Правила риска (первая версия)
 
@@ -86,14 +94,30 @@ Healthcheck бэка: `GET /health` → `200 {"status": "ok"}`.
 | R08 | `peer_anomaly` | Аномалия относительно коллег той же должности и региона (ML) | low–medium | — |
 
 Итоговый балл: сумма весов флагов, нормированная в 0–100. Каждый флаг обязан иметь `explanation` и `evidence`.
+Веса и формула нормировки — в [backend.md](backend.md#риск-движок-adr-04-методика-балла).
+
+- **R02:** если служащий только учредитель и не руководит — `medium` с пометкой «проверить передачу
+  доли в доверительное управление» (владение долей само по себе не запрещено). Руководство — `high`.
+- **R03:** контракт органа заключён в период назначения и не позже 3 лет после ухода от работодателя.
+- **R04:** переход (работа, учредитель или директор) не позже 2 лет после увольнения в компанию,
+  получавшую контракты органа в период назначения.
+- **R05:** адреса и телефоны сравниваются после нормализации; адрес или телефон, на котором больше
+  5 компаний, считается адресом массовой регистрации и не флагуется.
+- **R06:** контракты органа по кодам ОКПД2 из полномочия `procurement` в период назначения; при
+  4+ контрактах доля одного поставщика по сумме больше 50 % даёт `low`. Пустая сфера — правило не
+  применяется.
+- **R07:** severity по сумме `confidence · specificity` обращений ([ai.md](ai.md)): одно
+  расплывчатое обращение даёт только `low`.
 
 ## API (`/api/v1`)
 
 | Метод | Путь | Назначение |
 | ----- | ---- | ---------- |
+| GET  | `/audit?object_id=&limit=20&offset=0` | Журнал действий аналитика `{items, total}`, новые сверху |
 | GET  | `/stats/overview` | Счётчики для главной: служащие, флаги по уровням, обращения по статусам |
+| GET  | `/risk-map?organ_id=&limit=100&offset=0` | Карта рисков должностей (вариант D): должности и органы с долей служащих с флагами, баллами, частыми правилами и типовыми рисками |
 | GET  | `/organs` | Список органов |
-| GET  | `/officials?query=&organ_id=&min_score=&sort=-risk_score&limit=20&offset=0` | Рейтинг служащих: `{items: [{id, full_name, position, organ, risk_score, top_flags[]}], total}` |
+| GET  | `/officials?query=&organ_id=&min_score=&rule_code=&sort=-risk_score&limit=20&offset=0` | Рейтинг служащих: `{items: [{id, full_name, position, organ, risk_score, top_flags[]}], total}` |
 | GET  | `/officials/{id}` | Профиль: person, appointments, authorities, relatives, companies, risk `{score, flags[]}` |
 | GET  | `/officials/{id}/graph?depth=2` | `{nodes: [{id, type: person|company|organ|contract|appeal, label, risk?}], edges: [{source, target, type, label}]}` |
 | GET  | `/officials/{id}/flags` | Флаги риска с объяснениями |
@@ -106,4 +130,133 @@ Healthcheck бэка: `GET /health` → `200 {"status": "ok"}`.
 | GET  | `/reports/{id}` | Черновик |
 | POST | `/assistant/ask` | `{question}` → `{answer, sources: [{type, id, label}]}` |
 
-Списки возвращают `{items, total}`. Формат ошибок описан в `docs/backend.md`.
+Списки возвращают `{items, total}`, `limit` не больше 100. Формат ошибок — ProblemDetails, описан в
+[backend.md](backend.md#формат-ошибок).
+
+### Формы ответов
+
+Поля сверх перечисленных допустимы: фронт их игнорирует.
+
+**`GET /stats/overview`**
+
+```json
+{
+  "officials_total": 150, "officials_with_flags": 31,
+  "flags_by_severity": {"high": 12, "medium": 20, "low": 9},
+  "appeals_total": 101, "appeals_by_status": {"new": 0, "analyzed": 101, "routed": 0, "closed": 0},
+  "computed_at": "2026-11-11T12:00:00Z"
+}
+```
+
+`computed_at` — время последнего пересчёта риска, `null`, если пересчёта ещё не было.
+
+**`GET /risk-map`** (AI-11, вариант D)
+
+```json
+{
+  "items": [{
+    "position_id": "...", "title": "Начальник отдела закупок", "department": "Отдел закупок",
+    "organ_id": "...", "organ": "Департамент строительства ...", "is_corruption_risky": true,
+    "authorities": ["procurement"], "risk_level": "high",
+    "typical_risks": [{"code": "procurement_affiliated_supplier", "title": "Аффилированный поставщик",
+                       "description": "...", "authority": "procurement",
+                       "rule_codes": ["R01", "R03", "R05"], "legal_ref": "273-ФЗ ст. 10, 11; ..."}],
+    "officials_total": 1, "officials_with_flags": 1, "flagged_share": 1.0,
+    "avg_score": 79.0, "max_score": 79.0,
+    "top_rules": [{"rule_code": "R01", "count": 1}],
+    "top_officials": [{"id": "...", "full_name": "Соколов Андрей Викторович", "risk_score": 79.0}]
+  }],
+  "total": 57,
+  "organs": [{"organ_id": "...", "organ": "...", "positions_total": 20, "officials_total": 58,
+              "officials_with_flags": 11, "flagged_share": 0.19, "avg_score": 5.9, "max_score": 80.0,
+              "top_rules": [...], "top_officials": [...]}],
+  "computed_at": "2026-11-15T12:00:00Z"
+}
+```
+
+- Служащий относится к своей **текущей** должности, как в рейтинге (`position`/`organ` в
+  `GET /officials`). Должности без замещающих служащих в карту не входят.
+- `items` — должности, по убыванию `avg_score`, затем `max_score`; `total` — число должностей,
+  `limit` по умолчанию 100. `organs` — сводка тех же служащих по органам, без пагинации.
+  `organ_id` оставляет должности и сводку одного органа.
+- `flagged_share` — доля служащих с хотя бы одним флагом (0–1), `avg_score` и `max_score` —
+  по баллам 0–100. `top_rules` — до 5 правил по числу служащих с флагом, `top_officials` —
+  до 3 служащих с флагами по баллу.
+- `risk_level` и `typical_risks` описывают **должность**, а не людей: они зависят только от
+  полномочий (`Authority.kind`) и признака `is_corruption_risky`. `high` — есть `procurement`,
+  `permits` или `inspection`; `medium` — есть `budget` или `hr`, либо должность в перечне
+  коррупционно-опасных; иначе `low`. `typical_risks[].rule_codes` — правила, которыми система
+  ищет этот риск (пусто — система его не проверяет), `authority` — вид полномочия.
+  Извлечение полномочий из текста регламента (`POST /positions/analyze-regulation`) в контракт
+  не входит.
+
+**`GET /officials`** — элемент списка:
+
+```json
+{"id": "...", "full_name": "Соколов Андрей Викторович", "position": "Начальник отдела закупок",
+ "organ": "Департамент строительства ...", "organ_id": "...", "risk_score": 87.0,
+ "top_flags": [{"rule_code": "R01", "severity": "high"}]}
+```
+
+`position` и `organ` — названия текущей должности и органа. `top_flags` — до 3 флагов по весу.
+`sort`: `-risk_score` (по умолчанию), `risk_score`, `full_name`, `-full_name`. При равном балле
+выше тот, у кого больше флагов. `rule_code` (`R01`…`R08`) оставляет служащих с флагом этого правила.
+
+**`GET /officials/{id}`**
+
+```json
+{
+  "person": {"id": "...", "full_name": "...", "inn": null, "birth_date": null, "address": "...", "phone": "..."},
+  "appointments": [{"id": "...", "person_id": "...", "position_id": "...", "started_at": "...", "ended_at": null,
+                    "position": {Position}, "organ": {Organ}}],
+  "authorities": [{Authority}],
+  "relatives": [{"kinship_id": "...", "kind": "spouse", "person": {Person}}],
+  "companies": [{"company": {Company}, "role": "founder | director | employee", "share": 100,
+                 "via_person_id": "...", "via_person_name": "...", "relation": "self | spouse | ...",
+                 "started_at": "...", "ended_at": null, "contracts_count": 5, "contracts_amount": 38000000}],
+  "risk": {"score": 87.0, "computed_at": "...", "flags": [{RiskFlag}]}
+}
+```
+
+`companies` — компании служащего и его родственников: роли учредителя и директора, а также места
+работы служащего (`role = "employee"`). `contracts_*` — контракты компании с органами, где служащий
+замещал должность. `authorities` — полномочия текущих должностей.
+
+**`GET /officials/{id}/graph`** — `{nodes, edges}`. `node.type`: `person`, `company`, `organ`,
+`contract`, `appeal`. `edge.type`: `works_in` (служащий → орган, label — должность), `kinship`,
+`founder`, `director`, `employment`, `supplier` (компания → контракт), `customer` (контракт → орган),
+`mentions` (обращение → служащий), `shared_contact` (человек ↔ компания с тем же адресом или
+телефоном, R05). Узлы из `evidence` флагов служащего всегда входят в граф. `depth` от 1 до 3, по умолчанию 2.
+
+**`GET /officials/{id}/flags`** — `{items: [RiskFlag], total}`, по убыванию веса.
+
+**`POST /risk/recompute`** — `{officials_processed, flags_total, computed_at}`.
+
+**`GET /appeals/{id}`** — `Appeal` плюс `linked_persons: [{id, full_name, position, organ, risk_score}]`.
+
+**`POST /assistant/ask`** — `sources[].type`: `person`, `company`, `organ`, `contract`, `appeal`, `flag`.
+
+
+### Свёртка контрактов и журнал (B-11, B-18)
+
+Граф сворачивает контракты одной пары поставщик/орган в один узел с числом и полной суммой.
+ID: `uuid5(NAMESPACE_URL, f"kodprozr:contracts:{company_id}:{organ_id}")`.
+Риск-движок приводит контрактные `evidence[].node_id` всех правил к тому же ID, сохраняя
+фактические подписи исходных контрактов. Свёртка графа учитывает все контракты пары;
+флаг описывает только контракты, соответствующие условиям правила. Лимит — 150 узлов,
+`truncated=true` при неполноте графа или исчерпании лимита входных контрактов.
+
+`GET /audit` — чтение журнала с фильтром UUID `object_id`, пагинацией до 100 записей.
+Профиль, докладная и упоминания обращения имеют также записи с `object_type=person`
+и `object_id` служащего, чтобы журнал можно было показать в его профиле. Создание обращения
+дополнительно записывается по ID самого обращения; полный пересчёт — с типом `risk` и
+`object_id=null`. Записи сохраняются в транзакции операции, неуспешные операции их не оставляют.
+
+
+### Ассистент B-19
+
+Форма `POST /assistant/ask` сохраняется. Сервер вызывает один инструмент чтения из фиксированного
+набора (поиск/профиль служащего, родственники среди поставщиков, верх рейтинга, обращения,
+компании), максимум 20 результатов. `sources` — IDs реальных результатов БД. При недоступной LLM
+типовые вопросы разбираются детерминированно; неоднозначность требует уточнения, неподдерживаемые
+вопросы получают отказ с примерами. Операции записи и произвольный SQL не поддерживаются.

@@ -5,12 +5,12 @@ QueryRiskUseCase) подставляет src/web/dependencies.py.
 """
 
 from collections.abc import Sequence
-from datetime import date
+from datetime import date, datetime
 from typing import Protocol
 from uuid import UUID
 
 from src.modules.reports.application.interfaces.dossier_source import DossierSourceInterface
-from src.modules.reports.domain.dossier import Dossier, FlagSummary
+from src.modules.reports.domain.dossier import AppealSummary, Dossier, FlagSummary
 
 
 class ExternalPerson(Protocol):
@@ -30,6 +30,13 @@ class ExternalOrgan(Protocol):
     def name(self) -> str: ...
 
 
+class ExternalAuthority(Protocol):
+    @property
+    def kind(self) -> str: ...
+    @property
+    def okpd2(self) -> Sequence[str]: ...
+
+
 class ExternalAppointment(Protocol):
     @property
     def position(self) -> ExternalPosition: ...
@@ -37,6 +44,10 @@ class ExternalAppointment(Protocol):
     def organ(self) -> ExternalOrgan: ...
     @property
     def started_at(self) -> date: ...
+    @property
+    def ended_at(self) -> date | None: ...
+    @property
+    def authorities(self) -> Sequence[ExternalAuthority]: ...
 
 
 class ExternalSnapshot(Protocol):
@@ -83,10 +94,33 @@ class ExternalRiskSource(Protocol):
     async def get_flags(self, person_ids: Sequence[UUID]) -> Sequence[ExternalFlag]: ...
 
 
+class ExternalAppeal(Protocol):
+    @property
+    def appeal_id(self) -> UUID: ...
+    @property
+    def received_at(self) -> datetime: ...
+    @property
+    def summary(self) -> str | None: ...
+    @property
+    def specificity(self) -> float: ...
+    @property
+    def category(self) -> str | None: ...
+
+
+class ExternalAppealsSource(Protocol):
+    async def mentions(self, person_ids: Sequence[UUID]) -> Sequence[ExternalAppeal]: ...
+
+
 class DossierACLAdapter(DossierSourceInterface):
-    def __init__(self, officials: ExternalOfficialsSource, risk: ExternalRiskSource) -> None:
+    def __init__(
+        self,
+        officials: ExternalOfficialsSource,
+        risk: ExternalRiskSource,
+        appeals: ExternalAppealsSource,
+    ) -> None:
         self._officials = officials
         self._risk = risk
+        self._appeals = appeals
 
     async def get_dossier(self, person_id: UUID) -> Dossier | None:
         snapshots = await self._officials.snapshots([person_id])
@@ -104,6 +138,30 @@ class DossierACLAdapter(DossierSourceInterface):
             organ_name=appointment.organ.name if appointment else None,
             appointed_at=appointment.started_at if appointment else None,
             score=scores[0].score if scores else 0.0,
+            ended_at=appointment.ended_at if appointment else None,
+            authorities=tuple(
+                {
+                    "procurement": "закупки",
+                    "permits": "разрешения",
+                    "inspection": "проверки",
+                    "budget": "бюджет",
+                    "hr": "кадры",
+                }.get(a.kind, a.kind)
+                + (f" (ОКПД2: {', '.join(a.okpd2)})" if a.okpd2 else "")
+                for a in (appointment.authorities if appointment else ())
+            ),
+            appeals=tuple(
+                AppealSummary(
+                    a.appeal_id,
+                    a.received_at.strftime("%d.%m.%Y"),
+                    a.summary or "Без краткого содержания",
+                    a.specificity,
+                    a.category,
+                )
+                for a in sorted(
+                    await self._appeals.mentions([person_id]), key=lambda m: m.received_at
+                )
+            ),
             flags=tuple(
                 FlagSummary(
                     rule_code=f.rule_code,

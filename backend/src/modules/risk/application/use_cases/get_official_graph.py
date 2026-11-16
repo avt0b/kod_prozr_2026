@@ -1,3 +1,4 @@
+from collections import defaultdict
 from uuid import UUID
 
 from src.core.utils.text import format_rub
@@ -8,14 +9,14 @@ from src.modules.risk.application.interfaces.counterparties_source import (
 )
 from src.modules.risk.application.interfaces.officials_source import OfficialsSourceInterface
 from src.modules.risk.application.interfaces.risk_repository import RiskRepositoryInterface
-from src.modules.risk.domain.enums import EdgeType, NodeType
+from src.modules.risk.domain.enums import EdgeType, NodeType, RuleCode
 from src.modules.risk.domain.exceptions import InvalidGraphDepthError, RiskSubjectNotFoundError
 from src.modules.risk.domain.facts import KINSHIP_LABELS, ROLE_LABELS
-from src.modules.risk.domain.graph import ConnectionsGraph, GraphEdge, GraphNode
+from src.modules.risk.domain.graph import ConnectionsGraph, GraphEdge, GraphNode, contract_group_id
 
 MAX_DEPTH = 3
-MAX_NODES = 300
-MAX_CONTRACTS = 100
+MAX_NODES = 150
+MAX_CONTRACTS = 100_000
 
 CATEGORY_LABELS = {
     "bribe": "взятка",
@@ -70,6 +71,7 @@ class GetOfficialGraphUseCase:
             if graph.truncated or not (frontier_persons or frontier_companies):
                 break
 
+        await self._attach_flag_evidence(graph, person_id)
         await self._attach_contracts(graph)
         scores = await self._repository.get_scores(graph.ids_of(NodeType.PERSON))
         graph.set_risk({s.person_id: s.score for s in scores})
@@ -176,6 +178,28 @@ class GetOfficialGraphUseCase:
             )
         return new_persons
 
+    async def _attach_flag_evidence(self, graph: ConnectionsGraph, person_id: UUID) -> None:
+        """Узлы из evidence флагов служащего всегда есть в графе: фронт подсвечивает цепочку.
+
+        Связь R05 (общий адрес или телефон) в данных не ребро, поэтому добавляем ребро
+        shared_contact от человека из цепочки к компании.
+        """
+        for flag in await self._repository.get_flags([person_id]):
+            for node in flag.evidence:
+                graph.add_node(GraphNode(node.id, node.type, node.label))
+            if flag.rule_code is RuleCode.R05:
+                persons = [n for n in flag.evidence if n.type is NodeType.PERSON]
+                companies = [n for n in flag.evidence if n.type is NodeType.COMPANY]
+                if persons and companies:
+                    graph.add_edge(
+                        GraphEdge(
+                            persons[-1].id,
+                            companies[0].id,
+                            EdgeType.SHARED_CONTACT,
+                            "общий адрес или телефон",
+                        )
+                    )
+
     async def _attach_contracts(self, graph: ConnectionsGraph) -> None:
         company_ids = graph.ids_of(NodeType.COMPANY)
         organ_ids = graph.ids_of(NodeType.ORGAN)
@@ -184,12 +208,18 @@ class GetOfficialGraphUseCase:
         contracts = await self._counterparties.contracts(
             customer_organ_ids=organ_ids, supplier_company_ids=company_ids, limit=MAX_CONTRACTS
         )
+        # Conservatively mark a saturated source limit as potentially incomplete.
+        if len(contracts) >= MAX_CONTRACTS:
+            graph.truncated = True
+        groups: dict[tuple[UUID, UUID], list[float]] = defaultdict(list)
         for contract in contracts:
-            label = f"№{contract.reg_number}, {format_rub(contract.amount)}"
-            graph.add_node(GraphNode(contract.id, NodeType.CONTRACT, label))
-            graph.add_edge(
-                GraphEdge(contract.supplier_company_id, contract.id, EdgeType.SUPPLIER, "поставщик")
+            groups[(contract.supplier_company_id, contract.customer_organ_id)].append(
+                contract.amount
             )
-            graph.add_edge(
-                GraphEdge(contract.id, contract.customer_organ_id, EdgeType.CUSTOMER, "заказчик")
-            )
+        for (company_id, organ_id), amounts in sorted(groups.items()):
+            node_id = contract_group_id(company_id, organ_id)
+            label = f"{len(amounts)} контрактов на {format_rub(sum(amounts))}"
+            graph.add_node(GraphNode(node_id, NodeType.CONTRACT, label))
+            graph.update_node(GraphNode(node_id, NodeType.CONTRACT, label))
+            graph.add_edge(GraphEdge(company_id, node_id, EdgeType.SUPPLIER, "поставщик"))
+            graph.add_edge(GraphEdge(node_id, organ_id, EdgeType.CUSTOMER, "заказчик"))

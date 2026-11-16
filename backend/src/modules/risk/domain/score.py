@@ -1,9 +1,11 @@
-from collections.abc import Sequence
+from collections import defaultdict
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
+from types import MappingProxyType
 from uuid import UUID
 
-from src.modules.risk.domain.enums import Severity
+from src.modules.risk.domain.enums import RuleCode, Severity
 from src.modules.risk.domain.flag import RiskFlag
 
 MAX_SCORE = 100.0
@@ -21,25 +23,56 @@ class RiskScore:
             raise ValueError("score must be within 0..100")
 
 
+_ML_WEIGHTS: Mapping[Severity, float] = MappingProxyType(
+    {Severity.LOW: 3.0, Severity.MEDIUM: 5.0, Severity.HIGH: 5.0}
+)
+
+
 @dataclass(frozen=True)
 class ScorePolicy:
-    """Веса уровней и нормирование балла — единственное место, где они заданы.
+    """Методика балла (ADR-04, docs/backend.md) — единственное место, где заданы веса.
 
-    Контракт: «итоговый балл = сумма весов флагов, нормированная в 0–100».
-    Нормирование: обрезка сверху до 100 (два high-флага + medium = 100).
+    Вес флага: high 40, medium 20, low 5. R08 (ML) весит 3 (low) или 5 (medium и выше):
+    ML в одиночку не выводит служащего в топ и не тяжелее самого лёгкого правила.
+
+    Балл: score = min(100, Σ вклад правил).
+      Вклад правила = вес его самого тяжёлого флага + половина веса каждого следующего флага
+      того же правила, но не больше двух весов самого тяжёлого флага. Так десять однотипных
+      связей не перевешивают две разные схемы.
+
+    Калибровка B-17 (ADR-16): слабые сигналы (два low и R08 medium) вместе не больше
+    medium − 5 = 15. Так серия расплывчатых подсказок не перевешивает отдельную схему, а одно
+    конкретное обращение (R07 low -> medium) перевешивает. Пересчитывать при смене весов:
+    tests/unit/risk/test_engine_and_score.py и tests/e2e/risk/test_demo_ranking.py.
     """
 
     high: float = 40.0
     medium: float = 20.0
-    low: float = 10.0
+    low: float = 5.0
+    ml_weights: Mapping[Severity, float] = field(default_factory=lambda: _ML_WEIGHTS)
+    repeat_factor: float = 0.5
+    rule_cap_factor: float = 2.0
 
-    def weight_for(self, severity: Severity) -> float:
+    def weight_for(self, severity: Severity, rule_code: RuleCode | None = None) -> float:
+        if rule_code is RuleCode.R08:
+            return self.ml_weights[severity]
         return {Severity.HIGH: self.high, Severity.MEDIUM: self.medium, Severity.LOW: self.low}[
             severity
         ]
 
+    def rule_contribution(self, weights: Sequence[float]) -> float:
+        if not weights:
+            return 0.0
+        ordered = sorted(weights, reverse=True)
+        top = ordered[0]
+        total = top + self.repeat_factor * sum(ordered[1:])
+        return min(total, self.rule_cap_factor * top)
+
     def score(self, person_id: UUID, flags: Sequence[RiskFlag], computed_at: datetime) -> RiskScore:
-        total = sum(flag.weight for flag in flags)
+        by_rule: dict[RuleCode, list[float]] = defaultdict(list)
+        for flag in flags:
+            by_rule[flag.rule_code].append(flag.weight)
+        total = sum(self.rule_contribution(weights) for weights in by_rule.values())
         return RiskScore(
             person_id=person_id,
             score=round(min(MAX_SCORE, total), 1),

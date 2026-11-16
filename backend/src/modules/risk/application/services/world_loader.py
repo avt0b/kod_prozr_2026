@@ -17,6 +17,7 @@ from src.modules.risk.domain.facts import (
 from src.modules.risk.domain.world import RiskWorld
 
 MAX_CONTRACTS = 500_000
+MAX_COMPANIES = 100_000
 
 
 class RiskWorldLoader:
@@ -48,12 +49,8 @@ class RiskWorldLoader:
         for batch in chunked(linked_person_ids):
             roles.extend(await self._counterparties.roles_for_persons(batch))
 
-        company_ids = list(
-            {r.company_id for r in roles} | {e.company_id for o in officials for e in o.employments}
-        )
-        companies: list[CompanyFacts] = []
-        for batch in chunked(company_ids):
-            companies.extend(await self._counterparties.companies(batch))
+        # Все компании: R05 сверяет контакты поставщиков и отсеивает адреса массовой регистрации.
+        companies: list[CompanyFacts] = await self._counterparties.all_companies(MAX_COMPANIES)
 
         organ_ids = list({a.organ_id for o in officials for a in o.appointments})
         contracts: list[ContractFacts] = []
@@ -61,6 +58,11 @@ class RiskWorldLoader:
             contracts.extend(
                 await self._counterparties.contracts(customer_organ_ids=batch, limit=MAX_CONTRACTS)
             )
+
+        # Роли в компаниях-поставщиках: R08 считает долю «номинальных» директоров.
+        staff: list[CompanyRoleFacts] = []
+        for batch in chunked(list({c.supplier_company_id for c in contracts})):
+            staff.extend(await self._counterparties.roles_for_companies(batch))
 
         mentions: list[AppealMentionFacts] = []
         for batch in chunked([o.person.id for o in officials]):
@@ -73,4 +75,5 @@ class RiskWorldLoader:
             company_roles=roles,
             contracts=contracts,
             appeal_mentions=mentions,
+            company_staff=staff,
         )

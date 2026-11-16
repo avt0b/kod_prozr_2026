@@ -41,17 +41,20 @@ async def list_officials(
     query: Annotated[str | None, Query(max_length=200)] = None,
     organ_id: UUID | None = None,
     min_score: Annotated[float | None, Query(ge=0, le=100)] = None,
+    rule_code: Annotated[str | None, Query(pattern=r"^R0[1-8]$")] = None,
     sort: OfficialsSort = OfficialsSort.RISK_DESC,
     limit: Annotated[int, Query(ge=1, le=MAX_PAGE_LIMIT)] = 20,
     offset: Annotated[int, Query(ge=0)] = 0,
 ) -> PageResponse[OfficialListItemResponse]:
     """Рейтинг служащих по риск-баллу с фильтрами."""
     page = await use_case.execute(
-        OfficialsFilter(query=query, organ_id=organ_id, min_score=min_score, sort=sort),
+        OfficialsFilter(
+            query=query, organ_id=organ_id, min_score=min_score, rule_code=rule_code, sort=sort
+        ),
         PageRequest(limit=limit, offset=offset),
     )
     return PageResponse(
-        items=[OfficialListItemResponse.model_validate(i) for i in page.items], total=page.total
+        items=[OfficialListItemResponse.from_dto(i) for i in page.items], total=page.total
     )
 
 
@@ -67,6 +70,8 @@ async def get_official(
         appointments=[
             AppointmentResponse(
                 id=a.id,
+                person_id=a.person_id,
+                position_id=a.position.id,
                 started_at=a.started_at,
                 ended_at=a.ended_at,
                 is_active=a.is_active,

@@ -14,6 +14,7 @@ from src.core.infrastructure.events import InMemoryEventBus
 from src.core.infrastructure.exception_handler import register_core_handlers
 from src.core.infrastructure.llm import OpenAICompatibleLLMClient
 from src.core.infrastructure.logger import configure_logging, get_logger
+from src.core.presentation.audit_router import router as audit_router
 from src.modules.appeals.infrastructure.exception_handler import register_appeals_handlers
 from src.modules.appeals.presentation.api.appeals_router import router as appeals_router
 from src.modules.assistant.infrastructure.exception_handler import register_assistant_handlers
@@ -51,8 +52,12 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     app.state.engine = engine
     app.state.session_maker = get_async_session_maker(engine)
     register_event_handlers(app.state.event_bus, app.state.session_maker)
-    yield
-    await engine.dispose()
+    try:
+        yield
+    finally:
+        if app.state.llm_client is not None:
+            await app.state.llm_client.aclose()
+        await engine.dispose()
 
 
 def create_app(settings: Settings) -> FastAPI:
@@ -71,6 +76,7 @@ def create_app(settings: Settings) -> FastAPI:
             api_key=settings.llm_api_key.get_secret_value() if settings.llm_api_key else None,
             model=settings.llm_model,
             timeout=settings.llm_timeout_seconds,
+            connect_timeout=settings.llm_connect_timeout_seconds,
         )
         if settings.llm_base_url
         else None
@@ -94,6 +100,7 @@ def create_app(settings: Settings) -> FastAPI:
     register_assistant_handlers(app)
 
     api = APIRouter(prefix=API_PREFIX)
+    api.include_router(audit_router)
     api.include_router(stats_router)
     api.include_router(organs_router)
     api.include_router(officials_router)

@@ -9,9 +9,12 @@ keys/
 # --- Docker ---
 docker-compose.override.yml
 
+# --- Артефакты стенда: дампы БД, офлайн-пакет, видео (make dump/offline-bundle/video) ---
+/dist/
+
 # --- Данные ---
-# Синтетика генерируется скриптом, в git не кладём.
-data/generated/
+# data/generated/ храним в git: генерация детерминирована, а предрасчёт анализа обращений
+# (AI-06) зависит от LLM и не воспроизводится бесплатно. Пересоздать: python -m data.generator.
 *.dump
 *.sql.gz
 
@@ -61,3 +64,10 @@ desktop.ini
 .omc
 .claude/settings.local.json
 .claude/worktrees/
+
+# Browser test artifacts
+frontend/test-results/
+
+# Local authoring and verification workspace
+.codex-build/
+/egor-test-fixture/

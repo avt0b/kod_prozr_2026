@@ -103,8 +103,8 @@ class RelativeSupplierRule(RiskRule):
             f"{_plural_contracts(len(contracts))} от «{appointment.organ_name}» "
             f"на {format_rub(total)}, когда {official_name} занимал(а) "
             f"должность «{appointment.position_title}» с полномочиями по закупкам. "
-            "Возможен конфликт интересов: требуется проверка уведомления о личной "
-            "заинтересованности и самоотвода."
+            "Это может свидетельствовать о конфликте интересов: требуется проверить, "
+            "было ли уведомление о личной заинтересованности и самоотвод."
         )
 
         evidence: list[EvidenceNode] = [person_node(official.person)]
@@ -136,4 +136,3 @@ def _plural_contracts(count: int) -> str:
     if count % 10 in (2, 3, 4) and count % 100 not in (12, 13, 14):
         return "контракта"
     return "контрактов"
-

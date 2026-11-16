@@ -1,0 +1,14 @@
+# Наложение для релизного деплоя (OPS-09): образы из GHCR вместо локальной сборки.
+# Используется только deploy/deploy.sh вместе с корневым docker-compose.yml:
+#
+#   docker compose -f docker-compose.yml -f deploy/docker-compose.release.yml up -d --no-build
+#
+# BACKEND_IMAGE / FRONTEND_IMAGE задаёт deploy.sh (ghcr.io/<owner>/<repo>/<service>:<tag>).
+# Локальный `make up` это наложение не подключает и по-прежнему собирает образы сам.
+
+services:
+  backend:
+    image: ${BACKEND_IMAGE:?BACKEND_IMAGE не задан — запускайте через deploy/deploy.sh}
+
+  frontend:
+    image: ${FRONTEND_IMAGE:?FRONTEND_IMAGE не задан — запускайте через deploy/deploy.sh}

@@ -1,0 +1,17 @@
+# NVIDIA GPU для Ollama. Подключается поверх основного файла:
+#
+#   docker compose -f docker-compose.yml -f docker-compose.gpu.yml --profile llm up -d ollama
+#
+# make llm-up делает это сам, если `docker info` показывает runtime nvidia
+# (нужен nvidia-container-toolkit). Без него контейнер с этим блоком не стартует,
+# поэтому в основном docker-compose.yml GPU не запрашивается.
+
+services:
+  ollama:
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]

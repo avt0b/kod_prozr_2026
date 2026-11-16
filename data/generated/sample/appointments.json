@@ -1,0 +1,37 @@
+[
+ {
+  "id": "72624795-aae5-5e7b-a734-039b8a8d8323",
+  "person_id": "4d32a594-1325-5c9d-bed1-cfec43b131a2",
+  "position_id": "4be236f5-46bd-5a34-a9a2-9baf08171fd7",
+  "started_at": "2021-02-01",
+  "ended_at": null
+ },
+ {
+  "id": "1c8047fd-9b93-5a0b-a79b-362861ed91b2",
+  "person_id": "c39d5cae-091f-5b73-af39-6fbb6b9a613e",
+  "position_id": "b556fe68-7563-5865-9d36-5d5e342955d5",
+  "started_at": "2018-09-03",
+  "ended_at": null
+ },
+ {
+  "id": "c9371c8f-ab2c-54fc-8554-c60507d1ca78",
+  "person_id": "fb05291e-c81e-5e5c-b2be-db310f0a2fbb",
+  "position_id": "06d6564f-679a-506f-8635-5296e995f703",
+  "started_at": "2024-03-01",
+  "ended_at": null
+ },
+ {
+  "id": "3778196e-dc87-5937-8745-d82dc8490c49",
+  "person_id": "3f06dada-686f-580b-874e-58593097933f",
+  "position_id": "56835f92-4f4d-5b1e-8dfd-7ca3b9b28e3a",
+  "started_at": "2020-09-01",
+  "ended_at": null
+ },
+ {
+  "id": "da14c2b8-f268-5b3a-9a80-d8ddb53342f6",
+  "person_id": "12b5fe9f-4f46-52d7-b758-a3ae1f18cf32",
+  "position_id": "4490c535-e85b-5b15-8250-4d5c098a7dea",
+  "started_at": "2019-05-20",
+  "ended_at": null
+ }
+]

@@ -2,8 +2,8 @@
  * Типы сущностей и ответов API по docs/contracts.md.
  * JSON в snake_case, id — UUID (string), даты — ISO 8601 (string).
  *
- * Поля, помеченные «ДОДУМАНО», в контракте не описаны явно — это наше предположение,
- * его нужно согласовать с бэкендом (см. docs/frontend.md, раздел «Пробелы контракта»).
+ * Формы ответов и енумы согласованы на созвоне по контракту (T-01, 11.11):
+ * см. docs/contracts.md, раздел «Формы ответов».
  */
 
 export type UUID = string;
@@ -52,7 +52,7 @@ export interface Appointment {
 
 export type AuthorityKind = 'procurement' | 'permits' | 'inspection' | 'budget' | 'hr';
 
-/** ДОДУМАНО: структура scope (в контракте — «коды ОКПД2/ОКВЭД, территория»). */
+/** Сфера полномочия. Пустой список кодов = любые коды. */
 export interface AuthorityScope {
   okpd2?: string[];
   okved?: string[];
@@ -84,7 +84,7 @@ export interface Company {
   address: string;
   phone?: string | null;
   registered_at: ISODate;
-  /** ДОДУМАНО: значения статуса. */
+  /** Значения статуса. */
   status: 'active' | 'liquidated' | 'liquidating';
 }
 
@@ -108,7 +108,7 @@ export interface Employment {
   ended_at?: ISODate | null;
 }
 
-/** ДОДУМАНО: значения способа закупки. */
+/** Значения способа закупки. */
 export type ProcurementMethod = 'auction' | 'tender' | 'quotation' | 'single_supplier';
 
 export interface Contract {
@@ -125,7 +125,7 @@ export interface Contract {
 export type RuleCode = 'R01' | 'R02' | 'R03' | 'R04' | 'R05' | 'R06' | 'R07' | 'R08';
 export type Severity = 'low' | 'medium' | 'high';
 
-/** Узел цепочки доказательств. ДОДУМАНО: формат элемента evidence. node_id совпадает с id узла графа. */
+/** Узел цепочки доказательств (элемент evidence). node_id совпадает с id узла графа. */
 export interface EvidenceItem {
   node_id: UUID;
   type: GraphNodeType;
@@ -153,7 +153,7 @@ export interface RiskScore {
 export type AppealStatus = 'new' | 'analyzed' | 'routed' | 'closed';
 export type AppealCategory =
   'bribe' | 'conflict_of_interest' | 'procurement' | 'abuse_of_power' | 'other';
-/** ДОДУМАНО: значения канала поступления обращения. */
+/** Значения канала поступления обращения. */
 export type AppealChannel = 'web' | 'email' | 'hotline' | 'letter' | 'personal';
 
 export type EntityType = 'person' | 'organization' | 'position' | 'money' | 'date' | 'address';
@@ -170,6 +170,16 @@ export interface AppealSignal {
   text: string;
 }
 
+/** Служащий, похожий на упомянутого, но не привязанный автоматически (ai.md §3). */
+export interface AppealCandidate {
+  person_id: UUID;
+  full_name: string;
+  score: number;
+}
+
+/** Чем сделан разбор: LLM или фоллбэк на правилах (ADR-05). */
+export type AnalysisEngine = 'llm' | 'fallback';
+
 export interface AppealAnalysis {
   is_corruption: boolean;
   category: AppealCategory;
@@ -179,6 +189,11 @@ export interface AppealAnalysis {
   specificity: number;
   route_to: string;
   summary: string;
+  /** Контракт: llm | fallback. Старые разборы могут его не содержать. */
+  engine?: AnalysisEngine;
+  /** Техническое имя анализатора: rules, llm:<модель>. */
+  analyzer?: string;
+  candidates?: AppealCandidate[];
 }
 
 export interface Appeal {
@@ -192,7 +207,7 @@ export interface Appeal {
   linked_person_ids: UUID[];
 }
 
-/** ДОДУМАНО: краткая карточка связанного служащего в GET /appeals/{id}. */
+/** Краткая карточка связанного служащего в GET /appeals/{id}. */
 export interface LinkedOfficial {
   id: UUID;
   full_name: string;
@@ -214,7 +229,7 @@ export interface ReportDraft {
 
 /* ---------- Ответы эндпоинтов ---------- */
 
-/** ДОДУМАНО: форма ответа GET /stats/overview. */
+/** Форма ответа GET /stats/overview. */
 export interface StatsOverview {
   officials_total: number;
   officials_with_flags: number;
@@ -224,13 +239,13 @@ export interface StatsOverview {
   computed_at: ISODate;
 }
 
-/** ДОДУМАНО: краткий флаг для бейджей в рейтинге. */
+/** Краткий флаг для бейджей в рейтинге. */
 export interface FlagShort {
   rule_code: RuleCode;
   severity: Severity;
 }
 
-/** Элемент GET /officials. ДОДУМАНО: position и organ — строки (название), плюс organ_id. */
+/** Элемент GET /officials. position и organ — строки (название), плюс organ_id. */
 export interface OfficialListItem {
   id: UUID;
   full_name: string;
@@ -247,25 +262,27 @@ export interface OfficialsQuery {
   query?: string;
   organ_id?: UUID;
   min_score?: number;
+  /** Только служащие с флагом этого правила. */
+  rule_code?: RuleCode;
   sort?: OfficialsSort;
   limit?: number;
   offset?: number;
 }
 
-/** ДОДУМАНО: замещение должности, обогащённое должностью и органом. */
+/** Замещение должности, обогащённое должностью и органом. */
 export interface AppointmentDetails extends Appointment {
   position: Position;
   organ: Organ;
 }
 
-/** ДОДУМАНО: родственник с видом родства. */
+/** Родственник с видом родства. */
 export interface RelativeDetails {
   kinship_id: UUID;
   kind: KinshipKind;
   person: Person;
 }
 
-/** ДОДУМАНО: компания, связанная со служащим напрямую или через родственника. */
+/** Компания, связанная со служащим напрямую или через родственника. */
 export interface CompanyLink {
   company: Company;
   role: CompanyRoleKind | 'employee';
@@ -276,8 +293,8 @@ export interface CompanyLink {
   relation: 'self' | KinshipKind;
   started_at: ISODate;
   ended_at?: ISODate | null;
-  contracts_count: number;
-  contracts_amount: number;
+  contracts_count?: number;
+  contracts_amount?: number;
 }
 
 export interface OfficialProfile {
@@ -302,7 +319,7 @@ export interface GraphNode {
   risk?: number | null;
 }
 
-/** ДОДУМАНО: значения edge.type. */
+/** Значения edge.type. */
 export type GraphEdgeType =
   | 'works_in'
   | 'kinship'
@@ -311,7 +328,8 @@ export type GraphEdgeType =
   | 'employment'
   | 'supplier'
   | 'customer'
-  | 'mentions';
+  | 'mentions'
+  | 'shared_contact';
 
 export interface GraphEdge {
   source: UUID;
@@ -323,6 +341,8 @@ export interface GraphEdge {
 export interface OfficialGraph {
   nodes: GraphNode[];
   edges: GraphEdge[];
+  /** Optional server limit marker; does not alter the contract's required fields. */
+  truncated?: boolean;
 }
 
 export interface AppealsQuery {
@@ -337,14 +357,14 @@ export interface CreateAppealPayload {
   channel: AppealChannel;
 }
 
-/** ДОДУМАНО: ответ POST /risk/recompute. */
+/** Ответ POST /risk/recompute. */
 export interface RecomputeResult {
   officials_processed: number;
   flags_total: number;
   computed_at: ISODate;
 }
 
-/** ДОДУМАНО: набор типов источников ассистента. */
+/** Набор типов источников ассистента. */
 export type AssistantSourceType = 'person' | 'company' | 'organ' | 'contract' | 'appeal' | 'flag';
 
 export interface AssistantSource {
@@ -356,4 +376,74 @@ export interface AssistantSource {
 export interface AssistantAnswer {
   answer: string;
   sources: AssistantSource[];
+}
+
+/* ---------- Карта рисков должностей (GET /risk-map, вариант D) ---------- */
+
+/** Уровень риска должности по её полномочиям, без учёта людей. */
+export type PositionRiskLevel = 'high' | 'medium' | 'low';
+
+/** Типовой коррупционный риск полномочия. rule_codes — правила, которыми система его ищет. */
+export interface TypicalRisk {
+  code: string;
+  title: string;
+  description: string;
+  authority: AuthorityKind;
+  rule_codes: RuleCode[];
+  legal_ref: string;
+}
+
+export interface RuleCount {
+  rule_code: RuleCode;
+  /** Число служащих группы с флагом этого правила. */
+  count: number;
+}
+
+export interface RiskMapOfficial {
+  id: UUID;
+  full_name: string;
+  risk_score: number;
+}
+
+/** Сводка риска группы служащих (должность или орган). */
+export interface RiskAggregate {
+  officials_total: number;
+  officials_with_flags: number;
+  /** Доля служащих с флагами, 0–1. */
+  flagged_share: number;
+  avg_score: number;
+  max_score: number;
+  top_rules: RuleCount[];
+  top_officials: RiskMapOfficial[];
+}
+
+export interface PositionRisk extends RiskAggregate {
+  position_id: UUID;
+  title: string;
+  department: string;
+  organ_id: UUID;
+  organ: string;
+  is_corruption_risky: boolean;
+  authorities: AuthorityKind[];
+  risk_level: PositionRiskLevel;
+  typical_risks: TypicalRisk[];
+}
+
+export interface OrganRisk extends RiskAggregate {
+  organ_id: UUID;
+  organ: string;
+  positions_total: number;
+}
+
+export interface RiskMap {
+  items: PositionRisk[];
+  total: number;
+  organs: OrganRisk[];
+  computed_at: ISODate | null;
+}
+
+export interface RiskMapQuery {
+  organ_id?: UUID;
+  limit?: number;
+  offset?: number;
 }

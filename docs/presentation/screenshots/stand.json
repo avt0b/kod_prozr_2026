@@ -1,0 +1,26 @@
+{
+  "taken_at": "2026-11-15T19:47:49.254Z",
+  "base_url": "http://127.0.0.1:5185",
+  "official": "Соколов Андрей Викторович",
+  "before": {
+    "rank": 3,
+    "score": 73
+  },
+  "appeal": {
+    "category": "procurement",
+    "engine": "fallback",
+    "is_corruption": true,
+    "linked": 1
+  },
+  "after": {
+    "rank": 1,
+    "score": 88
+  },
+  "flags": [
+    "R01",
+    "R05",
+    "R06",
+    "R07",
+    "R08"
+  ]
+}

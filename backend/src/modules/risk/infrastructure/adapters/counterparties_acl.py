@@ -27,6 +27,9 @@ class ExternalCompany(Protocol):
     @property
     def phone(self) -> str | None: ...
 
+    @property
+    def registered_at(self) -> date | None: ...
+
 
 class ExternalCompanyRole(Protocol):
     @property
@@ -59,9 +62,14 @@ class ExternalContract(Protocol):
     @property
     def okpd2(self) -> str | None: ...
 
+    @property
+    def method(self) -> str | None: ...
+
 
 class ExternalCounterpartiesSource(Protocol):
     async def companies(self, company_ids: Sequence[UUID]) -> Sequence[ExternalCompany]: ...
+
+    async def all_companies(self, limit: int = ...) -> Sequence[ExternalCompany]: ...
 
     async def roles_for_persons(
         self, person_ids: Sequence[UUID]
@@ -78,6 +86,19 @@ class ExternalCounterpartiesSource(Protocol):
         supplier_company_ids: Sequence[UUID] | None = None,
         limit: int = ...,
     ) -> Sequence[ExternalContract]: ...
+
+
+def _company(company: ExternalCompany) -> CompanyFacts:
+    return CompanyFacts(
+        id=company.id,
+        name=company.name,
+        inn=company.inn,
+        status=company.status,
+        okved=company.okved,
+        address=company.address,
+        phone=company.phone,
+        registered_at=company.registered_at,
+    )
 
 
 def _role(role: ExternalCompanyRole) -> CompanyRoleFacts:
@@ -102,18 +123,10 @@ class CounterpartiesACLAdapter(CounterpartiesSourceInterface):
         return [_role(r) for r in await self._source.roles_for_companies(company_ids)]
 
     async def companies(self, company_ids: Sequence[UUID]) -> list[CompanyFacts]:
-        return [
-            CompanyFacts(
-                id=c.id,
-                name=c.name,
-                inn=c.inn,
-                status=c.status,
-                okved=c.okved,
-                address=c.address,
-                phone=c.phone,
-            )
-            for c in await self._source.companies(company_ids)
-        ]
+        return [_company(c) for c in await self._source.companies(company_ids)]
+
+    async def all_companies(self, limit: int) -> list[CompanyFacts]:
+        return [_company(c) for c in await self._source.all_companies(limit)]
 
     async def contracts(
         self,
@@ -136,6 +149,7 @@ class CounterpartiesACLAdapter(CounterpartiesSourceInterface):
                 amount=c.amount,
                 signed_at=c.signed_at,
                 okpd2=c.okpd2,
+                method=c.method,
             )
             for c in found
         ]

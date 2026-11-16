@@ -1,4 +1,5 @@
 from collections.abc import Sequence
+from datetime import datetime
 from uuid import UUID
 
 from sqlalchemy import delete, distinct, func, insert, select
@@ -67,9 +68,12 @@ class RiskRepository(RiskRepositoryInterface):
             select(RiskFlagModel.severity, func.count()).group_by(RiskFlagModel.severity)
         )
         counts = {"low": 0, "medium": 0, "high": 0}
-        counts.update({severity: count for severity, count in rows.tuples()})
+        counts.update({severity: count for severity, count in rows})
         return counts
 
     async def flagged_officials_count(self) -> int:
         total = await self._session.scalar(select(func.count(distinct(RiskFlagModel.person_id))))
         return total or 0
+
+    async def last_computed_at(self) -> datetime | None:
+        return await self._session.scalar(select(func.max(RiskScoreModel.computed_at)))

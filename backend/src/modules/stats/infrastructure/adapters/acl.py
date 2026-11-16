@@ -1,12 +1,14 @@
 """ACL stats -> officials / risk / appeals. Внешние источники — локальные протоколы,
 настоящие объекты (Query*UseCase модулей) подставляет src/web/dependencies.py."""
 
+from datetime import datetime
 from typing import Protocol
 
 from src.modules.stats.application.interfaces.sources import (
     AppealsCounterInterface,
     OfficialsCounterInterface,
     RiskCounterInterface,
+    RiskSummary,
 )
 
 
@@ -19,6 +21,8 @@ class ExternalRiskStats(Protocol):
     def flags_by_severity(self) -> dict[str, int]: ...
     @property
     def flagged_officials(self) -> int: ...
+    @property
+    def computed_at(self) -> datetime | None: ...
 
 
 class ExternalRiskSource(Protocol):
@@ -41,11 +45,13 @@ class RiskCounterACLAdapter(RiskCounterInterface):
     def __init__(self, source: ExternalRiskSource) -> None:
         self._source = source
 
-    async def flags_by_severity(self) -> dict[str, int]:
-        return dict((await self._source.stats()).flags_by_severity)
-
-    async def flagged_officials(self) -> int:
-        return (await self._source.stats()).flagged_officials
+    async def summary(self) -> RiskSummary:
+        stats = await self._source.stats()
+        return RiskSummary(
+            flags_by_severity=dict(stats.flags_by_severity),
+            flagged_officials=stats.flagged_officials,
+            computed_at=stats.computed_at,
+        )
 
 
 class AppealsCounterACLAdapter(AppealsCounterInterface):

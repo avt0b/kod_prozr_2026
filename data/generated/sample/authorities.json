@@ -1,0 +1,66 @@
+[
+ {
+  "id": "10414808-8532-5a79-9819-7306e89ab423",
+  "position_id": "4be236f5-46bd-5a34-a9a2-9baf08171fd7",
+  "kind": "procurement",
+  "scope": {
+   "okpd2": [
+    "42.11"
+   ],
+   "okved": [],
+   "territory": "Энская область"
+  }
+ },
+ {
+  "id": "7a1a2a90-8aa1-5fe4-b931-fbfbaa3c7ac1",
+  "position_id": "b556fe68-7563-5865-9d36-5d5e342955d5",
+  "kind": "permits",
+  "scope": {
+   "okpd2": [],
+   "okved": [],
+   "territory": "Энская область"
+  }
+ },
+ {
+  "id": "b10d4ee3-2209-59c4-bac7-d76a9bc1e698",
+  "position_id": "06d6564f-679a-506f-8635-5296e995f703",
+  "kind": "procurement",
+  "scope": {
+   "okpd2": [],
+   "okved": [],
+   "territory": "г. Энск"
+  }
+ },
+ {
+  "id": "b922f9e3-2681-51f2-bfd3-6071efba3107",
+  "position_id": "06d6564f-679a-506f-8635-5296e995f703",
+  "kind": "budget",
+  "scope": {
+   "okpd2": [],
+   "okved": [],
+   "territory": "г. Энск"
+  }
+ },
+ {
+  "id": "a5982518-7aea-56d6-a650-2a93b78a8a70",
+  "position_id": "56835f92-4f4d-5b1e-8dfd-7ca3b9b28e3a",
+  "kind": "procurement",
+  "scope": {
+   "okpd2": [
+    "81.29"
+   ],
+   "okved": [],
+   "territory": "г. Энск"
+  }
+ },
+ {
+  "id": "7421b5e8-2d2c-5f4e-a136-861af492e741",
+  "position_id": "4490c535-e85b-5b15-8250-4d5c098a7dea",
+  "kind": "inspection",
+  "scope": {
+   "okpd2": [],
+   "okved": [],
+   "territory": "г. Энск"
+  }
+ }
+]

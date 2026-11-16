@@ -1,7 +1,7 @@
 """DTO слоя application. Наружу из use case уходят они, а не доменные сущности."""
 
 from dataclasses import dataclass
-from datetime import date
+from datetime import date, datetime
 from uuid import UUID
 
 
@@ -88,14 +88,26 @@ class OfficialSnapshotDTO:
 
 
 @dataclass(frozen=True)
-class CompanyLinkView:
-    """Связь человека с компанией — приходит из counterparties через ACL."""
+class CompanyView:
+    """Компания — приходит из counterparties через ACL."""
+
+    id: UUID
+    inn: str
+    ogrn: str
+    name: str
+    okved: str
+    address: str | None
+    phone: str | None
+    registered_at: date | None
+    status: str
+
+
+@dataclass(frozen=True)
+class CompanyRoleView:
+    """Роль человека в компании (учредитель или директор) — из counterparties через ACL."""
 
     person_id: UUID
-    company_id: UUID
-    company_name: str
-    company_inn: str
-    company_status: str
+    company: CompanyView
     role: str
     share: float | None
     started_at: date
@@ -103,16 +115,56 @@ class CompanyLinkView:
 
 
 @dataclass(frozen=True)
+class ContractView:
+    supplier_company_id: UUID
+    customer_organ_id: UUID
+    amount: float
+    signed_at: date
+
+
+@dataclass(frozen=True)
+class CompanyLinkDTO:
+    """Компания в профиле: связь служащего или родственника, с контрактами органов служащего."""
+
+    company: CompanyView
+    role: str  # founder | director | employee
+    share: float | None
+    via_person_id: UUID
+    via_person_name: str
+    relation: str  # self | вид родства
+    started_at: date
+    ended_at: date | None
+    contracts_count: int
+    contracts_amount: float
+
+
+@dataclass(frozen=True)
+class RiskScoreView:
+    score: float
+    flags_count: int
+
+
+@dataclass(frozen=True)
+class EvidenceView:
+    node_id: UUID
+    type: str
+    label: str
+
+
+@dataclass(frozen=True)
 class RiskFlagView:
     """Флаг риска — приходит из risk через ACL."""
 
     id: UUID
+    person_id: UUID
     rule_code: str
     rule_name: str
     severity: str
     weight: float
     explanation: str
+    evidence: tuple[EvidenceView, ...]
     legal_ref: str | None
+    computed_at: datetime
 
 
 @dataclass(frozen=True)
@@ -128,6 +180,7 @@ class OfficialListItemDTO:
 @dataclass(frozen=True)
 class OfficialRiskDTO:
     score: float
+    computed_at: datetime | None
     flags: tuple[RiskFlagView, ...]
 
 
@@ -137,6 +190,6 @@ class OfficialProfileDTO:
     appointments: tuple[AppointmentDTO, ...]
     authorities: tuple[AuthorityDTO, ...]
     relatives: tuple[RelativeDTO, ...]
-    companies: tuple[CompanyLinkView, ...]
+    companies: tuple[CompanyLinkDTO, ...]
     employments: tuple[EmploymentDTO, ...]
     risk: OfficialRiskDTO

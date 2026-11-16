@@ -33,9 +33,13 @@ class Settings(BaseSettings):
     llm_api_key: SecretStr | None = None
     llm_model: str = "qwen2.5:7b-instruct"
     llm_timeout_seconds: float = Field(default=60.0, gt=0)
+    # Установка соединения: при недоступной LLM (в т.ч. DROP на файрволе) быстро уходим на фоллбэк.
+    llm_connect_timeout_seconds: float = Field(default=5.0, gt=0)
 
     # Каталог с JSON синтетики для `python -m src.seed` (относительно backend/ или абсолютный).
     seed_dir: str = "data/generated"
+    # Порог «закупки чуть ниже порога» для R08, ₽ (тот же --threshold у генератора, data.md §3).
+    procurement_threshold: float = Field(default=600_000.0, gt=0)
 
     model_config = SettingsConfigDict(
         env_file=f"{BASE_DIR}/.env",

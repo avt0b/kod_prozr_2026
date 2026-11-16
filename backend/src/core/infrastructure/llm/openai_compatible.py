@@ -1,32 +1,57 @@
+import json
+from time import perf_counter
 from typing import Any
 
 import httpx
+from jsonschema import ValidationError, validate
 
-from src.core.exceptions import ExternalServiceError
-from src.core.infrastructure.interfaces.llm_client import ChatMessage, LLMClientInterface
+from src.core.exceptions.base import LLMInvalidResponseError, LLMUnavailableError
+from src.core.infrastructure.interfaces.llm_client import ChatMessage
 from src.core.infrastructure.logger import get_logger
 
 logger = get_logger(__name__)
 
 
-class OpenAICompatibleLLMClient(LLMClientInterface):
-    """Клиент к любому OpenAI-совместимому API: vLLM, Ollama (`/v1`), облачные провайдеры.
+# Ошибки, после которых повтор только удлиняет ожидание: сервер недоступен
+# (соединение не установлено) или не уложился в таймаут генерации.
+_NO_RETRY = (httpx.ConnectError, httpx.TimeoutException)
 
-    Ходит в `POST {LLM_BASE_URL}/chat/completions`. SDK openai не тянем — хватает httpx.
+DEFAULT_CONNECT_TIMEOUT = 5.0
+
+
+class OpenAICompatibleLLMClient:
+    """OpenAI-compatible transport.
+
+    Соединение ограничено коротким ``connect_timeout``, ответ — длинным ``timeout``.
+    Один повтор только для 5xx/429 и обрывов уже установленного соединения; недоступный
+    сервер и истёкший таймаут сразу дают ``LLMUnavailableError`` (дальше — фоллбэк).
     """
 
-    def __init__(self, base_url: str, api_key: str | None, model: str, timeout: float) -> None:
+    def __init__(
+        self,
+        base_url: str,
+        api_key: str | None,
+        model: str,
+        timeout: float,
+        *,
+        connect_timeout: float = DEFAULT_CONNECT_TIMEOUT,
+        transport: httpx.AsyncBaseTransport | None = None,
+    ) -> None:
         self._base_url = base_url.rstrip("/")
         self._api_key = api_key
         self._model = model
-        self._timeout = timeout
+        self._timeout = httpx.Timeout(timeout, connect=min(connect_timeout, timeout))
+        self._client = httpx.AsyncClient(timeout=self._timeout, transport=transport)
+
+    async def aclose(self) -> None:
+        await self._client.aclose()
 
     async def complete(
         self,
         messages: list[ChatMessage],
         *,
         json_mode: bool = False,
-        temperature: float = 0.1,
+        temperature: float = 0.0,
         max_tokens: int | None = None,
     ) -> str:
         payload: dict[str, Any] = {
@@ -38,20 +63,57 @@ class OpenAICompatibleLLMClient(LLMClientInterface):
             payload["response_format"] = {"type": "json_object"}
         if max_tokens is not None:
             payload["max_tokens"] = max_tokens
-
         headers = {"Authorization": f"Bearer {self._api_key}"} if self._api_key else {}
-        try:
-            async with httpx.AsyncClient(timeout=self._timeout) as client:
+        started = perf_counter()
+        client = self._client
+        for attempt in range(2):
+            try:
                 response = await client.post(
                     f"{self._base_url}/chat/completions", json=payload, headers=headers
                 )
                 response.raise_for_status()
+            except httpx.HTTPError as exc:
+                if isinstance(exc, httpx.HTTPStatusError):
+                    status = exc.response.status_code
+                    retryable = status >= 500 or status == 429
+                else:
+                    retryable = not isinstance(exc, _NO_RETRY)
+                logger.warning(
+                    "LLM transport failure: {} attempt={}", type(exc).__name__, attempt + 1
+                )
+                if retryable and attempt == 0:
+                    continue
+                raise LLMUnavailableError("LLM is unavailable") from exc
+            try:
                 data = response.json()
-            content = data["choices"][0]["message"]["content"]
-        except (httpx.HTTPError, KeyError, IndexError, ValueError) as exc:
-            logger.warning("LLM request failed: {}", type(exc).__name__)
-            raise ExternalServiceError(f"LLM is unavailable: {type(exc).__name__}") from exc
+                content = data["choices"][0]["message"]["content"]
+                if not isinstance(content, str) or not content.strip():
+                    raise ValueError("empty response")
+            except (ValueError, TypeError, KeyError, IndexError) as exc:
+                raise LLMInvalidResponseError("LLM returned invalid content") from exc
+            logger.info(
+                "LLM model={} duration_ms={:.1f}",
+                self._model,
+                (perf_counter() - started) * 1000,
+            )
+            return content
+        raise LLMUnavailableError("LLM is unavailable")
 
-        if not isinstance(content, str):
-            raise ExternalServiceError("LLM returned empty content")
-        return content
+    async def complete_text(self, system: str, messages: list[ChatMessage]) -> str:
+        return await self.complete([ChatMessage("system", system), *messages])
+
+    async def complete_json(
+        self, system: str, messages: list[ChatMessage], schema: dict[str, Any]
+    ) -> dict[str, Any]:
+        raw = await self.complete(
+            [ChatMessage("system", system + "\nJSON schema:\n" + json.dumps(schema)), *messages],
+            json_mode=True,
+        )
+        try:
+            result: object = json.loads(raw)
+            if not isinstance(result, dict):
+                raise ValueError("expected object")
+            validate(result, schema)
+        except (ValueError, ValidationError) as exc:
+            raise LLMInvalidResponseError("LLM JSON failed schema validation") from exc
+        return result

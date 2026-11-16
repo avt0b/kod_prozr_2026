@@ -17,6 +17,12 @@ export function GraphLegend() {
               display: 'inline-block',
               background: NODE_STYLES[type].color,
               borderRadius: SHAPE_RADIUS[NODE_STYLES[type].shape] ?? 0,
+              clipPath:
+                type === 'organ'
+                  ? 'polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%)'
+                  : type === 'appeal'
+                    ? 'polygon(0 0,70% 0,100% 50%,70% 100%,0 100%)'
+                    : undefined,
               transform:
                 NODE_STYLES[type].shape === 'diamond' ? 'rotate(45deg) scale(0.8)' : undefined,
             }}
@@ -25,7 +31,7 @@ export function GraphLegend() {
         </Group>
       ))}
       <Text size="xs" c="dimmed">
-        Красная обводка — высокий риск. Пунктир — родство.
+        Рамка: красная — высокий риск, оранжевая — средний, зелёная — низкий. Пунктир — родство.
       </Text>
     </Group>
   );

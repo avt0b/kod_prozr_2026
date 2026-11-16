@@ -1,4 +1,5 @@
 from collections.abc import Sequence
+from datetime import datetime
 from typing import Protocol
 from uuid import UUID
 
@@ -24,3 +25,7 @@ class RiskRepositoryInterface(Protocol):
     async def severity_counts(self) -> dict[str, int]: ...
 
     async def flagged_officials_count(self) -> int: ...
+
+    async def last_computed_at(self) -> datetime | None:
+        """Время последнего пересчёта (максимум по баллам). Пересчёта не было — None."""
+        ...

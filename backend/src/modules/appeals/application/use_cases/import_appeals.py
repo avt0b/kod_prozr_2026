@@ -40,13 +40,22 @@ class ImportAppealsUseCase:
             batch = await self._repository.list_unanalyzed(ANALYZE_BATCH)
             if not batch:
                 break
+            # По одному и по порядку received_at: repeated_subject ищет более ранние
+            # обращения в БД, поэтому каждое сохраняется до разбора следующего.
             for appeal in batch:
                 await self._analysis.analyze(appeal)
                 appeal.clear_events()
-            async with self._unit_of_work:
-                await self._repository.upsert_many(batch)
-                await self._unit_of_work.commit()
+                async with self._unit_of_work:
+                    await self._repository.save(appeal)
+                    await self._unit_of_work.commit()
             analyzed += len(batch)
             logger.info("Seed: analyzed {} appeals", analyzed)
 
-        return {"appeals": len(appeals), "appeals_analyzed": analyzed}
+        # appeals_precomputed — анализ пришёл из сидов (AI-06), appeals_analyzed — разобраны
+        # сейчас. С предрасчётом второе 0: это норма, а не потерянный анализ.
+        precomputed = sum(1 for a in appeals if a.analysis is not None)
+        return {
+            "appeals": len(appeals),
+            "appeals_precomputed": precomputed,
+            "appeals_analyzed": analyzed,
+        }

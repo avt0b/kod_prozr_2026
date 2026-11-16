@@ -6,13 +6,20 @@ import { AppealStatusBadge } from '@/features/appeals/AppealBadges';
 import { EntityLegend } from '@/features/appeals/EntityLegend';
 import { HighlightedText } from '@/features/appeals/HighlightedText';
 import { useAppeal, useReanalyzeAppeal } from '@/features/appeals/api';
-import type { LinkedOfficial } from '@/shared/api';
+import { LinkedOfficialPreview } from '@/features/appeals/LinkedOfficialPreview';
 import { routes } from '@/shared/config/routes';
 import { formatDateTime } from '@/shared/lib/format';
 import { APPEAL_CHANNEL_LABELS } from '@/shared/lib/labels';
-import { QueryState, RiskScoreBadge } from '@/shared/ui';
+import type { AppealCandidate } from '@/shared/api';
+import { QueryState } from '@/shared/ui';
 
-function LinkedOfficials({ persons }: { persons: LinkedOfficial[] }) {
+function LinkedOfficials({
+  persons,
+  candidates,
+}: {
+  persons: string[];
+  candidates: AppealCandidate[];
+}) {
   return (
     <Card>
       <Title order={4} mb="sm">
@@ -20,21 +27,30 @@ function LinkedOfficials({ persons }: { persons: LinkedOfficial[] }) {
       </Title>
       {persons.length === 0 ? (
         <Text size="sm" c="dimmed">
-          Не сопоставлены с базой служащих
+          {candidates.length
+            ? 'Автоматически не привязаны: упоминание неоднозначно'
+            : 'Не сопоставлены с базой служащих'}
         </Text>
       ) : (
         <Stack gap="sm">
-          {persons.map((p) => (
-            <Group key={p.id} wrap="nowrap" align="flex-start">
-              <RiskScoreBadge score={p.risk_score} />
-              <div>
-                <Anchor component={Link} to={routes.official(p.id)} fw={500} size="sm">
-                  {p.full_name}
-                </Anchor>
-                <Text size="xs" c="dimmed">
-                  {p.position} · {p.organ}
-                </Text>
-              </div>
+          {persons.map((id) => (
+            <LinkedOfficialPreview key={id} id={id} />
+          ))}
+        </Stack>
+      )}
+      {candidates.length > 0 && (
+        <Stack gap={4} mt="md">
+          <Text size="sm" fw={600}>
+            Возможно (подтверждает аналитик):
+          </Text>
+          {candidates.map((c) => (
+            <Group key={c.person_id} gap="xs">
+              <Anchor component={Link} to={routes.official(c.person_id)} size="sm">
+                {c.full_name}
+              </Anchor>
+              <Text size="xs" c="dimmed">
+                совпадение {Math.round(c.score * 100)}%
+              </Text>
             </Group>
           ))}
         </Stack>
@@ -72,9 +88,19 @@ export function AppealPage() {
                 loading={reanalyze.isPending}
                 onClick={() => reanalyze.mutate(a.id)}
               >
-                Повторить анализ
+                {a.analysis ? 'Повторить анализ' : 'Запустить анализ'}
               </Button>
             </Group>
+            {reanalyze.isError && (
+              <Alert color="red" mb="md" title="Не удалось повторить анализ">
+                {reanalyze.error.message}
+              </Alert>
+            )}
+            {reanalyze.isPending && (
+              <Alert role="status" mb="md">
+                Повторный анализ обычно занимает 5–15 секунд.
+              </Alert>
+            )}
 
             <Grid gutter="lg">
               <Grid.Col span={{ base: 12, md: 7 }}>
@@ -93,7 +119,10 @@ export function AppealPage() {
                       </Stack>
                     )}
                   </Card>
-                  <LinkedOfficials persons={a.linked_persons} />
+                  <LinkedOfficials
+                    persons={a.linked_person_ids}
+                    candidates={a.analysis?.candidates ?? []}
+                  />
                 </Stack>
               </Grid.Col>
               <Grid.Col span={{ base: 12, md: 5 }}>
@@ -101,7 +130,7 @@ export function AppealPage() {
                   <AppealAnalysisPanel analysis={a.analysis} />
                 ) : (
                   <Alert color="blue" title="Обращение ещё не проанализировано">
-                    Нажмите «Повторить анализ», чтобы запустить классификацию.
+                    Нажмите «Запустить анализ», чтобы классифицировать обращение.
                   </Alert>
                 )}
               </Grid.Col>

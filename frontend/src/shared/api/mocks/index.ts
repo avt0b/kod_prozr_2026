@@ -4,8 +4,9 @@
  */
 import { env } from '@/shared/config/env';
 import { ApiError, type HttpMethod, type RequestOptions } from '../client';
-import type { AppealsQuery, CreateAppealPayload, OfficialsQuery } from '../types';
+import type { AppealsQuery, CreateAppealPayload, OfficialsQuery, RiskMapQuery } from '../types';
 import * as db from './db';
+import { riskMap } from './riskMap';
 import { organs } from './seed';
 
 type Handler = (params: Record<string, string>, opts: RequestOptions) => unknown;
@@ -56,6 +57,11 @@ const routes: Route[] = [
     },
   },
   { method: 'POST', pattern: path('/risk/recompute'), handler: () => db.recompute() },
+  {
+    method: 'GET',
+    pattern: path('/risk-map'),
+    handler: (_, { query }) => riskMap((query ?? {}) as RiskMapQuery),
+  },
 
   {
     method: 'GET',

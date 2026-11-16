@@ -3,7 +3,7 @@ from enum import StrEnum
 from uuid import UUID
 
 from src.core.dto import Page, PageRequest
-from src.modules.officials.application.dto.officials_dto import OfficialListItemDTO
+from src.modules.officials.application.dto.officials_dto import OfficialListItemDTO, RiskScoreView
 from src.modules.officials.application.interfaces.appointment_repository import (
     AppointmentRepositoryInterface,
 )
@@ -17,6 +17,8 @@ from src.modules.officials.application.use_cases.get_official_snapshots import (
 # при росте — read-модель рейтинга (как projector в optimus).
 MAX_RATING_CANDIDATES = 50_000
 TOP_FLAGS = 3
+ALL_FLAGS = 100
+_NO_SCORE = RiskScoreView(score=0.0, flags_count=0)
 
 
 class OfficialsSort(StrEnum):
@@ -31,6 +33,7 @@ class OfficialsFilter:
     query: str | None = None
     organ_id: UUID | None = None
     min_score: float | None = None
+    rule_code: str | None = None  # только служащие с флагом этого правила (демо: C2–C5)
     sort: OfficialsSort = OfficialsSort.RISK_DESC
 
 
@@ -55,15 +58,28 @@ class ListOfficialsUseCase:
         scores = await self._risk.get_scores(candidate_ids)
 
         def score(person_id: UUID) -> float:
-            return scores.get(person_id, 0.0)
+            return scores.get(person_id, _NO_SCORE).score
+
+        def rank(person_id: UUID) -> tuple[float, int]:
+            # При равном балле выше тот, у кого больше флагов (contracts.md).
+            found = scores.get(person_id, _NO_SCORE)
+            return found.score, found.flags_count
 
         ids = candidate_ids
         if filters.min_score is not None:
             ids = [pid for pid in ids if score(pid) >= filters.min_score]
+        if filters.rule_code is not None:
+            flagged = await self._risk.get_top_flags(ids, ALL_FLAGS)
+            ids = [
+                pid
+                for pid in ids
+                if any(f.rule_code == filters.rule_code for f in flagged.get(pid, ()))
+            ]
+        # sorted стабилен и при reverse=True: при равенстве остаётся порядок по ФИО.
         if filters.sort is OfficialsSort.RISK_DESC:
-            ids = sorted(ids, key=score, reverse=True)
+            ids = sorted(ids, key=rank, reverse=True)
         elif filters.sort is OfficialsSort.RISK_ASC:
-            ids = sorted(ids, key=score)
+            ids = sorted(ids, key=rank)
         elif filters.sort is OfficialsSort.NAME_DESC:
             ids = list(reversed(ids))
 

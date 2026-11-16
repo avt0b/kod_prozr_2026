@@ -6,7 +6,7 @@ import {
 } from '@/features/officials/OfficialsFilters';
 import { OfficialsTable } from '@/features/officials/OfficialsTable';
 import { useOfficials } from '@/features/officials/api';
-import type { OfficialsSort } from '@/shared/api';
+import type { OfficialsSort, RuleCode } from '@/shared/api';
 import { PageHeader, QueryState } from '@/shared/ui';
 
 const PAGE_SIZE = 20;
@@ -18,6 +18,7 @@ export function OfficialsPage() {
     query: params.get('query') ?? '',
     organId: params.get('organ_id'),
     minScore: params.get('min_score') ? Number(params.get('min_score')) : null,
+    ruleCode: (params.get('rule_code') as RuleCode | null) ?? null,
   };
   const sort = (params.get('sort') as OfficialsSort | null) ?? '-risk_score';
   const page = Number(params.get('page') ?? 1);
@@ -35,6 +36,7 @@ export function OfficialsPage() {
     query: filters.query || undefined,
     organ_id: filters.organId ?? undefined,
     min_score: filters.minScore ?? undefined,
+    rule_code: filters.ruleCode ?? undefined,
     sort,
     limit: PAGE_SIZE,
     offset: (page - 1) * PAGE_SIZE,
@@ -50,7 +52,13 @@ export function OfficialsPage() {
         <OfficialsFilters
           value={filters}
           onChange={(v) =>
-            update({ query: v.query, organ_id: v.organId, min_score: v.minScore, page: null })
+            update({
+              query: v.query,
+              organ_id: v.organId,
+              min_score: v.minScore,
+              rule_code: v.ruleCode,
+              page: null,
+            })
           }
         />
         <Card p={0}>

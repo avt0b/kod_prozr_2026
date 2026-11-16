@@ -9,6 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.core.infrastructure.dependencies import get_session
 from src.modules.appeals.presentation import dependencies as appeals_deps
+from src.modules.assistant.presentation import dependencies as assistant_deps
 from src.modules.officials.presentation import dependencies as officials_deps
 from src.modules.reports.presentation import dependencies as reports_deps
 from src.modules.risk.presentation import dependencies as risk_deps
@@ -27,6 +28,7 @@ def _on_session[T](builder: Callable[[AsyncSession], T]) -> Callable[..., T]:
 
 # заглушка модуля -> реализация из composition root
 DEPENDENCY_OVERRIDES: dict[Callable[..., Any], Callable[..., Any]] = {
+    assistant_deps.get_assistant_tools: _on_session(wiring.assistant_tools),
     officials_deps.get_risk_source: _on_session(wiring.officials_risk_source),
     officials_deps.get_company_links_source: _on_session(wiring.officials_company_links),
     risk_deps.get_officials_source: _on_session(wiring.risk_officials_source),
@@ -37,4 +39,6 @@ DEPENDENCY_OVERRIDES: dict[Callable[..., Any], Callable[..., Any]] = {
     stats_deps.get_officials_counter: _on_session(wiring.stats_officials_counter),
     stats_deps.get_risk_counter: _on_session(wiring.stats_risk_counter),
     stats_deps.get_appeals_counter: _on_session(wiring.stats_appeals_counter),
+    stats_deps.get_official_placements: _on_session(wiring.stats_official_placements),
+    stats_deps.get_official_risk_profiles: _on_session(wiring.stats_official_risk_profiles),
 }

@@ -41,7 +41,7 @@ async def get_official_flags(
 ) -> PageResponse[RiskFlagResponse]:
     """Флаги риска служащего с объяснением, цепочкой доказательств и нормой."""
     flags = await use_case.execute(person_id)
-    return PageResponse(items=[RiskFlagResponse.model_validate(f) for f in flags], total=len(flags))
+    return PageResponse(items=[RiskFlagResponse.from_dto(f) for f in flags], total=len(flags))
 
 
 @router.post("/risk/recompute", response_model=RecomputeResponse)

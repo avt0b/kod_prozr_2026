@@ -6,12 +6,14 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from src.core.config import Settings
 from src.core.events.event_bus import EventBus
 from src.core.infrastructure.dependencies import (
+    get_audit_log,
     get_event_bus,
     get_llm_client,
     get_session,
     get_settings,
     get_unit_of_work,
 )
+from src.core.infrastructure.interfaces.audit_log import AuditLogInterface
 from src.core.infrastructure.interfaces.llm_client import LLMClientInterface
 from src.core.infrastructure.interfaces.unit_of_work import UnitOfWorkInterface
 from src.modules.appeals.application.interfaces.appeal_analyzer import AppealAnalyzer
@@ -19,6 +21,7 @@ from src.modules.appeals.application.interfaces.appeal_repository import (
     AppealRepositoryInterface,
 )
 from src.modules.appeals.application.interfaces.person_directory import PersonDirectoryInterface
+from src.modules.appeals.application.interfaces.person_matcher import PersonMatcherInterface
 from src.modules.appeals.application.services.appeal_analysis import AppealAnalysisService
 from src.modules.appeals.application.use_cases.create_appeal import CreateAppealUseCase
 from src.modules.appeals.application.use_cases.get_appeal import GetAppealUseCase
@@ -26,6 +29,7 @@ from src.modules.appeals.application.use_cases.list_appeals import ListAppealsUs
 from src.modules.appeals.application.use_cases.reanalyze_appeal import ReanalyzeAppealUseCase
 from src.modules.appeals.infrastructure.adapters.fallback_analyzer import FallbackAppealAnalyzer
 from src.modules.appeals.infrastructure.adapters.llm_analyzer import LLMAppealAnalyzer
+from src.modules.appeals.infrastructure.adapters.person_matcher import MorphPersonMatcher
 from src.modules.appeals.infrastructure.adapters.rule_based_analyzer import (
     RuleBasedAppealAnalyzer,
 )
@@ -62,11 +66,21 @@ def get_appeal_repository(
     return AppealRepository(session)
 
 
+_MATCHER = MorphPersonMatcher()
+
+
+def get_person_matcher() -> PersonMatcherInterface:
+    """AI-05: сопоставление лиц без состояния; словарь pymorphy3 грузится один раз."""
+    return _MATCHER
+
+
 def get_appeal_analysis_service(
     analyzer: Annotated[AppealAnalyzer, Depends(get_appeal_analyzer)],
     directory: Annotated[PersonDirectoryInterface, Depends(get_person_directory)],
+    matcher: Annotated[PersonMatcherInterface, Depends(get_person_matcher)],
+    repository: Annotated[AppealRepositoryInterface, Depends(get_appeal_repository)],
 ) -> AppealAnalysisService:
-    return AppealAnalysisService(analyzer, directory)
+    return AppealAnalysisService(analyzer, directory, matcher, repository)
 
 
 def get_create_appeal_use_case(
@@ -75,8 +89,9 @@ def get_create_appeal_use_case(
     directory: Annotated[PersonDirectoryInterface, Depends(get_person_directory)],
     unit_of_work: Annotated[UnitOfWorkInterface, Depends(get_unit_of_work)],
     event_bus: Annotated[EventBus, Depends(get_event_bus)],
+    audit: Annotated[AuditLogInterface, Depends(get_audit_log)],
 ) -> CreateAppealUseCase:
-    return CreateAppealUseCase(repository, analysis, directory, unit_of_work, event_bus)
+    return CreateAppealUseCase(repository, analysis, directory, unit_of_work, event_bus, audit)
 
 
 def get_reanalyze_appeal_use_case(

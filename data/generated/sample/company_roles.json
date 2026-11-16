@@ -1,0 +1,119 @@
+[
+ {
+  "id": "396005cc-54bd-5a20-a007-7556629a4fc4",
+  "company_id": "9af31fd9-ec57-514c-a271-0023c96da37f",
+  "person_id": "389166ea-9188-55a7-9888-e167c8675437",
+  "role": "founder",
+  "share": 100.0,
+  "started_at": "2024-09-16",
+  "ended_at": null
+ },
+ {
+  "id": "4ace049c-62f3-5ccc-909c-f1a4b235ffd0",
+  "company_id": "22650ed8-aa4d-5009-9a21-3081732f732b",
+  "person_id": "c39d5cae-091f-5b73-af39-6fbb6b9a613e",
+  "role": "founder",
+  "share": 60.0,
+  "started_at": "2015-03-12",
+  "ended_at": null
+ },
+ {
+  "id": "293e1fea-fc06-53a6-9206-81130e13c37d",
+  "company_id": "22650ed8-aa4d-5009-9a21-3081732f732b",
+  "person_id": "c39d5cae-091f-5b73-af39-6fbb6b9a613e",
+  "role": "director",
+  "share": null,
+  "started_at": "2015-03-12",
+  "ended_at": null
+ },
+ {
+  "id": "e1f26d90-c17e-5f25-8380-ad6be405f231",
+  "company_id": "e021a58d-9110-59a9-af7d-b588acf4a876",
+  "person_id": "c28ce561-96d9-506c-8526-05fc24789210",
+  "role": "founder",
+  "share": 100.0,
+  "started_at": "2014-12-16",
+  "ended_at": null
+ },
+ {
+  "id": "1a5dd7a7-563d-5837-8613-6a503228b8ce",
+  "company_id": "e021a58d-9110-59a9-af7d-b588acf4a876",
+  "person_id": "e3ab07d1-ae6f-5664-b9d9-d340b4a8a867",
+  "role": "director",
+  "share": null,
+  "started_at": "2014-12-16",
+  "ended_at": null
+ },
+ {
+  "id": "ec3b42b9-6e96-5baa-9e15-1e9b979393ca",
+  "company_id": "0be4df7c-fd7b-5490-a19c-bf3c3ba44b03",
+  "person_id": "8743ac4b-0121-5162-9f9b-774e42076b40",
+  "role": "founder",
+  "share": 100.0,
+  "started_at": "2014-10-25",
+  "ended_at": null
+ },
+ {
+  "id": "fc7b355c-55a4-5f04-88ab-41499243d39c",
+  "company_id": "0be4df7c-fd7b-5490-a19c-bf3c3ba44b03",
+  "person_id": "9b401e07-38bb-58f2-a539-fc50363fc6a0",
+  "role": "director",
+  "share": null,
+  "started_at": "2014-10-25",
+  "ended_at": null
+ },
+ {
+  "id": "d4fdd080-de18-5466-9383-fb091b3f117b",
+  "company_id": "33f60c99-33c1-5eff-97e0-45bbefdc92c6",
+  "person_id": "a4258dca-8615-5887-94b4-06af9884078f",
+  "role": "founder",
+  "share": 100.0,
+  "started_at": "2016-09-23",
+  "ended_at": null
+ },
+ {
+  "id": "edff0669-c9e5-5e69-839b-4306c75c83d0",
+  "company_id": "33f60c99-33c1-5eff-97e0-45bbefdc92c6",
+  "person_id": "a4258dca-8615-5887-94b4-06af9884078f",
+  "role": "director",
+  "share": null,
+  "started_at": "2016-09-23",
+  "ended_at": null
+ },
+ {
+  "id": "bae9e271-e05c-5f36-80af-befe7ceda2c3",
+  "company_id": "466a6c86-859c-5050-82a4-2f05af4505a3",
+  "person_id": "68671376-bf12-5d14-916a-c837f5c46baf",
+  "role": "founder",
+  "share": 100.0,
+  "started_at": "2004-12-02",
+  "ended_at": null
+ },
+ {
+  "id": "97dcc264-f13b-58ae-b07c-6d4ca0d884f6",
+  "company_id": "466a6c86-859c-5050-82a4-2f05af4505a3",
+  "person_id": "68671376-bf12-5d14-916a-c837f5c46baf",
+  "role": "director",
+  "share": null,
+  "started_at": "2004-12-02",
+  "ended_at": null
+ },
+ {
+  "id": "9741ebb5-c650-5d6d-a7d9-fbb3c771188e",
+  "company_id": "d711e64e-b0ab-5bb1-8c41-f450ef42835e",
+  "person_id": "d6b3cf0a-71bd-5ef0-addf-de12e0bd8be7",
+  "role": "founder",
+  "share": 100.0,
+  "started_at": "2018-07-30",
+  "ended_at": null
+ },
+ {
+  "id": "38f5759e-515f-5794-939d-704d795c192e",
+  "company_id": "d711e64e-b0ab-5bb1-8c41-f450ef42835e",
+  "person_id": "e892dfd0-8da1-5259-998a-a10cd2591555",
+  "role": "director",
+  "share": null,
+  "started_at": "2018-07-30",
+  "ended_at": null
+ }
+]

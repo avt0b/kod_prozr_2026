@@ -21,4 +21,5 @@ class QueryRiskUseCase:
         return RiskStatsDTO(
             flags_by_severity=await self._repository.severity_counts(),
             flagged_officials=await self._repository.flagged_officials_count(),
+            computed_at=await self._repository.last_computed_at(),
         )

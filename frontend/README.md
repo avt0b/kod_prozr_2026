@@ -7,7 +7,7 @@ API и модель данных описаны в [docs/contracts.md](../docs/c
 
 ## Быстрый старт
 
-Нужен Node.js 20.19+ (в CI и Docker используется 22).
+Нужен Node.js 22.18+ (в CI и Docker используется 22).
 
 ```bash
 cd frontend
@@ -18,15 +18,16 @@ npm run dev            # http://localhost:5173
 
 ## Команды
 
-| Команда                                   | Что делает                                              |
-| ----------------------------------------- | ------------------------------------------------------- |
-| `npm run dev`                             | dev-сервер Vite на :5173, режим берётся из `.env`       |
-| `npm run dev:mocks`                       | dev-сервер на моках при любом `.env`                    |
-| `npm run build`                           | проверка типов (`tsc -b`) и production-сборка в `dist/` |
-| `npm run preview`                         | раздача собранного `dist/` на :4173                     |
-| `npm run typecheck`                       | только проверка типов                                   |
-| `npm run lint` / `npm run lint:fix`       | ESLint, с исправлением во втором случае                 |
-| `npm run format` / `npm run format:check` | Prettier: переформатировать или только проверить        |
+| Команда                                   | Что делает                                                                                                                       |
+| ----------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| `npm run dev`                             | dev-сервер Vite на :5173, режим берётся из `.env`                                                                                |
+| `npm run dev:mocks`                       | dev-сервер на моках при любом `.env`                                                                                             |
+| `npm run build`                           | проверка типов (`tsc -b`) и production-сборка в `dist/`                                                                          |
+| `npm run preview`                         | раздача собранного `dist/` на :4173                                                                                              |
+| `npm run typecheck`                       | только проверка типов                                                                                                            |
+| `npm run lint` / `npm run lint:fix`       | ESLint, с исправлением во втором случае                                                                                          |
+| `npm run format` / `npm run format:check` | Prettier: переформатировать или только проверить                                                                                 |
+| `npm run e2e` / `npm run e2e:video`       | Playwright: сценарий демо на реальном стенде, см. [frontend.md §5.1](../docs/frontend.md#51-e2e-прогон-сценария-демо-playwright) |
 
 ## Переменные окружения
 
@@ -54,3 +55,13 @@ docker run --rm -p 3000:80 kodprozr-frontend   # http://localhost:3000
 
 Корневой `docker-compose.yml` передаёт `VITE_API_URL` как build-arg. После смены адреса образ нужно пересобрать.
 Для стенда без бэкенда можно собрать образ с `--build-arg VITE_USE_MOCKS=true`.
+
+## Проверки задач Егора (F-11–F-16)
+
+- `npm test` — регрессионные проверки Unicode, evidence, группировки и адаптеров API.
+- `npm run test:e2e` — браузерный прогон на уже запущенном Vite (по умолчанию `http://127.0.0.1:5173`). Перед первым запуском: `npx playwright install chromium`.
+- Для установленного Edge в PowerShell: `$env:TEST_BROWSER_CHANNEL='msedge'`.
+- Для реального API: задайте `TEST_BASE_URL` и `TEST_API_URL`. Проверка создаёт синтетическое обращение H1 и докладную: запускать в отдельной тестовой БД.
+- В браузерном прогоне проверяются фильтры, форма, ошибки сервера, разбор, R01, переход по узлу графа, R07 и граф на 150 узлах. Скриншоты сохраняются в игнорируемом `test-results/`.
+
+Подробное воспроизведение стенда и оставшиеся зависимости — [отчёт Егора](../docs/tasks/egor-report.md).

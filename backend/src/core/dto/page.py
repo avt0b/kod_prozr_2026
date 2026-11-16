@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-MAX_PAGE_LIMIT = 200
+MAX_PAGE_LIMIT = 100
 
 
 @dataclass(frozen=True)

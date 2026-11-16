@@ -27,6 +27,12 @@ class CompanyRepository(CompanyRepositoryInterface):
         )
         return [r.to_entity() for r in rows]
 
+    async def list_all(self, limit: int) -> list[Company]:
+        rows = await self._session.scalars(
+            select(CompanyModel).order_by(CompanyModel.id).limit(limit)
+        )
+        return [r.to_entity() for r in rows]
+
     async def roles_for_persons(self, person_ids: Sequence[UUID]) -> list[CompanyRole]:
         if not person_ids:
             return []

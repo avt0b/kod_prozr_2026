@@ -10,6 +10,8 @@
 
 ---
 
+Процесс задач, веток и PR — [workflow.md](workflow.md); рабочие PR направляются в `dev`.
+
 ## 1. Эталон: что читать и что берём
 
 ### Что прочитать в первый день (около часа)
@@ -381,11 +383,13 @@ class LLMClientInterface(Protocol):
 
 - **`OpenAICompatibleLLMClient`** (`llm/openai_compatible.py`) делает `POST {LLM_BASE_URL}/chat/completions`
   через `httpx.AsyncClient`. Параметры: `temperature=0`, `response_format` — `json_schema`, а если
-  сервер его не принимает, то `json_object`. Таймаут `LLM_TIMEOUT_S` (30 с). Ошибки сети, таймаут и
-  5xx превращаются в `LLMUnavailableError`, не-JSON ответ — в `LLMInvalidResponseError`. Каждый вызов
+  сервер его не принимает, то `json_object`. Таймаут ответа `LLM_TIMEOUT_SECONDS` (60 с), соединения —
+  `LLM_CONNECT_TIMEOUT_SECONDS` (5 с). Ошибки сети, таймаут и 5xx превращаются в `LLMUnavailableError`,
+  не-JSON ответ — в `LLMInvalidResponseError`. Один повтор только при 5xx/429 и обрыве установленного
+  соединения; недоступный сервер и истёкший таймаут сразу ведут к фоллбэку. Каждый вызов
   логируется: модель, длительность, токены, валиден ли ответ. Текст обращения в лог не пишем.
 - **`NullLLMClient`** всегда бросает `LLMUnavailableError`. Его отдаёт `get_llm_client`, если
-  `LLM_BASE_URL` пуст или `LLM_ENABLED=false`, и его же подставляем в тестах.
+  `LLM_BASE_URL` пуст, и его же подставляем в тестах.
 - **`complete_model(client, system, messages, model: type[T]) -> T`** (`llm/structured.py`)
   валидирует ответ Pydantic-моделью. При ошибке повторяет запрос один раз и добавляет текст ошибки.
   Если и повтор не прошёл, бросает `LLMInvalidResponseError`.
@@ -462,9 +466,10 @@ class Settings(BaseSettings):
     llm_base_url: str = ""                                     # LLM_BASE_URL; пусто = NullLLMClient
     llm_api_key: SecretStr = SecretStr("")                     # LLM_API_KEY
     llm_model: str = "qwen2.5:7b-instruct"                     # LLM_MODEL
-    llm_timeout_s: float = 30.0                                # LLM_TIMEOUT_S
-    llm_enabled: bool = True                                   # LLM_ENABLED
-    seed_data_dir: Path = Path("data/generated")               # SEED_DATA_DIR
+    llm_timeout_seconds: float = 60.0                          # LLM_TIMEOUT_SECONDS
+    llm_connect_timeout_seconds: float = 5.0                   # LLM_CONNECT_TIMEOUT_SECONDS
+    seed_dir: str = "data/generated"                           # SEED_DIR
+    # LLM выключена, если LLM_BASE_URL пуст (свойство settings.llm_enabled)
 
     model_config = SettingsConfigDict(
         env_file=(REPO_ROOT / ".env", BACKEND_DIR / ".env"), extra="ignore"
@@ -529,7 +534,7 @@ make downgrade                            # проверить откат
   `op.execute("CREATE SCHEMA IF NOT EXISTS <name>")`, а `downgrade` заканчивается `DROP SCHEMA`
   (образец — `2026_10_28_1800-ef913316e14a_move_tables_to_context_schemas.py`).
 - Результат autogenerate вычитываем руками: лишние `drop`, enum и индексы.
-- Каждая миграция — новый файл, обратимая, `downgrade` прогнан локально. Уже влитую в `main`
+- Каждая миграция — новый файл, обратимая, `downgrade` прогнан локально. Уже влитую в `dev` или `main`
   миграцию не редактируем.
 - Имена файлов задаёт шаблон из `alembic.ini` эталона:
   `%%(year)d_%%(month).2d_%%(day).2d_%%(hour).2d%%(minute).2d-%%(rev)s_%%(slug)s`.
@@ -575,7 +580,7 @@ backend/
     └── e2e/<module>/
 ```
 
-`src/seed` знает все модули, как и `web`. Он читает JSON из `SEED_DATA_DIR`, вызывает
+`src/seed` знает все модули, как и `web`. Он читает JSON из `SEED_DIR`, вызывает
 `Import*UseCase` каждого модуля, затем делает предрасчёт анализа фоновых обращений (ADR-05) и полный
 пересчёт риска. Каталог `data/` вне контекста сборки образа, поэтому в compose нужен том
 `./data:/app/data:ro` (с Кириллом).
@@ -586,25 +591,25 @@ backend/
 | --- | --- | --- | --- |
 | `officials` | `Person`, `Organ` (агрегаты). `Position`, `Authority`, `Appointment`, `Kinship` — внутри них. Enum `AuthorityKind`, `KinshipKind`. Правило «служащий = Person с Appointment» | `ListOfficials` (рейтинг), `GetOfficialProfile`, `GetOfficialGraph`, `ListOrgans`, `GetOfficialsSnapshot` (для ACL), `ImportOfficials` | `RiskSummarySource` ← risk, `CompanyLinksSource` ← counterparties, `AppealLinksSource` ← appeals |
 | `counterparties` | `Company` (агрегат с `CompanyRole`), `Contract`, `Employment`. Enum `CompanyRoleKind` | `GetCounterpartiesSnapshot`, `GetCompanyLinks(person_ids)`, `LookupCompany`, `ImportCounterparties` | — |
-| `risk` | `RiskFlag`, `RiskScore`, VO `Evidence`, `RiskSnapshot` (факты в терминах риска), протокол `Rule`, правила `rules/r01_…r07_*.py`, `scoring.py`, enum `RuleCode`, `Severity` | `RecomputeRisk` (все или `person_ids`), `GetFlags`, `GetRiskSummaries(person_ids)`, `GetRiskStats` | `OfficialsSource` ← officials, `CounterpartiesSource` ← counterparties, `AppealSignalsSource` ← appeals, `PeerAnomalyDetector` (ML, адаптер в своём `infrastructure/ml/`) |
+| `risk` | `RiskFlag`, `RiskScore`, VO `EvidenceNode`, `RiskWorld` и `facts.py` (факты в терминах риска), `RiskRule`, правила `rules/r0N_*.py`, `score.py` (`ScorePolicy`), граф связей, enum `RuleCode`, `Severity` | `RecomputeRisk` (все или `person_ids`), `GetFlags`, `GetRiskSummaries(person_ids)`, `GetRiskStats` | `OfficialsSource` ← officials, `CounterpartiesSource` ← counterparties, `AppealSignalsSource` ← appeals, `PeerAnomalyDetector` (ML, адаптер в своём `infrastructure/ml/`) |
 | `appeals` | `Appeal` (агрегат, статусы `new → analyzed → routed → closed`), VO `AppealAnalysis`, `ExtractedEntity`, `Signal`, `specificity.py`, `routing_policy.py` | `SubmitAppeal`, `ReanalyzeAppeal`, `ListAppeals`, `GetAppeal`, `GetAppealSignals` (для R07), `GetAppealStats` | `AppealAnalyzer` и `PersonMatcher` (адаптеры ИИ в своём `infrastructure/`), `OfficialsDirectory` ← officials, `RiskRecalculator` → risk |
-| `reports` | `ReportDraft`, VO `ReportFacts`. Правило «в тексте только факты из входа» | `CreateReportDraft`, `GetReportDraft`, `GetOverview` (`/stats/overview`) | `ReportFactsSource` ← officials, risk, appeals; `OverviewSource` ← officials, risk, appeals; `ReportWriter` (шаблон Jinja или LLM) |
+| `reports` | `ReportDraft`, VO `ReportFacts`. Правило «в тексте только факты из входа» | `CreateReportDraft`, `GetReportDraft` | `ReportFactsSource` ← officials, risk, appeals; `ReportWriter` (шаблон Jinja или LLM) |
+| `stats` | — (своих данных нет) | `GetOverview` (`/stats/overview`) | счётчики ← officials, risk, appeals |
 | `assistant` | VO `ToolCall`, `AssistantAnswer`, `Source`. Закрытый список инструментов и их аргументов, лимит 3 шага | `AskAssistant` | инструменты из [ai.md](ai.md), §6, каждый — порт на use case чтения чужого модуля |
 | `core` | — | — | `AuditLog` (раздел 4) |
 
 Пояснения к раскладке:
 
-- **Путь URL не равен модулю.** `/officials/{id}/flags` обслуживает роутер `risk`,
-  `/stats/overview` — роутер `reports`. Все роутеры подключаются в `create_app.py` с
+- **Путь URL не равен модулю.** `/officials/{id}/flags` и `/officials/{id}/graph` обслуживает
+  роутер `risk`, `/stats/overview` — модуль `stats` (ADR-15). Все роутеры подключаются в `create_app.py` с
   `prefix="/api/v1"`. `/health` — без префикса.
 - **Рейтинг `/officials`.** Служащих около 150 (ADR-03), поэтому `ListOfficials` берёт служащих по
   `query` и `organ_id` из своего репозитория, а баллы и `top_flags` — через `RiskSummarySource`.
   Фильтр `min_score`, сортировка и пагинация делаются в памяти. Если данных станет на порядки больше,
   переходим на read-модель по образцу `projector` эталона.
-- **Граф `/officials/{id}/graph`** собирается в `officials` обходом в ширину до `depth` по снимку.
-  Компании и контракты приходят через `CompanyLinksSource`, обращения — через `AppealLinksSource`,
-  риск узлов — через `RiskSummarySource`. id узла — UUID сущности. `evidence` флага — список
-  `{type, id}` тех же узлов, поэтому фронт может подсветить цепочку.
+- **Граф `/officials/{id}/graph`** собирается в `risk` (ADR-15) обходом в ширину до `depth` через
+  те же порты, что и снимок для правил. id узла — UUID сущности. `evidence` флага — список
+  `{node_id, type, label}` тех же узлов, поэтому фронт может подсветить цепочку.
 - **ИИ-функции Влада О.** (`analyze_appeal`, `match_persons`, `peer_anomalies`, `draft_report`)
   встают адаптерами за портами модулей: `appeals/infrastructure/analyzers/`,
   `appeals/infrastructure/matching/`, `risk/infrastructure/ml/`, `reports/infrastructure/writers/`.
@@ -614,37 +619,49 @@ backend/
 ### Риск-движок (ADR-04: методика балла)
 
 ```python
-# risk/domain/rule.py
-class Rule(Protocol):
-    code: RuleCode
-    def evaluate(self, snapshot: RiskSnapshot) -> list[RiskFlag]: ...
+# risk/domain/rules/base.py
+class RiskRule(ABC):
+    code: ClassVar[RuleCode]
+    severity: ClassVar[Severity]
+    def evaluate(self, official: OfficialFacts, world: RiskWorld) -> list[RiskFlag]: ...
 ```
 
-- **Правила — чистые функции над снимком.** `RecomputeRiskUseCase` собирает `RiskSnapshot`:
+- **Правила — чистые функции над снимком (ADR-13).** `RecomputeRiskUseCase` собирает снимок `RiskWorld`:
   служащие, должности, полномочия, родство (из `OfficialsSource`), компании, роли, прошлая работа,
   контракты (из `CounterpartiesSource`), сигналы обращений (из `AppealSignalsSource`). Затем он
-  прогоняет все правила из реестра `risk/domain/rules/__init__.py`, добавляет флаги R08 от
+  прогоняет все правила из реестра `default_rules()` в `risk/domain/rules/__init__.py`, добавляет флаги R08 от
   `PeerAnomalyDetector`, считает баллы и в одной транзакции заменяет флаги и баллы пересчитанных лиц.
   Граф маленький, снимок целиком помещается в память. Правила тестируются без БД, а риску не нужны
   join по чужим схемам.
 - **Каждый флаг** обязан иметь `explanation`, `evidence` (непустая цепочка узлов) и `legal_ref`, если
   норма есть. Это инвариант конструктора `RiskFlag`. Формулировки — «может свидетельствовать»
   (ADR-09).
-- **Балл** (`risk/domain/scoring.py`), веса — константы в одном месте:
+- **Балл** (`ScorePolicy` в `risk/domain/score.py`), веса — константы в одном месте. Стартовые веса
+  подтверждены на созвоне по контракту (T-01), откалиброваны по `_truth` 15.11 (B-17, ADR-16):
 
-| Severity | Вес |
-| --- | --- |
-| high | 40 |
-| medium | 20 |
-| low | 7 |
-| R08 (ML) | 5 (low) / 10 (medium) — потолок, ML один не выводит в топ |
+| Severity | Вес | До B-17 |
+| --- | --- | --- |
+| high | 40 | 40 |
+| medium | 20 | 20 |
+| low | 5 | 7 |
+| R08 (ML) | 3 (low) / 5 (medium) — не тяжелее самого лёгкого правила, ML один не выводит в топ | 5 / 10 |
 
   `score = min(100, Σ вклад правил)`. Вклад правила — вес его самого тяжёлого флага. Каждый
   следующий флаг того же правила добавляет половину своего веса, всего не больше двух весов правила.
-  При равном балле сортируем по `flags_count`. Веса предварительные: калибруем по `_truth` 12.11
-  (plan.md). При калибровке меняем только константы и тест на эталонные случаи.
-- **Пересчёт** запускается двумя путями: `POST /risk/recompute` (все) и `RiskRecalculator.recompute_for(person_ids)`
-  после `SubmitAppeal` и `ReanalyzeAppeal` (ADR-10). Пересчёт синхронный.
+  Пример: R01 high + два R05 medium + R06 low = 40 + (20 + 10) + 5 = 75. Десять флагов R05 дают
+  не 200, а 40. При равном балле сортируем по `flags_count`. Инвариант калибровки: слабые сигналы
+  (два `low` и R08 `medium`) вместе не больше `medium − 5`. При смене весов меняем только константы
+  и тесты: эталонные профили в `tests/unit/risk/test_engine_and_score.py` и порядок демо на полном
+  наборе в `tests/e2e/risk/test_demo_ranking.py`.
+- **R08 (ML)** подключается через порт `PeerAnomalyDetectorInterface.detect(world) -> list[PeerAnomalyFacts]`
+  (`risk/application/interfaces/peer_anomaly_detector.py`). Адаптер с моделью кладём в
+  `risk/infrastructure/ml/` и отдаём из `get_peer_anomaly_detector()` в
+  `risk/presentation/dependencies.py`; пока там `NoPeerAnomalyDetector`. Детектор работает только
+  при полном пересчёте (нужна вся группа коллег), при частичном прошлые флаги R08 переносятся.
+  Правило `PeerAnomalyRule` пишет объяснение по трём признакам с наибольшим |z|.
+- **Пересчёт** запускается тремя путями: `POST /risk/recompute` (все), `make seed` (все, в конце
+  загрузки) и `RecomputeRiskUseCase.execute(person_ids)` после анализа обращения — подписчик события
+  `AppealAnalyzedEvent` в `web/event_handlers.py` (ADR-10). Пересчёт синхронный.
 
 ---
 
@@ -682,9 +699,9 @@ class Rule(Protocol):
 
 1. Значение в `RuleCode` (`risk/domain/enums.py`), строка в таблице правил `contracts.md`.
 2. `risk/domain/rules/rNN_<name>.py`: класс с `code` и `evaluate(snapshot) -> list[RiskFlag]`.
-   Severity, `explanation` по-русски («может свидетельствовать»), `evidence` — цепочка `{type, id}`
-   от служащего до объекта, `legal_ref`.
-3. Не хватает фактов в `RiskSnapshot` — расширить VO снимка, порт источника, ACL-адаптер и use case
+   Severity, `explanation` по-русски («может свидетельствовать»), `evidence` — цепочка узлов графа
+   (`EvidenceNode(type, id, label)`, в API — `{node_id, type, label}`) от служащего до объекта, `legal_ref`.
+3. Не хватает фактов в `RiskWorld` — расширить факты снимка (`risk/domain/facts.py`), `RiskWorldLoader`, порт источника, ACL-адаптер и use case
    снимка в модуле-источнике. Чужой модуль не импортировать.
 4. Зарегистрировать правило в реестре `risk/domain/rules/__init__.py`.
 5. Unit-тесты на снимке, собранном руками: срабатывание, несрабатывание и ложноположительный кейс из

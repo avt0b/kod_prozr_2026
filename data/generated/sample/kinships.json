@@ -1,0 +1,98 @@
+[
+ {
+  "id": "05264672-8794-575f-8b08-46c7407e5bab",
+  "person_id": "4d32a594-1325-5c9d-bed1-cfec43b131a2",
+  "relative_id": "1de4bde4-87fb-5d34-a087-da423161cc93",
+  "kind": "sibling"
+ },
+ {
+  "id": "8f8f843e-3852-5247-b0d2-592cd67cd3a6",
+  "person_id": "4d32a594-1325-5c9d-bed1-cfec43b131a2",
+  "relative_id": "972d958a-af2d-54f5-9a24-0ccf6109460c",
+  "kind": "parent"
+ },
+ {
+  "id": "d27eab3d-5826-57ec-94fc-b23e3390bc1d",
+  "person_id": "c39d5cae-091f-5b73-af39-6fbb6b9a613e",
+  "relative_id": "3c8ee801-9d7a-52e1-b55b-5abda3b79f19",
+  "kind": "child"
+ },
+ {
+  "id": "57dfb0f1-a578-5ad1-972d-9480b755de06",
+  "person_id": "c39d5cae-091f-5b73-af39-6fbb6b9a613e",
+  "relative_id": "32f9ca3c-9efa-57e0-aef4-452de7d07c63",
+  "kind": "parent"
+ },
+ {
+  "id": "c8331578-860f-54cd-98f6-f5e82424386e",
+  "person_id": "c39d5cae-091f-5b73-af39-6fbb6b9a613e",
+  "relative_id": "7d2ce814-065a-5005-9f78-24882f686c52",
+  "kind": "child"
+ },
+ {
+  "id": "e223548b-44e0-5fb4-bdcf-8192e2ede42b",
+  "person_id": "c39d5cae-091f-5b73-af39-6fbb6b9a613e",
+  "relative_id": "1aea02b3-d77c-542f-9d2f-45782dc7857e",
+  "kind": "spouse"
+ },
+ {
+  "id": "b32faf6e-d88c-59ac-81c9-1c284f590b14",
+  "person_id": "c39d5cae-091f-5b73-af39-6fbb6b9a613e",
+  "relative_id": "a2d5fae8-96b6-5c59-b425-ed144502acb2",
+  "kind": "child"
+ },
+ {
+  "id": "d76104b6-a90d-50a7-b46a-1676eb812468",
+  "person_id": "fb05291e-c81e-5e5c-b2be-db310f0a2fbb",
+  "relative_id": "8d7321e5-fdff-5670-832f-903ec0c583a1",
+  "kind": "sibling"
+ },
+ {
+  "id": "924f3b69-fcb8-5a43-aeb4-1b957c36c786",
+  "person_id": "3f06dada-686f-580b-874e-58593097933f",
+  "relative_id": "1f9252bd-dde7-526d-a337-b2514a1287d6",
+  "kind": "sibling"
+ },
+ {
+  "id": "a75ee282-6a3e-57fa-99e3-85c95a3f5491",
+  "person_id": "3f06dada-686f-580b-874e-58593097933f",
+  "relative_id": "41ff6869-e39a-53fa-afc3-45424d2236fd",
+  "kind": "child"
+ },
+ {
+  "id": "2fcd6a09-e0f5-5d37-a0d4-d2b47a614693",
+  "person_id": "3f06dada-686f-580b-874e-58593097933f",
+  "relative_id": "28eab59d-1fef-5bdb-b936-56110b9ae7c8",
+  "kind": "child"
+ },
+ {
+  "id": "c8ae1ffc-1f57-5613-b419-c4b09a911945",
+  "person_id": "12b5fe9f-4f46-52d7-b758-a3ae1f18cf32",
+  "relative_id": "261d4079-b7b8-5443-bdc2-f0e0594e53f2",
+  "kind": "parent"
+ },
+ {
+  "id": "da55ef51-9aa5-5284-9743-4a9bf485bc4c",
+  "person_id": "12b5fe9f-4f46-52d7-b758-a3ae1f18cf32",
+  "relative_id": "dc480fa3-2ae8-5f51-9361-32168ec3138e",
+  "kind": "spouse"
+ },
+ {
+  "id": "014f8989-35d5-5a23-962f-fc2ea1a070ac",
+  "person_id": "4d32a594-1325-5c9d-bed1-cfec43b131a2",
+  "relative_id": "389166ea-9188-55a7-9888-e167c8675437",
+  "kind": "spouse"
+ },
+ {
+  "id": "c5816da5-73d2-50f3-9730-bab3ec5e30b4",
+  "person_id": "4d32a594-1325-5c9d-bed1-cfec43b131a2",
+  "relative_id": "79370703-4d1a-5905-bef5-d10f0e3e45cf",
+  "kind": "in_law"
+ },
+ {
+  "id": "7a73464b-495e-5103-814b-311453ba0542",
+  "person_id": "3f06dada-686f-580b-874e-58593097933f",
+  "relative_id": "4fc67869-37fa-55a9-a0d8-345b59a3d8eb",
+  "kind": "parent"
+ }
+]
