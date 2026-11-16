@@ -107,8 +107,12 @@ jobs:
       - name: Smoke
         env:
           LLM_BASE_URL: ""
+        # Сервер запускается из .venv без `uv run` и останавливается в конце шага: живой
+        # процесс uv держит блокировку кеша, и post-шаг setup-uv (cache prune) падал по таймауту 300 с.
         run: |
-          uv run uvicorn src.web.main:app --port 8000 > /tmp/uvicorn.log 2>&1 &
+          .venv/bin/uvicorn src.web.main:app --port 8000 > /tmp/uvicorn.log 2>&1 &
+          server=$!
+          trap 'kill "$server" 2>/dev/null || true' EXIT
           for _ in $(seq 60); do curl -fs http://localhost:8000/health && break; sleep 1; done
           python3 ../scripts/smoke.py --api http://localhost:8000 || (cat /tmp/uvicorn.log; exit 1)
 
