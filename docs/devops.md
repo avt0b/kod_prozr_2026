@@ -275,6 +275,18 @@ Ollama слушает только `127.0.0.1` (условие 1). Если от
 - `qwen2.5:7b-instruct` весит около 4.7 ГБ и требует около 8 ГБ RAM, на GPU — около 5 ГБ VRAM
   (Q4). На CPU ответ занимает от нескольких до десятков секунд: для предрасчёта приемлемо, для
   живого показа медленно (порог решения — [demo.md](demo.md)).
+- **Замер 16.11, вариант А на CPU** (runtime `nvidia` в Docker нет, `ollama ps` → `100% CPU`,
+  модель прогрета `make llm-up`): `make smoke` проходит, 50 проверок, но первое демо-обращение
+  `POST /appeals` упёрлось в `LLM_TIMEOUT_SECONDS=90` и ушло на фоллбэк (90,4 с). Повторный
+  разбор того же текста (`reanalyze`, `engine=llm`) занял 26,3 с, `/assistant/ask` — 30,6 с.
+  Порог живого показа 20 с не выполняется ни в одном случае. Вывод: на демо LLM включаем только
+  на GPU (вариант А с nvidia-container-toolkit или вариант Б). Без GPU показываем фоллбэк.
+  Докладная от LLM не зависит: `TemplateReportWriter` (AI-09 выключен), ответ за 11 мс.
+- **Модель без сети.** Если контейнер не достаёт `registry.ollama.ai` (16.11 `ollama pull` из
+  docker-сети упал по `i/o timeout`), а на хосте модель уже есть в `~/.ollama/models`, её можно
+  скопировать в том: `docker run --rm -v kodprozr_ollama_models:/v -v ~/.ollama/models:/src:ro
+  alpine:3 sh -c 'mkdir -p /v/models && cp -r /src/blobs /src/manifests /v/models/'`, затем
+  `make llm-up`.
 - На слабом ноутбуке подойдёт `qwen2.5:3b-instruct` (около 2 ГБ): поменяйте `LLM_MODEL` и
   снова выполните `make llm-up`.
 - Тег образа закреплён: `OLLAMA_IMAGE=ollama/ollama:0.12.6`. На этой версии AI-03 прогоняет
