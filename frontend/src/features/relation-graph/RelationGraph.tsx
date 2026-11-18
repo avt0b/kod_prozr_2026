@@ -8,6 +8,7 @@ import {
   Text,
   useComputedColorScheme,
 } from '@mantine/core';
+import { useReducedMotion } from '@mantine/hooks';
 import cytoscape, { type Core, type ElementDefinition } from 'cytoscape';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { GraphNode, OfficialGraph } from '@/shared/api';
@@ -45,6 +46,7 @@ export function RelationGraph({ graph, rootId, highlight, onNodeClick, height = 
   const cyRef = useRef<Core | null>(null);
   const clickRef = useRef(onNodeClick);
   const dark = useComputedColorScheme('light') === 'dark';
+  const reducedMotion = useReducedMotion();
   const [layout, setLayout] = useState('breadthfirst');
   const [focused, setFocused] = useState<GraphNode | null>(null);
   const [grouped, setGrouped] = useState(true);
@@ -141,7 +143,13 @@ export function RelationGraph({ graph, rootId, highlight, onNodeClick, height = 
         .addClass('hl');
     });
     fitGraph(cy);
-  }, [highlight, elements, dark, prepared, layout]);
+    if (!highlight?.length || reducedMotion) return;
+    const animation = containerRef.current?.animate([{ opacity: 0.65 }, { opacity: 1 }], {
+      duration: 270,
+      easing: 'cubic-bezier(0.2, 0.8, 0.2, 1)',
+    });
+    return () => animation?.cancel();
+  }, [highlight, elements, dark, prepared, layout, reducedMotion]);
 
   return (
     <Stack gap="xs">
@@ -183,6 +191,7 @@ export function RelationGraph({ graph, rootId, highlight, onNodeClick, height = 
         role="img"
         aria-label={`Граф связей: ${graph.nodes.length} узлов, ${graph.edges.length} связей`}
         data-testid="relation-graph"
+        className="workspace-graph"
         style={{
           height,
           width: '100%',

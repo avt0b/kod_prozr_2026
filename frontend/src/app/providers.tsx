@@ -4,7 +4,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import type { ReactNode } from 'react';
 import { ApiError } from '@/shared/api';
-import { theme } from './theme';
+import { theme, workspaceVariables } from './theme';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -20,7 +20,11 @@ const queryClient = new QueryClient({
 
 export function Providers({ children }: { children: ReactNode }) {
   return (
-    <MantineProvider theme={theme} defaultColorScheme="light">
+    <MantineProvider
+      theme={theme}
+      cssVariablesResolver={workspaceVariables}
+      defaultColorScheme="light"
+    >
       <Notifications position="top-right" />
       <QueryClientProvider client={queryClient}>
         {children}

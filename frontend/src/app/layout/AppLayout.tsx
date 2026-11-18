@@ -5,7 +5,6 @@ import {
   Burger,
   Group,
   NavLink,
-  Text,
   Tooltip,
   useComputedColorScheme,
   useMantineColorScheme,
@@ -21,9 +20,10 @@ import {
   IconSun,
   IconMail,
 } from '@tabler/icons-react';
-import { NavLink as RouterNavLink, Outlet, useLocation } from 'react-router';
+import { Link, NavLink as RouterNavLink, Outlet, useLocation } from 'react-router';
 import { env } from '@/shared/config/env';
 import { routes } from '@/shared/config/routes';
+import { useLiquidGlass } from '@/shared/ui/useLiquidGlass';
 
 const NAV = [
   { to: routes.overview(), label: 'Обзор', icon: IconChartBar, end: true },
@@ -53,19 +53,33 @@ function ColorSchemeToggle() {
 export function AppLayout() {
   const [opened, { toggle, close }] = useDisclosure();
   const { pathname } = useLocation();
+  const headerGlass = useLiquidGlass<HTMLElement>();
+  const navigationGlass = useLiquidGlass<HTMLElement>();
 
   return (
     <AppShell
-      header={{ height: 56 }}
-      navbar={{ width: 240, breakpoint: 'sm', collapsed: { mobile: !opened } }}
+      className="workspace-shell"
+      header={{ height: 76 }}
+      navbar={{ width: 250, breakpoint: 'sm', collapsed: { mobile: !opened } }}
       padding="lg"
     >
-      <AppShell.Header>
+      <AppShell.Header className="workspace-header workspace-glass" {...headerGlass.props}>
+        {headerGlass.lens}
         <Group h="100%" px="md" justify="space-between">
-          <Group gap="sm">
-            <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />
-            <IconShieldSearch size={24} color="var(--mantine-primary-color-filled)" />
-            <Text fw={600}>Рабочее место аналитика</Text>
+          <Group gap="xs" wrap="nowrap">
+            <Burger
+              opened={opened}
+              onClick={toggle}
+              hiddenFrom="sm"
+              size="sm"
+              aria-label="Меню разделов"
+              aria-expanded={opened}
+              aria-controls="workspace-navigation"
+            />
+            <Link className="workspace-brand" to={routes.overview()} onClick={close}>
+              <IconShieldSearch size={24} color="var(--mantine-primary-color-filled)" />
+              <span className="workspace-brand-title">Рабочее место аналитика</span>
+            </Link>
             {env.useMocks && (
               <Tooltip label="Данные из src/shared/api/mocks (VITE_USE_MOCKS=true)">
                 <Badge variant="light" color="orange">
@@ -78,10 +92,19 @@ export function AppLayout() {
         </Group>
       </AppShell.Header>
 
-      <AppShell.Navbar p="sm">
+      <AppShell.Navbar
+        id="workspace-navigation"
+        aria-label="Разделы приложения"
+        data-menu-open={opened || undefined}
+        className="workspace-navbar workspace-glass"
+        p="sm"
+        {...navigationGlass.props}
+      >
+        {navigationGlass.lens}
         {NAV.map((item) => (
           <NavLink
             key={item.to}
+            className="workspace-nav-item"
             component={RouterNavLink}
             to={item.to}
             end={item.end}
@@ -93,8 +116,10 @@ export function AppLayout() {
         ))}
       </AppShell.Navbar>
 
-      <AppShell.Main>
-        <Outlet />
+      <AppShell.Main className="workspace-main">
+        <div className="workspace-page" key={pathname}>
+          <Outlet />
+        </div>
       </AppShell.Main>
     </AppShell>
   );
