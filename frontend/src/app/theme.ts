@@ -3,6 +3,7 @@ import {
   Alert,
   Button,
   Card,
+  CloseButton,
   Combobox,
   createTheme,
   Drawer,
@@ -12,8 +13,11 @@ import {
   Notification,
   NumberInput,
   Paper,
+  Pagination,
   Popover,
+  SegmentedControl,
   Select,
+  Switch,
   Table,
   Textarea,
   TextInput,
@@ -37,7 +41,21 @@ const surface = {
   classNames: { root: 'workspace-surface' },
 };
 const field = { classNames: { input: 'workspace-field' } };
-const control = { classNames: { root: 'workspace-control' } };
+const control = { defaultProps: { radius: 'xl' }, classNames: { root: 'workspace-control' } };
+const spring = 'cubic-bezier(0.22, 1.22, 0.33, 1)';
+const anchoredTransition = {
+  transition: 'pop-top-left',
+  duration: 245,
+  exitDuration: 150,
+  timingFunction: spring,
+} as const;
+const panelTransition = {
+  duration: 300,
+  exitDuration: 180,
+  timingFunction: 'cubic-bezier(0.22, 1, 0.36, 1)',
+};
+const panelClassNames = { content: 'workspace-popover', header: 'workspace-drawer-header' };
+const overlayProps = { backgroundOpacity: 0.29, blur: 6 };
 
 const semanticColors = {
   '--mantine-color-text': 'var(--workspace-ink)',
@@ -57,6 +75,7 @@ export const theme = createTheme({
   colors: { brand },
   primaryShade: { light: 7, dark: 7 },
   defaultRadius: 'md',
+  respectReducedMotion: true,
   radius: { xs: '6px', sm: '9px', md: '13px', lg: '21px', xl: '28px' },
   fontFamily: 'Inter, system-ui, -apple-system, "Segoe UI", sans-serif',
   fontFamilyMonospace: 'ui-monospace, SFMono-Regular, Consolas, monospace',
@@ -66,23 +85,45 @@ export const theme = createTheme({
     Paper: Paper.extend(surface),
     Button: Button.extend(control),
     ActionIcon: ActionIcon.extend(control),
+    CloseButton: CloseButton.extend(control),
+    Pagination: Pagination.extend({
+      defaultProps: { radius: 'xl' },
+      classNames: { control: 'workspace-control workspace-page-control' },
+    }),
+    SegmentedControl: SegmentedControl.extend({
+      defaultProps: { radius: 'xl', transitionDuration: 360, transitionTimingFunction: spring },
+      classNames: { root: 'workspace-segmented', indicator: 'workspace-segment-indicator' },
+    }),
+    Switch: Switch.extend({
+      classNames: { track: 'workspace-switch-track', thumb: 'workspace-switch-thumb' },
+    }),
     TextInput: TextInput.extend(field),
     NumberInput: NumberInput.extend(field),
     Textarea: Textarea.extend(field),
-    Select: Select.extend(field),
+    Select: Select.extend({
+      classNames: { ...field.classNames, dropdown: 'workspace-popover workspace-dropdown' },
+      defaultProps: { comboboxProps: { transitionProps: anchoredTransition } },
+    }),
     Alert: Alert.extend({ defaultProps: { radius: 'lg' } }),
     Table: Table.extend({
       defaultProps: { verticalSpacing: 'sm', highlightOnHover: true },
       classNames: { table: 'workspace-table', thead: 'workspace-table-head' },
     }),
-    Combobox: Combobox.extend({ classNames: { dropdown: 'workspace-popover' } }),
-    Popover: Popover.extend({ classNames: { dropdown: 'workspace-popover' } }),
+    Combobox: Combobox.extend({
+      defaultProps: { transitionProps: anchoredTransition },
+      classNames: { dropdown: 'workspace-popover workspace-dropdown' },
+    }),
+    Popover: Popover.extend({
+      defaultProps: { transitionProps: anchoredTransition },
+      classNames: { dropdown: 'workspace-popover workspace-dropdown' },
+    }),
     Drawer: Drawer.extend({
-      classNames: { content: 'workspace-popover', header: 'workspace-drawer-header' },
+      defaultProps: { transitionProps: panelTransition, overlayProps },
+      classNames: { ...panelClassNames, content: 'workspace-popover workspace-drawer' },
     }),
     Modal: Modal.extend({
-      defaultProps: { radius: 'lg' },
-      classNames: { content: 'workspace-popover', header: 'workspace-drawer-header' },
+      defaultProps: { radius: 'lg', transitionProps: anchoredTransition, overlayProps },
+      classNames: panelClassNames,
     }),
     Notification: Notification.extend({ classNames: { root: 'workspace-popover' } }),
   },

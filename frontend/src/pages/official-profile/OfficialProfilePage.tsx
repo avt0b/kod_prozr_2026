@@ -3,10 +3,10 @@ import {
   Badge,
   Card,
   Center,
-  Chip,
   Grid,
   Group,
   Loader,
+  SegmentedControl,
   SimpleGrid,
   Stack,
   Text,
@@ -128,27 +128,15 @@ function GraphSignalPicker({
       {...glass.props}
     >
       {glass.lens}
-      <Chip.Group
+      <SegmentedControl
+        size="xs"
         value={selectedId ?? 'all'}
         onChange={(id) => onSelect(flags.find((flag) => flag.id === id) ?? null)}
-      >
-        <Group gap={4} wrap="wrap">
-          <Chip value="all" size="xs" variant="light">
-            Все связи
-          </Chip>
-          {flags.map((flag) => (
-            <Chip
-              key={flag.id}
-              value={flag.id}
-              color={SEVERITY_COLORS[flag.severity]}
-              size="xs"
-              variant="light"
-            >
-              {flag.rule_code}
-            </Chip>
-          ))}
-        </Group>
-      </Chip.Group>
+        data={[
+          { value: 'all', label: 'Все связи' },
+          ...flags.map((flag) => ({ value: flag.id, label: flag.rule_code })),
+        ]}
+      />
     </div>
   );
 }

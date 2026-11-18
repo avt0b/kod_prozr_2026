@@ -10,6 +10,7 @@ import {
   useMantineColorScheme,
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
+import type { CSSProperties } from 'react';
 import {
   IconChartBar,
   IconListNumbers,
@@ -24,6 +25,7 @@ import { Link, NavLink as RouterNavLink, Outlet, useLocation } from 'react-route
 import { env } from '@/shared/config/env';
 import { routes } from '@/shared/config/routes';
 import { useLiquidGlass } from '@/shared/ui/useLiquidGlass';
+import { useControlGlint } from './useControlGlint';
 
 const NAV = [
   { to: routes.overview(), label: 'Обзор', icon: IconChartBar, end: true },
@@ -55,6 +57,10 @@ export function AppLayout() {
   const { pathname } = useLocation();
   const headerGlass = useLiquidGlass<HTMLElement>();
   const navigationGlass = useLiquidGlass<HTMLElement>();
+  const activeSection = NAV.findIndex((item) =>
+    item.end ? pathname === item.to : pathname === item.to || pathname.startsWith(`${item.to}/`),
+  );
+  useControlGlint();
 
   return (
     <AppShell
@@ -101,19 +107,29 @@ export function AppLayout() {
         {...navigationGlass.props}
       >
         {navigationGlass.lens}
-        {NAV.map((item) => (
-          <NavLink
-            key={item.to}
-            className="workspace-nav-item"
-            component={RouterNavLink}
-            to={item.to}
-            end={item.end}
-            label={item.label}
-            leftSection={<item.icon size={18} />}
-            active={item.end ? pathname === item.to : pathname.startsWith(item.to)}
-            onClick={close}
+        <div
+          className="workspace-nav-list"
+          style={{ '--workspace-active-section': Math.max(0, activeSection) } as CSSProperties}
+        >
+          <span
+            className="workspace-nav-selection"
+            data-visible={activeSection >= 0 || undefined}
+            aria-hidden="true"
           />
-        ))}
+          {NAV.map((item, index) => (
+            <NavLink
+              key={item.to}
+              className="workspace-nav-item"
+              component={RouterNavLink}
+              to={item.to}
+              end={item.end}
+              label={item.label}
+              leftSection={<item.icon size={18} />}
+              active={activeSection === index}
+              onClick={close}
+            />
+          ))}
+        </div>
       </AppShell.Navbar>
 
       <AppShell.Main className="workspace-main">
