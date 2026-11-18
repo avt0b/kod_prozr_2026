@@ -1,5 +1,5 @@
-import { Badge, Card, Group, Stack, Text, ThemeIcon } from '@mantine/core';
-import { IconChevronRight, IconScale } from '@tabler/icons-react';
+import { Badge, Card, Group, Stack, Text, ThemeIcon, UnstyledButton } from '@mantine/core';
+import { IconChevronDown, IconChevronRight, IconScale } from '@tabler/icons-react';
 import { Fragment } from 'react';
 import type { RiskFlag } from '@/shared/api';
 import {
@@ -12,11 +12,56 @@ import {
 interface Props {
   flags: RiskFlag[];
   selectedId?: string | null;
+  expandedId?: string;
   onSelect?: (flag: RiskFlag | null) => void;
 }
 
-/** Список флагов с объяснением, нормой права и цепочкой evidence. Клик выделяет флаг (повторный — снимает). */
-export function FlagList({ flags, selectedId, onSelect }: Props) {
+function FlagEvidence({ flag }: { flag: RiskFlag }) {
+  return (
+    <>
+      <Text size="sm">{flag.explanation}</Text>
+      {flag.legal_ref && (
+        <Group gap={6} mt="xs" wrap="nowrap" align="flex-start">
+          <ThemeIcon size="sm" variant="light" color="brand">
+            <IconScale size={14} aria-hidden />
+          </ThemeIcon>
+          <Text size="xs" c="dimmed">
+            {flag.legal_ref}
+          </Text>
+        </Group>
+      )}
+      {flag.evidence.length > 0 && (
+        <Group gap={4} mt="xs" aria-label="Узлы цепочки">
+          <Text size="xs" c="dimmed">
+            Цепочка:
+          </Text>
+          {flag.evidence.map((node, index) => (
+            <Fragment key={`${node.node_id}:${index}`}>
+              {index > 0 && <IconChevronRight size={12} aria-hidden />}
+              <Badge
+                size="sm"
+                variant="outline"
+                color="gray"
+                tt="none"
+                radius="sm"
+                fw={500}
+                h="auto"
+                py={2}
+                maw="100%"
+                title={`${NODE_TYPE_LABELS[node.type]}: ${node.label}`}
+                styles={{ label: { whiteSpace: 'normal', overflow: 'visible', textAlign: 'left' } }}
+              >
+                {node.label}
+              </Badge>
+            </Fragment>
+          ))}
+        </Group>
+      )}
+    </>
+  );
+}
+
+export function FlagList({ flags, selectedId, expandedId, onSelect }: Props) {
   if (!flags.length) {
     return (
       <Text c="dimmed" size="sm">
@@ -24,83 +69,62 @@ export function FlagList({ flags, selectedId, onSelect }: Props) {
       </Text>
     );
   }
+
   return (
-    <Stack gap="sm">
-      {flags.map((f) => {
-        const selected = f.id === selectedId;
+    <Stack gap={8}>
+      {flags.map((flag) => {
+        const selected = flag.id === selectedId;
+        const expanded = !expandedId || flag.id === expandedId;
+        const evidenceId = `flag-details-${flag.id}`;
+        const label = (
+          <Group gap={8} wrap="nowrap" justify="space-between">
+            <Badge color={SEVERITY_COLORS[flag.severity]} variant="light" style={{ flexShrink: 0 }}>
+              {flag.rule_code}
+            </Badge>
+            <Text size="sm" fw={650} style={{ flex: 1 }}>
+              {RULE_TITLES[flag.rule_code]}
+            </Text>
+            {onSelect && (
+              <IconChevronDown
+                size={15}
+                aria-hidden
+                style={{ flexShrink: 0, rotate: expanded ? '180deg' : undefined }}
+              />
+            )}
+          </Group>
+        );
         return (
           <Card
-            key={f.id}
-            padding="md"
+            key={flag.id}
+            padding="xs"
             className="workspace-flag"
-            data-selectable={onSelect ? '' : undefined}
-            data-selected={selected ? '' : undefined}
-            data-severity={f.severity}
-            role={onSelect ? 'button' : undefined}
-            tabIndex={onSelect ? 0 : undefined}
-            aria-pressed={onSelect ? selected : undefined}
-            onClick={() => onSelect?.(selected ? null : f)}
-            onKeyDown={(event) => {
-              if (onSelect && (event.key === 'Enter' || event.key === ' ')) {
-                event.preventDefault();
-                onSelect(selected ? null : f);
-              }
-            }}
+            data-expanded={expanded || undefined}
+            data-selected={selected || undefined}
           >
-            <Group justify="space-between" mb={6} gap="xs" align="flex-start">
-              <Group gap="xs">
-                <Badge color={SEVERITY_COLORS[f.severity]} variant="filled">
-                  {f.rule_code}
-                </Badge>
-                <Text fw={600}>{RULE_TITLES[f.rule_code]}</Text>
-              </Group>
-              <Text size="xs" c="dimmed" style={{ whiteSpace: 'nowrap' }}>
-                риск {SEVERITY_LABELS[f.severity]} · вес {f.weight}
-              </Text>
-            </Group>
-
-            <Text size="sm">{f.explanation}</Text>
-
-            {f.legal_ref && (
-              <Group gap={6} mt="xs" wrap="nowrap" align="flex-start">
-                <ThemeIcon size="sm" variant="light" color="gray">
-                  <IconScale size={14} />
-                </ThemeIcon>
-                <Text size="xs" c="dimmed">
-                  {f.legal_ref}
-                </Text>
-              </Group>
+            {onSelect ? (
+              <UnstyledButton
+                className="workspace-flag-trigger"
+                type="button"
+                aria-pressed={selected}
+                aria-expanded={expanded}
+                aria-controls={evidenceId}
+                onClick={() => onSelect(selected ? null : flag)}
+              >
+                {label}
+              </UnstyledButton>
+            ) : (
+              label
             )}
-
-            {f.evidence.length > 0 && (
-              <Group gap={4} mt="xs">
-                <Text size="xs" c="dimmed">
-                  Цепочка:
-                </Text>
-                {f.evidence.map((e, i) => (
-                  <Fragment key={e.node_id}>
-                    {i > 0 && <IconChevronRight size={12} />}
-                    <Badge
-                      size="sm"
-                      variant="outline"
-                      color="gray"
-                      tt="none"
-                      radius="sm"
-                      fw={500}
-                      h="auto"
-                      py={2}
-                      maw="100%"
-                      title={`${NODE_TYPE_LABELS[e.type]}: ${e.label}`}
-                      styles={{
-                        label: { whiteSpace: 'normal', overflow: 'visible', textAlign: 'left' },
-                      }}
-                    >
-                      {e.label}
-                    </Badge>
-                  </Fragment>
-                ))}
-              </Group>
-            )}
+            <div id={evidenceId} hidden={!expanded}>
+              {expanded && (
+                <>
+                  <Text size="xs" c="dimmed" mt="xs" mb={5}>
+                    Риск {SEVERITY_LABELS[flag.severity]} · вес {flag.weight}
+                  </Text>
+                  <FlagEvidence flag={flag} />
+                </>
+              )}
+            </div>
           </Card>
         );
       })}

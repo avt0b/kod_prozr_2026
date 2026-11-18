@@ -8,7 +8,7 @@ import {
   Text,
   useComputedColorScheme,
 } from '@mantine/core';
-import { useReducedMotion } from '@mantine/hooks';
+import { useMediaQuery, useReducedMotion } from '@mantine/hooks';
 import cytoscape, { type Core, type ElementDefinition } from 'cytoscape';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { GraphNode, OfficialGraph } from '@/shared/api';
@@ -23,7 +23,7 @@ const MAX_FIT_ZOOM = 1.4;
 /** Вписывает подсвеченную цепочку, а если её нет — весь граф. */
 function fitGraph(cy: Core) {
   const target = cy.elements('.hl').length ? cy.elements('.hl') : cy.elements();
-  cy.fit(target, 45);
+  cy.fit(target, Math.min(cy.width(), cy.height()) < 400 ? 20 : 45);
   if (cy.zoom() > MAX_FIT_ZOOM) {
     cy.zoom(MAX_FIT_ZOOM);
     cy.center(target);
@@ -47,6 +47,7 @@ export function RelationGraph({ graph, rootId, highlight, onNodeClick, height = 
   const clickRef = useRef(onNodeClick);
   const dark = useComputedColorScheme('light') === 'dark';
   const reducedMotion = useReducedMotion();
+  const mobile = useMediaQuery('(max-width: 47.99em)');
   const [layout, setLayout] = useState('breadthfirst');
   const [focused, setFocused] = useState<GraphNode | null>(null);
   const [grouped, setGrouped] = useState(true);
@@ -79,6 +80,7 @@ export function RelationGraph({ graph, rootId, highlight, onNodeClick, height = 
                 prepared.graph,
                 rootId,
                 highlight?.map((id) => prepared.aliases.get(id) ?? id),
+                mobile ? 2 : 3,
               ),
               fit: true,
               padding: 35,
@@ -123,7 +125,7 @@ export function RelationGraph({ graph, rootId, highlight, onNodeClick, height = 
       cy.destroy();
       cyRef.current = null;
     };
-  }, [elements, dark, layout, rootId, prepared, highlight]);
+  }, [elements, dark, layout, rootId, prepared, highlight, mobile]);
 
   useEffect(() => {
     const cy = cyRef.current;
@@ -145,7 +147,7 @@ export function RelationGraph({ graph, rootId, highlight, onNodeClick, height = 
     fitGraph(cy);
     if (!highlight?.length || reducedMotion) return;
     const animation = containerRef.current?.animate([{ opacity: 0.65 }, { opacity: 1 }], {
-      duration: 270,
+      duration: 180,
       easing: 'cubic-bezier(0.2, 0.8, 0.2, 1)',
     });
     return () => animation?.cancel();
@@ -166,7 +168,7 @@ export function RelationGraph({ graph, rootId, highlight, onNodeClick, height = 
           w={170}
         />
         <Button
-          variant="subtle"
+          variant="default"
           size="xs"
           onClick={() => {
             const cy = cyRef.current;
@@ -193,7 +195,7 @@ export function RelationGraph({ graph, rootId, highlight, onNodeClick, height = 
         data-testid="relation-graph"
         className="workspace-graph"
         style={{
-          height,
+          height: mobile ? Math.min(340, height) : height,
           width: '100%',
           borderRadius: 'var(--mantine-radius-md)',
           border: '1px solid var(--mantine-color-default-border)',

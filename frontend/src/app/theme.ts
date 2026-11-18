@@ -24,16 +24,16 @@ import {
 } from '@mantine/core';
 
 const brand: MantineColorsTuple = [
-  '#edf3ff',
-  '#dce8ff',
-  '#bacfff',
-  '#92b3f5',
-  '#7099ed',
-  '#497ce0',
-  '#2b65d2',
-  '#2456ba',
-  '#1c469b',
-  '#163979',
+  '#eaf2ff',
+  '#dce9fb',
+  '#b8d2f4',
+  '#98bcef',
+  '#75a1d9',
+  '#5486c6',
+  '#356ab1',
+  '#194f9b',
+  '#164583',
+  '#123564',
 ];
 
 const surface = {
@@ -42,15 +42,15 @@ const surface = {
 };
 const field = { classNames: { input: 'workspace-field' } };
 const control = { defaultProps: { radius: 'xl' }, classNames: { root: 'workspace-control' } };
-const spring = 'cubic-bezier(0.22, 1.22, 0.33, 1)';
+const easeOut = 'cubic-bezier(0.2, 0.8, 0.2, 1)';
 const anchoredTransition = {
   transition: 'pop-top-left',
-  duration: 245,
-  exitDuration: 150,
-  timingFunction: spring,
+  duration: 180,
+  exitDuration: 120,
+  timingFunction: easeOut,
 } as const;
 const panelTransition = {
-  duration: 300,
+  duration: 220,
   exitDuration: 180,
   timingFunction: 'cubic-bezier(0.22, 1, 0.36, 1)',
 };
@@ -76,14 +76,17 @@ export const theme = createTheme({
   primaryShade: { light: 7, dark: 7 },
   defaultRadius: 'md',
   respectReducedMotion: true,
-  radius: { xs: '6px', sm: '9px', md: '13px', lg: '21px', xl: '28px' },
+  radius: { xs: '6px', sm: '9px', md: '13px', lg: '16px', xl: '28px' },
   fontFamily: 'Inter, system-ui, -apple-system, "Segoe UI", sans-serif',
   fontFamilyMonospace: 'ui-monospace, SFMono-Regular, Consolas, monospace',
   headings: { fontWeight: '735' },
   components: {
     Card: Card.extend({ ...surface, defaultProps: { ...surface.defaultProps, padding: 'lg' } }),
     Paper: Paper.extend(surface),
-    Button: Button.extend(control),
+    Button: Button.extend({
+      ...control,
+      defaultProps: { ...control.defaultProps, variant: 'filled' },
+    }),
     ActionIcon: ActionIcon.extend(control),
     CloseButton: CloseButton.extend(control),
     Pagination: Pagination.extend({
@@ -91,7 +94,7 @@ export const theme = createTheme({
       classNames: { control: 'workspace-control workspace-page-control' },
     }),
     SegmentedControl: SegmentedControl.extend({
-      defaultProps: { radius: 'xl', transitionDuration: 360, transitionTimingFunction: spring },
+      defaultProps: { radius: 'xl', transitionDuration: 180, transitionTimingFunction: easeOut },
       classNames: { root: 'workspace-segmented', indicator: 'workspace-segment-indicator' },
     }),
     Switch: Switch.extend({

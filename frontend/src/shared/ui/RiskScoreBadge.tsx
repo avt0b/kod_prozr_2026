@@ -8,7 +8,7 @@ interface Props extends Omit<BadgeProps, 'color' | 'children'> {
 /** Балл риска 0–100 с цветом уровня: ≥70 красный, ≥40 оранжевый, >0 жёлтый. */
 export function RiskScoreBadge({ score, ...rest }: Props) {
   return (
-    <Badge color={RISK_LEVEL_COLORS[riskLevel(score)]} variant="filled" miw={44} {...rest}>
+    <Badge color={RISK_LEVEL_COLORS[riskLevel(score)]} variant="light" miw={44} {...rest}>
       {score}
     </Badge>
   );
