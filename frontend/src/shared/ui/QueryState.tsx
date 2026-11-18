@@ -15,7 +15,12 @@ interface Props<T> {
 export function QueryState<T>({ query, children, isEmpty, empty }: Props<T>) {
   if (query.isPending) {
     return (
-      <Center py="xl">
+      <Center
+        py="xl"
+        className="workspace-surface workspace-state"
+        role="status"
+        aria-label="Загрузка данных"
+      >
         <Loader />
       </Center>
     );
@@ -36,7 +41,7 @@ export function QueryState<T>({ query, children, isEmpty, empty }: Props<T>) {
   }
   if (isEmpty?.(query.data)) {
     return (
-      <Center py="xl">
+      <Center py="xl" className="workspace-surface workspace-state">
         <Text c="dimmed">{empty ?? 'Ничего не найдено'}</Text>
       </Center>
     );

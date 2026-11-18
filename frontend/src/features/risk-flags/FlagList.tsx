@@ -32,14 +32,22 @@ export function FlagList({ flags, selectedId, onSelect }: Props) {
           <Card
             key={f.id}
             padding="md"
-            style={{
-              cursor: onSelect ? 'pointer' : undefined,
-              borderColor: selected ? 'var(--mantine-color-red-6)' : undefined,
-              borderWidth: selected ? 2 : undefined,
-            }}
+            className="workspace-flag"
+            data-selectable={onSelect ? '' : undefined}
+            data-selected={selected ? '' : undefined}
+            data-severity={f.severity}
+            role={onSelect ? 'button' : undefined}
+            tabIndex={onSelect ? 0 : undefined}
+            aria-pressed={onSelect ? selected : undefined}
             onClick={() => onSelect?.(selected ? null : f)}
+            onKeyDown={(event) => {
+              if (onSelect && (event.key === 'Enter' || event.key === ' ')) {
+                event.preventDefault();
+                onSelect(selected ? null : f);
+              }
+            }}
           >
-            <Group justify="space-between" mb={6} wrap="nowrap" align="flex-start">
+            <Group justify="space-between" mb={6} gap="xs" align="flex-start">
               <Group gap="xs">
                 <Badge color={SEVERITY_COLORS[f.severity]} variant="filled">
                   {f.rule_code}
