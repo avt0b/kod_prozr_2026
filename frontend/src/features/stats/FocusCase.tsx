@@ -1,12 +1,27 @@
 import { Anchor, Group, Skeleton, Text } from '@mantine/core';
-import { IconBuilding, IconUser } from '@tabler/icons-react';
+import {
+  IconBuilding,
+  IconBuildingBank,
+  IconFiles,
+  IconInbox,
+  IconUser,
+} from '@tabler/icons-react';
 import { Link } from 'react-router';
-import { useOfficial, useOfficialGraph } from '@/features/officials/api';
+import { useOfficialFlags, useOfficialGraph } from '@/features/officials/api';
 import type { OfficialGraph, OfficialListItem } from '@/shared/api';
 import { routes } from '@/shared/config/routes';
 import { riskLevel } from '@/shared/lib/format';
+import { NODE_TYPE_LABELS, RULE_TITLES } from '@/shared/lib/labels';
 import { AnimatedNumber } from '@/shared/ui/AnimatedNumber';
 import type { CSSProperties } from 'react';
+
+const EVIDENCE_ICONS = {
+  person: IconUser,
+  company: IconBuilding,
+  organ: IconBuildingBank,
+  contract: IconFiles,
+  appeal: IconInbox,
+};
 
 /** A compact view of actual graph edges, never an invented relationship illustration. */
 function NetworkPreview({ graph, personId }: { graph: OfficialGraph; personId: string }) {
@@ -115,9 +130,12 @@ function NetworkPreview({ graph, personId }: { graph: OfficialGraph; personId: s
 }
 
 export function FocusCase({ official }: { official: OfficialListItem }) {
-  const profile = useOfficial(official.id);
+  const flags = useOfficialFlags(official.id);
   const graph = useOfficialGraph(official.id);
-  const flag = profile.data?.risk.flags.slice().sort((a, b) => b.weight - a.weight)[0];
+  const flag = flags.data?.items.slice().sort((a, b) => b.weight - a.weight)[0];
+  const evidence = flag
+    ? [...new Map(flag.evidence.map((node) => [node.node_id, node])).values()]
+    : [];
   return (
     <article className="focus-case">
       <div className="focus-case-top">
@@ -153,9 +171,37 @@ export function FocusCase({ official }: { official: OfficialListItem }) {
       </Text>
       {flag && (
         <p className="focus-explanation">
-          <span>{flag.rule_code}</span>
+          <span>
+            {flag.rule_code} · {RULE_TITLES[flag.rule_code]}
+          </span>
           {flag.explanation}
         </p>
+      )}
+      {evidence.length > 0 && (
+        <Group gap={8} align="stretch" component="ol" className="workspace-evidence-list" mt="sm">
+          {evidence.map((node) => {
+            const NodeIcon = EVIDENCE_ICONS[node.type];
+            return (
+              <Group
+                className="workspace-evidence-node"
+                key={node.node_id}
+                component="li"
+                gap={9}
+                wrap="nowrap"
+              >
+                <NodeIcon size={19} aria-hidden />
+                <div>
+                  <Text size="xs" fw={650} lineClamp={2}>
+                    {node.label}
+                  </Text>
+                  <Text size="xs" c="dimmed">
+                    {NODE_TYPE_LABELS[node.type]}
+                  </Text>
+                </div>
+              </Group>
+            );
+          })}
+        </Group>
       )}
       <Group justify="space-between" mt="lg">
         <Text size="xs" c="dimmed">

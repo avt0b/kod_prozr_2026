@@ -3,39 +3,51 @@ import {
   AppShell,
   Badge,
   Box,
-  Burger,
   Group,
   NavLink,
   Tooltip,
   useComputedColorScheme,
   useMantineColorScheme,
 } from '@mantine/core';
-import { useDisclosure } from '@mantine/hooks';
-import { useEffect, useLayoutEffect, useState, type CSSProperties } from 'react';
 import {
   IconChartBar,
   IconListNumbers,
+  IconMail,
   IconMap2,
   IconMessageChatbot,
   IconMoon,
   IconShieldSearch,
   IconSun,
-  IconMail,
 } from '@tabler/icons-react';
+import { useEffect, useLayoutEffect, useState, type CSSProperties } from 'react';
 import { Link, NavLink as RouterNavLink, Outlet, useLocation } from 'react-router';
-import { env } from '@/shared/config/env';
-import { routes } from '@/shared/config/routes';
-import { WorkspaceSearch } from './WorkspaceSearch';
-import { MotionReplay } from './MotionReplay';
 import { WorkbenchPanels } from '@/features/workbench/WorkbenchPanels';
 import { WorkbenchTools } from '@/features/workbench/WorkbenchTools';
+import { env } from '@/shared/config/env';
+import { routes } from '@/shared/config/routes';
+import { useLiquidGlass } from '@/shared/ui/useLiquidGlass';
+import { useControlGlint } from './useControlGlint';
+import { MotionReplay } from './MotionReplay';
+import { WorkspaceSearch } from './WorkspaceSearch';
 
 const NAV = [
-  { to: routes.overview(), label: 'Обзор', icon: IconChartBar, end: true },
-  { to: routes.officials(), label: 'Рейтинг служащих', icon: IconListNumbers, end: false },
-  { to: routes.riskMap(), label: 'Карта рисков', icon: IconMap2, end: false },
-  { to: routes.appeals(), label: 'Обращения', icon: IconMail, end: false },
-  { to: routes.assistant(), label: 'Ассистент', icon: IconMessageChatbot, end: false },
+  { to: routes.overview(), label: 'Обзор', compact: 'Обзор', icon: IconChartBar, end: true },
+  {
+    to: routes.officials(),
+    label: 'Рейтинг служащих',
+    compact: 'Рейтинг',
+    icon: IconListNumbers,
+    end: false,
+  },
+  { to: routes.riskMap(), label: 'Карта рисков', compact: 'Риски', icon: IconMap2, end: true },
+  { to: routes.appeals(), label: 'Обращения', compact: 'Обращения', icon: IconMail, end: false },
+  {
+    to: routes.assistant(),
+    label: 'Ассистент',
+    compact: 'Ассистент',
+    icon: IconMessageChatbot,
+    end: true,
+  },
 ];
 
 function ColorSchemeToggle() {
@@ -45,7 +57,7 @@ function ColorSchemeToggle() {
     <Tooltip label="Сменить тему">
       <ActionIcon
         variant="default"
-        size="lg"
+        size={40}
         aria-label="Сменить тему"
         onClick={() => setColorScheme(computed === 'light' ? 'dark' : 'light')}
       >
@@ -55,8 +67,20 @@ function ColorSchemeToggle() {
   );
 }
 
+function MobileNavigation() {
+  return (
+    <nav className="workspace-mobile-nav workspace-glass" aria-label="Разделы приложения">
+      {NAV.map((item) => (
+        <RouterNavLink to={item.to} end={item.end} key={item.to} aria-label={item.label}>
+          <item.icon size={19} aria-hidden />
+          <span>{item.compact}</span>
+        </RouterNavLink>
+      ))}
+    </nav>
+  );
+}
+
 export function AppLayout() {
-  const [opened, { toggle, close }] = useDisclosure();
   const [presentation, setPresentation] = useState(false);
   useEffect(() => {
     if (!presentation) return;
@@ -69,6 +93,16 @@ export function AppLayout() {
     return () => window.removeEventListener('keydown', exit, true);
   }, [presentation]);
   const { pathname } = useLocation();
+  const headerGlass = useLiquidGlass<HTMLElement>();
+  const navigationGlass = useLiquidGlass<HTMLElement>();
+  const activeSection = NAV.findIndex((item) =>
+    item.end ? pathname === item.to : pathname === item.to || pathname.startsWith(`${item.to}/`),
+  );
+  const section = NAV[activeSection];
+  const SectionIcon = section?.icon ?? IconShieldSearch;
+  const sectionLabel =
+    section?.label ?? (pathname.startsWith(routes.report('')) ? 'Докладная' : 'Код прозрачности');
+  useControlGlint();
   useEffect(() => {
     const syncVisibility = () =>
       document.documentElement.toggleAttribute('data-motion-paused', document.hidden);
@@ -82,57 +116,31 @@ export function AppLayout() {
   useLayoutEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
   }, [pathname]);
-  const activeSection = NAV.findIndex((item) =>
-    item.end ? pathname === item.to : pathname === item.to || pathname.startsWith(`${item.to}/`),
-  );
 
   return (
     <AppShell
       className="workspace-shell"
       data-presentation={presentation || undefined}
-      header={{ height: 76 }}
-      navbar={{
-        width: 250,
-        breakpoint: 'sm',
-        collapsed: { mobile: !opened, desktop: presentation },
-      }}
-      padding="lg"
+      header={{ height: { base: 82, sm: 94 } }}
+      navbar={{ width: 240, breakpoint: 'sm', collapsed: { mobile: true, desktop: presentation } }}
+      padding={{ base: 14, sm: 24 }}
     >
       <a className="workspace-skip-link" href="#workspace-content">
         К содержимому
       </a>
-      <AppShell.Header className="workspace-header workspace-glass">
-        <Group h="100%" px="md" justify="space-between">
-          <Group gap="xs" wrap="nowrap">
-            <Burger
-              opened={opened}
-              onClick={() => {
-                setPresentation(false);
-                toggle();
-              }}
-              hiddenFrom="sm"
-              size="sm"
-              aria-label="Меню разделов"
-              aria-expanded={opened}
-              aria-controls="workspace-navigation"
-            />
-            <Link className="workspace-brand" to={routes.overview()} onClick={close}>
-              <span className="workspace-brand-mark">
-                <IconShieldSearch size={22} stroke={1.65} />
-              </span>
-              <span className="workspace-brand-title">
-                Код прозрачности<span>Рабочее место аналитика</span>
-              </span>
-            </Link>
+      <AppShell.Header className="workspace-header workspace-glass" {...headerGlass.props}>
+        {headerGlass.lens}
+        <Group justify="space-between" h="100%" px="sm" wrap="nowrap" gap="xs">
+          <Group wrap="nowrap" gap="xs" className="workspace-section">
+            <SectionIcon size={18} aria-hidden />
+            <span className="workspace-section-label">{sectionLabel}</span>
             {env.useMocks && (
-              <Tooltip label="Данные из src/shared/api/mocks (VITE_USE_MOCKS=true)">
-                <Badge variant="light" color="orange">
-                  моки
-                </Badge>
-              </Tooltip>
+              <Badge hiddenFrom="sm" variant="light" color="orange">
+                моки
+              </Badge>
             )}
           </Group>
-          <Group gap="sm" wrap="nowrap">
+          <Group gap="xs" wrap="nowrap">
             <WorkspaceSearch />
             <WorkbenchTools
               presentation={presentation}
@@ -147,13 +155,22 @@ export function AppLayout() {
       </AppShell.Header>
 
       <AppShell.Navbar
-        id="workspace-navigation"
         aria-label="Разделы приложения"
-        data-menu-open={opened || undefined}
         className="workspace-navbar workspace-glass"
-        p="sm"
+        visibleFrom="sm"
+        p={10}
+        {...navigationGlass.props}
       >
-        <span className="workspace-navigation-caption">Рабочее пространство</span>
+        {navigationGlass.lens}
+        <Link className="workspace-brand" to={routes.overview()}>
+          <span className="workspace-brand-mark">
+            <IconShieldSearch size={21} aria-hidden />
+          </span>
+          <span>
+            <span className="workspace-brand-title">Код прозрачности</span>
+            <span className="workspace-brand-caption">Кабинет аналитика</span>
+          </span>
+        </Link>
         <div
           className="workspace-nav-list"
           style={{ '--workspace-active-section': Math.max(0, activeSection) } as CSSProperties}
@@ -161,7 +178,7 @@ export function AppLayout() {
           <span
             className="workspace-nav-selection"
             data-visible={activeSection >= 0 || undefined}
-            aria-hidden="true"
+            aria-hidden
           />
           {NAV.map((item, index) => (
             <NavLink
@@ -171,17 +188,17 @@ export function AppLayout() {
               to={item.to}
               end={item.end}
               label={item.label}
-              leftSection={<item.icon size={18} />}
+              leftSection={<item.icon size={19} />}
               active={activeSection === index}
-              onClick={close}
             />
           ))}
         </div>
-        <div className="workspace-navigation-note">
-          <IconShieldSearch size={23} stroke={1.4} />
-          <strong>Данные. Связи. Основания.</strong>
-          <p>Сигнал помогает начать проверку. Решение принимает человек.</p>
-        </div>
+        {env.useMocks && (
+          <div className="workspace-data-mode" aria-label="Демонстрационные данные">
+            <span aria-hidden />
+            моки
+          </div>
+        )}
       </AppShell.Navbar>
 
       <AppShell.Main className="workspace-main" id="workspace-content" tabIndex={-1}>
@@ -189,6 +206,7 @@ export function AppLayout() {
           <Outlet />
         </div>
       </AppShell.Main>
+      {!presentation && <MobileNavigation />}
       <WorkbenchPanels />
     </AppShell>
   );

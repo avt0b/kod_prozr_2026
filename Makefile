@@ -177,7 +177,7 @@ video: ## Видео-бэкап: Playwright-сценарий демо проти
 		npx playwright test $(VIDEO_SPEC)); rc=$$?; \
 	mkdir -p $(VIDEO_DIR); ts=$$(date +%Y%m%d-%H%M%S); n=0; \
 	while IFS= read -r v; do n=$$((n+1)); cp "$$v" "$(VIDEO_DIR)/demo-$$ts-$$n.$${v##*.}"; done \
-		< <(find frontend -path frontend/node_modules -prune -o -type f \( -name '*.webm' -o -name '*.mp4' \) -newer "$$stamp" -print); \
+		< <(find frontend \( -path frontend/node_modules -o -name playwright-report \) -prune -o -type f \( -name '*.webm' -o -name '*.mp4' \) -newer "$$stamp" -print); \
 	rm -f "$$stamp"; \
 	[ $$n -gt 0 ] || { echo "Сценарий не записал видео: проверьте, что при DEMO_VIDEO=1 включена запись (video: 'on')."; exit 1; }; \
 	ls -lh $(VIDEO_DIR)/demo-$$ts-*; \

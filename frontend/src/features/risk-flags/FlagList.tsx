@@ -1,4 +1,5 @@
-import { Badge, Card, Group, Stack, Text } from '@mantine/core';
+import { Badge, Card, Group, Stack, Text, UnstyledButton } from '@mantine/core';
+import { IconChevronDown } from '@tabler/icons-react';
 import type { CSSProperties } from 'react';
 import type { RiskFlag } from '@/shared/api';
 import {
@@ -11,11 +12,51 @@ import {
 interface Props {
   flags: RiskFlag[];
   selectedId?: string | null;
+  expandedId?: string;
   onSelect?: (flag: RiskFlag | null) => void;
 }
 
-/** Список флагов с объяснением, нормой права и цепочкой evidence. Клик выделяет флаг (повторный — снимает). */
-export function FlagList({ flags, selectedId, onSelect }: Props) {
+function FlagEvidence({ flag }: { flag: RiskFlag }) {
+  return (
+    <dl className="flag-evidence-details">
+      <div>
+        <dt>Факт и пояснение</dt>
+        <dd>{flag.explanation}</dd>
+      </div>
+      <div>
+        <dt>Записи-источники</dt>
+        <dd>
+          {flag.evidence.length ? (
+            <ol>
+              {flag.evidence.map((e, index) => (
+                <li key={`${e.node_id}:${index}`}>
+                  <span className="flag-source-type">{NODE_TYPE_LABELS[e.type]}</span>
+                  <span title={e.node_id}>{e.label}</span>
+                </li>
+              ))}
+            </ol>
+          ) : (
+            <Text size="sm" c="dimmed">
+              В данных не указаны
+            </Text>
+          )}
+        </dd>
+      </div>
+      <div>
+        <dt>Правовое основание</dt>
+        <dd>
+          {flag.legal_ref || (
+            <Text size="sm" c="dimmed">
+              В данных не указано
+            </Text>
+          )}
+        </dd>
+      </div>
+    </dl>
+  );
+}
+
+export function FlagList({ flags, selectedId, expandedId, onSelect }: Props) {
   if (!flags.length) {
     return (
       <Text c="dimmed" size="sm">
@@ -23,77 +64,65 @@ export function FlagList({ flags, selectedId, onSelect }: Props) {
       </Text>
     );
   }
+
   return (
-    <Stack gap="sm">
-      {flags.map((f, index) => {
-        const selected = f.id === selectedId;
+    <Stack gap={8}>
+      {flags.map((flag, index) => {
+        const selected = flag.id === selectedId;
+        const expanded = !expandedId || flag.id === expandedId;
+        const evidenceId = `flag-details-${flag.id}`;
+        const label = (
+          <Group gap={8} wrap="nowrap" justify="space-between">
+            <Badge color={SEVERITY_COLORS[flag.severity]} variant="light" style={{ flexShrink: 0 }}>
+              {flag.rule_code}
+            </Badge>
+            <Text size="sm" fw={650} style={{ flex: 1 }}>
+              {RULE_TITLES[flag.rule_code]}
+            </Text>
+            {onSelect && (
+              <IconChevronDown
+                size={15}
+                aria-hidden
+                style={{ flexShrink: 0, rotate: expanded ? '180deg' : undefined }}
+              />
+            )}
+          </Group>
+        );
         return (
           <Card
-            key={f.id}
-            padding="md"
+            key={flag.id}
+            padding="xs"
             className="workspace-flag"
             style={{ '--motion-index': Math.min(index, 5) } as CSSProperties}
             data-selectable={onSelect ? '' : undefined}
-            data-selected={selected ? '' : undefined}
-            data-severity={f.severity}
-            role={onSelect ? 'button' : undefined}
-            tabIndex={onSelect ? 0 : undefined}
-            aria-pressed={onSelect ? selected : undefined}
-            onClick={() => onSelect?.(selected ? null : f)}
-            onKeyDown={(event) => {
-              if (onSelect && (event.key === 'Enter' || event.key === ' ')) {
-                event.preventDefault();
-                onSelect(selected ? null : f);
-              }
-            }}
+            data-severity={flag.severity}
+            data-expanded={expanded || undefined}
+            data-selected={selected || undefined}
           >
-            <Group justify="space-between" mb={6} gap="xs" align="flex-start">
-              <Group gap="xs">
-                <Badge color={SEVERITY_COLORS[f.severity]} variant="filled">
-                  {f.rule_code}
-                </Badge>
-                <Text fw={600}>{RULE_TITLES[f.rule_code]}</Text>
-              </Group>
-              <Text size="xs" c="dimmed" style={{ whiteSpace: 'nowrap' }}>
-                риск {SEVERITY_LABELS[f.severity]} · вес {f.weight}
-              </Text>
-            </Group>
-
-            <dl className="flag-evidence-details">
-              <div>
-                <dt>Факт и пояснение</dt>
-                <dd>{f.explanation}</dd>
-              </div>
-              <div>
-                <dt>Записи-источники</dt>
-                <dd>
-                  {f.evidence.length ? (
-                    <ol>
-                      {f.evidence.map((e) => (
-                        <li key={e.node_id}>
-                          <span className="flag-source-type">{NODE_TYPE_LABELS[e.type]}</span>
-                          <span title={e.node_id}>{e.label}</span>
-                        </li>
-                      ))}
-                    </ol>
-                  ) : (
-                    <Text size="sm" c="dimmed">
-                      В данных не указаны
-                    </Text>
-                  )}
-                </dd>
-              </div>
-              <div>
-                <dt>Правовое основание</dt>
-                <dd>
-                  {f.legal_ref || (
-                    <Text size="sm" c="dimmed">
-                      В данных не указано
-                    </Text>
-                  )}
-                </dd>
-              </div>
-            </dl>
+            {onSelect ? (
+              <UnstyledButton
+                className="workspace-flag-trigger"
+                type="button"
+                aria-pressed={selected}
+                aria-expanded={expanded}
+                aria-controls={evidenceId}
+                onClick={() => onSelect(selected ? null : flag)}
+              >
+                {label}
+              </UnstyledButton>
+            ) : (
+              label
+            )}
+            <div id={evidenceId} hidden={!expanded}>
+              {expanded && (
+                <>
+                  <Text size="xs" c="dimmed" mt="xs" mb={5}>
+                    Риск {SEVERITY_LABELS[flag.severity]} · вес {flag.weight}
+                  </Text>
+                  <FlagEvidence flag={flag} />
+                </>
+              )}
+            </div>
           </Card>
         );
       })}

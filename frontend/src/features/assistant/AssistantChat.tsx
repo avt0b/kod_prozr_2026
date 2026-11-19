@@ -167,9 +167,9 @@ export function AssistantChat() {
               key={m.id}
               className={`assistant-message assistant-message-${m.role}`}
               p="md"
-              maw="85%"
+              maw={{ base: '94%', sm: '76%' }}
               ml={m.role === 'user' ? 'auto' : undefined}
-              bg={m.role === 'user' ? 'var(--mantine-primary-color-light)' : undefined}
+              bg={m.role === 'user' ? 'var(--workspace-tint)' : 'var(--workspace-neutral)'}
               style={m.error ? { borderColor: 'var(--mantine-color-red-6)' } : undefined}
             >
               <Text size="xs" fw={600} c="dimmed" mb="xs">
@@ -192,7 +192,7 @@ export function AssistantChat() {
       </div>
 
       <form
-        className="assistant-composer"
+        className="assistant-composer workspace-glass"
         onSubmit={(e) => {
           e.preventDefault();
           send(draft);

@@ -105,7 +105,7 @@ export function OfficialsTable({ items, sort, onSortChange, startIndex = 0 }: Pr
               </Table.Td>
               <Table.Td fw={500}>
                 <Anchor
-                  className="official-name-link"
+                  className="official-name-link workspace-row-link"
                   component={Link}
                   to={routes.official(o.id)}
                   onClick={(event) => event.stopPropagation()}

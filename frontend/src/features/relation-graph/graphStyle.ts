@@ -11,9 +11,10 @@ export const NODE_STYLES: Record<GraphNodeType, { color: string; shape: string }
 };
 
 export function buildStylesheet(dark: boolean): StylesheetJson {
-  const text = dark ? '#E3E8F2' : '#1A2747';
-  const edge = dark ? '#5B6A86' : '#AAB4C8';
-  const textBg = dark ? '#151D2D' : '#FFFFFF';
+  const text = dark ? '#F0F5FB' : '#172636';
+  const edge = dark ? '#627D99' : '#93A6BA';
+  const textBg = dark ? '#192636' : '#FFFFFF';
+  const selection = dark ? '#87B6F5' : '#2D65A8';
 
   return [
     {
@@ -97,11 +98,26 @@ export function buildStylesheet(dark: boolean): StylesheetJson {
     },
     {
       selector: 'node.hl',
-      style: { 'overlay-color': '#FA5252', 'overlay-opacity': 0.25, 'overlay-padding': 6 },
+      style: {
+        shape: 'round-rectangle',
+        width: 130,
+        height: 54,
+        label: 'data(cardLabel)',
+        'background-color': textBg,
+        'border-width': 1.5,
+        'border-color': selection,
+        'text-valign': 'center',
+        'text-margin-y': 0,
+        'text-max-width': '118px',
+        'text-wrap': 'wrap',
+        'text-background-opacity': 0,
+        'font-size': 12,
+        'z-index': 2,
+      },
     },
     {
       selector: 'edge.hl',
-      style: { width: 3.5, 'line-color': '#FA5252', 'target-arrow-color': '#FA5252', opacity: 1 },
+      style: { width: 3, 'line-color': selection, 'target-arrow-color': selection, opacity: 1 },
     },
   ];
 }

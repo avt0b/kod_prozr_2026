@@ -62,10 +62,10 @@ for (const theme of ['light', 'dark']) {
         .locator('.workspace-flag')
         .filter({ hasText: 'Родственник — поставщик органа' })
         .first();
+      await flag.getByRole('button').click();
       await expect(flag.getByText('Факт и пояснение', { exact: true })).toBeVisible();
       await expect(flag.getByText('Записи-источники', { exact: true })).toBeVisible();
       await expect(flag.getByText('Правовое основание', { exact: true })).toBeVisible();
-      await flag.click();
       const graph = page.getByTestId('relation-graph');
       await expect(graph.locator('canvas').first()).toBeVisible();
       await graph.scrollIntoViewIfNeeded();
