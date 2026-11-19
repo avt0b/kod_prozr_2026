@@ -365,7 +365,7 @@
                       "name": "Наблюдаемый факт и причина дополнительной проверки.",
                       "fill": "$muted",
                       "textGrowth": "fixed-width",
-                      "width": "fill_container",
+                      "width": 498,
                       "content": "Наблюдаемый факт и причина дополнительной проверки.",
                       "lineHeight": 1.38,
                       "fontFamily": "$font",
@@ -373,29 +373,29 @@
                     },
                     {
                       "type": "text",
-                      "id": "L41Ouh",
-                      "name": "Основание: норма",
-                      "fill": "$ink",
-                      "textGrowth": "fixed-width",
-                      "width": "fill_container",
-                      "content": "Основание: норма",
-                      "lineHeight": 1.38,
-                      "fontFamily": "$font",
-                      "fontSize": 12,
-                      "fontWeight": "550"
-                    },
-                    {
-                      "type": "text",
                       "id": "BU7Rh",
                       "name": "Источники: записи реестра",
                       "fill": "$muted",
                       "textGrowth": "fixed-width",
-                      "width": "fill_container",
+                      "width": 498,
                       "content": "Источники: записи реестра",
                       "lineHeight": 1.38,
                       "fontFamily": "$font",
                       "fontSize": 12,
                       "fontWeight": "500"
+                    },
+                    {
+                      "type": "text",
+                      "id": "L41Ouh",
+                      "name": "Основание: норма",
+                      "fill": "$ink",
+                      "textGrowth": "fixed-width",
+                      "width": 498,
+                      "content": "Основание: норма",
+                      "lineHeight": 1.38,
+                      "fontFamily": "$font",
+                      "fontSize": 12,
+                      "fontWeight": "550"
                     },
                     {
                       "id": "kj8QD",
@@ -1117,6 +1117,18 @@
                     },
                     {
                       "type": "text",
+                      "id": "UhwOB",
+                      "name": "Высокий балл помогает выбрать кейс для проверки. Он не означает, что нар",
+                      "fill": "$muted",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Балл задаёт приоритет проверки, но не подтверждает нарушение.",
+                      "lineHeight": 1.38,
+                      "fontFamily": "$font",
+                      "fontSize": 14
+                    },
+                    {
+                      "type": "text",
                       "id": "P9tzsS",
                       "x": 0,
                       "y": 43,
@@ -1209,7 +1221,7 @@
                       "type": "ref",
                       "ref": "i85RQD",
                       "name": "Минимальный балл",
-                      "width": 184,
+                      "width": 176,
                       "stroke": "$blue-border",
                       "fill": "$blue-soft",
                       "descendants": {
@@ -1222,6 +1234,22 @@
                         },
                         "PklZx": {
                           "icon": "sliders-horizontal",
+                          "fill": "$blue"
+                        }
+                      }
+                    },
+                    {
+                      "id": "HcMHt",
+                      "type": "ref",
+                      "ref": "ymTVg",
+                      "name": "Сбросить активный фильтр",
+                      "descendants": {
+                        "KioaP": {
+                          "icon": "x",
+                          "fill": "$blue"
+                        },
+                        "qEm9W": {
+                          "content": "Сбросить фильтр",
                           "fill": "$blue"
                         }
                       }
@@ -1240,46 +1268,6 @@
                   "strokeAlignment": "inner",
                   "layout": "vertical",
                   "children": [
-                    {
-                      "type": "frame",
-                      "id": "VtFAx",
-                      "x": 0,
-                      "y": 0,
-                      "name": "Заголовок таблицы",
-                      "enabled": false,
-                      "width": "fill_container(1160)",
-                      "height": 54,
-                      "padding": [
-                        0,
-                        16
-                      ],
-                      "justifyContent": "space_between",
-                      "alignItems": "center",
-                      "children": [
-                        {
-                          "type": "text",
-                          "id": "NQT6R",
-                          "name": "Служащие",
-                          "fill": "$ink",
-                          "content": "Служащие",
-                          "lineHeight": 1.38,
-                          "fontFamily": "$font",
-                          "fontSize": 16,
-                          "fontWeight": "650"
-                        },
-                        {
-                          "type": "text",
-                          "id": "c5bRVx",
-                          "name": "17 результатов · минимум 60 баллов",
-                          "fill": "$muted",
-                          "content": "17 результатов · минимум 60 баллов",
-                          "lineHeight": 1.38,
-                          "fontFamily": "$font",
-                          "fontSize": 12,
-                          "fontWeight": "500"
-                        }
-                      ]
-                    },
                     {
                       "type": "frame",
                       "id": "R4usf",
@@ -1337,7 +1325,7 @@
                           "type": "text",
                           "id": "C45t9",
                           "name": "Балл риска ↓",
-                          "fill": "$blue",
+                          "fill": "$ink",
                           "textGrowth": "fixed-width",
                           "width": 112,
                           "content": "Балл ↓",
@@ -1345,7 +1333,7 @@
                           "textAlign": "right",
                           "fontFamily": "$font",
                           "fontSize": 12,
-                          "fontWeight": "650"
+                          "fontWeight": "750"
                         },
                         {
                           "type": "text",
@@ -2859,66 +2847,6 @@
                       ]
                     }
                   ]
-                },
-                {
-                  "type": "frame",
-                  "id": "GBBPp",
-                  "name": "Балл — приоритет проверки",
-                  "width": "fill_container",
-                  "fill": "#00000000",
-                  "gap": 12,
-                  "alignItems": "center",
-                  "children": [
-                    {
-                      "type": "icon",
-                      "id": "ZvhWr",
-                      "x": 16,
-                      "y": 22,
-                      "name": "Иконка · info",
-                      "enabled": false,
-                      "width": 18,
-                      "height": 18,
-                      "icon": "info",
-                      "library": "lucide",
-                      "fill": "$blue"
-                    },
-                    {
-                      "type": "frame",
-                      "id": "qyfxr",
-                      "name": "Балл — приоритет проверки",
-                      "width": "fill_container",
-                      "layout": "vertical",
-                      "gap": 2,
-                      "children": [
-                        {
-                          "type": "text",
-                          "id": "k8r6k",
-                          "x": 0,
-                          "y": 0,
-                          "name": "Балл — приоритет проверки",
-                          "enabled": false,
-                          "fill": "$blue",
-                          "content": "Балл — приоритет проверки",
-                          "lineHeight": 1.38,
-                          "fontFamily": "$font",
-                          "fontSize": 13,
-                          "fontWeight": "650"
-                        },
-                        {
-                          "type": "text",
-                          "id": "UhwOB",
-                          "name": "Высокий балл помогает выбрать кейс для проверки. Он не означает, что нар",
-                          "fill": "$muted",
-                          "textGrowth": "fixed-width",
-                          "width": "fill_container",
-                          "content": "Балл задаёт приоритет проверки, но не подтверждает нарушение.",
-                          "lineHeight": 1.38,
-                          "fontFamily": "$font",
-                          "fontSize": 13
-                        }
-                      ]
-                    }
-                  ]
                 }
               ]
             }
@@ -3369,13 +3297,247 @@
                               "icon": "chevron-up"
                             },
                             "FsrU2": {
-                              "content": "Супруга Соколова — учредитель поставщика. У компании пять контрактов с департаментом, где Соколов участвует в закупках."
-                            },
-                            "L41Ouh": {
-                              "content": "Основание: ст. 10 273-ФЗ"
+                              "type": "frame",
+                              "id": "s1e0Vc",
+                              "name": "Почему сработал",
+                              "width": "fill_container",
+                              "layout": "vertical",
+                              "gap": 4,
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "gg2cv",
+                                  "name": "Подзаголовок",
+                                  "fill": "$ink",
+                                  "content": "Почему сработал",
+                                  "lineHeight": 1.42,
+                                  "fontFamily": "$font",
+                                  "fontSize": 13,
+                                  "fontWeight": "650"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "JUwXW",
+                                  "name": "Факт и повод для проверки",
+                                  "fill": "$muted",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
+                                  "content": "Супруга Соколова — учредитель поставщика, заключившего пять контрактов с департаментом, где Соколов участвует в закупках.",
+                                  "lineHeight": 1.42,
+                                  "fontFamily": "$font",
+                                  "fontSize": 14,
+                                  "fontWeight": "normal"
+                                }
+                              ]
                             },
                             "BU7Rh": {
-                              "content": "Источники: сведения о родстве, карточка компании, реестр контрактов."
+                              "type": "frame",
+                              "id": "J0LbOl",
+                              "name": "На чём основан",
+                              "width": "fill_container",
+                              "stroke": "$line",
+                              "strokeWidth": {
+                                "top": 1
+                              },
+                              "strokeAlignment": "inner",
+                              "layout": "vertical",
+                              "padding": [
+                                8,
+                                0,
+                                0,
+                                0
+                              ],
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "aSN98",
+                                  "name": "Подзаголовок",
+                                  "fill": "$ink",
+                                  "content": "На чём основан",
+                                  "lineHeight": 1.42,
+                                  "fontFamily": "$font",
+                                  "fontSize": 13,
+                                  "fontWeight": "650"
+                                },
+                                {
+                                  "type": "frame",
+                                  "id": "k1Rxc",
+                                  "name": "Родство",
+                                  "width": "fill_container",
+                                  "height": 32,
+                                  "stroke": "$line",
+                                  "strokeWidth": {
+                                    "bottom": 1
+                                  },
+                                  "strokeAlignment": "inner",
+                                  "gap": 16,
+                                  "alignItems": "center",
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "XW5Wu",
+                                      "name": "Факт",
+                                      "fill": "$muted",
+                                      "textGrowth": "fixed-width",
+                                      "width": 144,
+                                      "content": "Родство",
+                                      "lineHeight": 1.42,
+                                      "fontFamily": "$font",
+                                      "fontSize": 13,
+                                      "fontWeight": "normal"
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "n5VXpM",
+                                      "name": "Источник",
+                                      "fill": "$blue",
+                                      "textGrowth": "fixed-width",
+                                      "width": "fill_container",
+                                      "content": "Сведения о связи",
+                                      "lineHeight": 1.42,
+                                      "fontFamily": "$font",
+                                      "fontSize": 13,
+                                      "fontWeight": "600"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "frame",
+                                  "id": "OJvaI",
+                                  "name": "Учредитель",
+                                  "width": "fill_container",
+                                  "height": 32,
+                                  "stroke": "$line",
+                                  "strokeWidth": {
+                                    "bottom": 1
+                                  },
+                                  "strokeAlignment": "inner",
+                                  "gap": 16,
+                                  "alignItems": "center",
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "n8pMy",
+                                      "name": "Факт",
+                                      "fill": "$muted",
+                                      "textGrowth": "fixed-width",
+                                      "width": 144,
+                                      "content": "Учредитель",
+                                      "lineHeight": 1.42,
+                                      "fontFamily": "$font",
+                                      "fontSize": 13,
+                                      "fontWeight": "normal"
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "M6leb",
+                                      "name": "Источник",
+                                      "fill": "$blue",
+                                      "textGrowth": "fixed-width",
+                                      "width": "fill_container",
+                                      "content": "Карточка компании",
+                                      "lineHeight": 1.42,
+                                      "fontFamily": "$font",
+                                      "fontSize": 13,
+                                      "fontWeight": "600"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "frame",
+                                  "id": "YpRrA",
+                                  "name": "Пять контрактов",
+                                  "width": "fill_container",
+                                  "height": 32,
+                                  "gap": 16,
+                                  "alignItems": "center",
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "xejRi",
+                                      "name": "Факт",
+                                      "fill": "$muted",
+                                      "textGrowth": "fixed-width",
+                                      "width": 144,
+                                      "content": "Пять контрактов",
+                                      "lineHeight": 1.42,
+                                      "fontFamily": "$font",
+                                      "fontSize": 13,
+                                      "fontWeight": "normal"
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "I02IUJ",
+                                      "name": "Источник",
+                                      "fill": "$blue",
+                                      "textGrowth": "fixed-width",
+                                      "width": "fill_container",
+                                      "content": "Реестр контрактов",
+                                      "lineHeight": 1.42,
+                                      "fontFamily": "$font",
+                                      "fontSize": 13,
+                                      "fontWeight": "600"
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            "L41Ouh": {
+                              "type": "frame",
+                              "id": "QH99b",
+                              "name": "Правовое основание",
+                              "width": "fill_container",
+                              "stroke": "$line",
+                              "strokeWidth": {
+                                "top": 1
+                              },
+                              "strokeAlignment": "inner",
+                              "gap": 16,
+                              "padding": [
+                                8,
+                                0,
+                                4,
+                                0
+                              ],
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "V9eW7p",
+                                  "name": "Подзаголовок",
+                                  "fill": "$ink",
+                                  "textGrowth": "fixed-width",
+                                  "width": 144,
+                                  "content": "Правовое основание",
+                                  "lineHeight": 1.42,
+                                  "fontFamily": "$font",
+                                  "fontSize": 13,
+                                  "fontWeight": "650"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "tPVEm",
+                                  "name": "Норма для проверки",
+                                  "fill": "$muted",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
+                                  "content": "273-ФЗ, ст. 10",
+                                  "lineHeight": 1.42,
+                                  "fontFamily": "$font",
+                                  "fontSize": 13,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            },
+                            "kj8QD": {
+                              "fill": "$blue",
+                              "stroke": "$blue"
+                            },
+                            "kj8QD/KioaP": {
+                              "fill": "$paper"
+                            },
+                            "kj8QD/qEm9W": {
+                              "fill": "$paper"
                             }
                           }
                         },
@@ -3394,6 +3556,9 @@
                             "is9fR": {
                               "content": "R06"
                             },
+                            "BPTFJ": {
+                              "content": "Высокая доля закупок у одного поставщика"
+                            },
                             "gEwT6": {
                               "content": "Высокий",
                               "fill": "$rose"
@@ -3404,14 +3569,14 @@
                               "textGrowth": "auto",
                               "width": 300
                             },
-                            "L41Ouh": {
-                              "content": "Основание: индикатор концентрации закупок",
+                            "BU7Rh": {
+                              "content": "Источник: выборка контрактов отдела",
                               "enabled": false,
                               "textGrowth": "auto",
                               "width": 300
                             },
-                            "BU7Rh": {
-                              "content": "Источник: выборка контрактов отдела",
+                            "L41Ouh": {
+                              "content": "Основание: индикатор концентрации закупок",
                               "enabled": false,
                               "textGrowth": "auto",
                               "width": 300
@@ -3436,6 +3601,9 @@
                             "is9fR": {
                               "content": "R07"
                             },
+                            "BPTFJ": {
+                              "content": "Поступило связанное обращение"
+                            },
                             "gEwT6": {
                               "content": "Средний",
                               "fill": "$amber"
@@ -3446,14 +3614,14 @@
                               "textGrowth": "auto",
                               "width": 300
                             },
-                            "L41Ouh": {
-                              "content": "Основание: правило обработки обращений",
+                            "BU7Rh": {
+                              "content": "Источник: обращение ОБР–0107",
                               "enabled": false,
                               "textGrowth": "auto",
                               "width": 300
                             },
-                            "BU7Rh": {
-                              "content": "Источник: обращение ОБР–0107",
+                            "L41Ouh": {
+                              "content": "Основание: правило обработки обращений",
                               "enabled": false,
                               "textGrowth": "auto",
                               "width": 300
@@ -4090,27 +4258,27 @@
                           "id": "W47vGD",
                           "name": "Управление графом",
                           "width": "fill_container",
-                          "height": 40,
+                          "height": 48,
+                          "gap": 16,
                           "padding": [
                             0,
                             16
                           ],
-                          "justifyContent": "end",
+                          "justifyContent": "space_between",
                           "alignItems": "center",
                           "children": [
                             {
                               "type": "text",
                               "id": "v3Dpa",
-                              "x": 16,
-                              "y": 15.5,
-                              "name": "Цепочка подтверждающих записей",
-                              "enabled": false,
+                              "name": "Цепочка R01",
                               "fill": "$ink",
-                              "content": "Цепочка подтверждающих записей",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Соколов → супруга → ДорСтройРесурс → 5 контрактов на 38 млн ₽ → департамент",
                               "lineHeight": 1.38,
                               "fontFamily": "$font",
-                              "fontSize": 15,
-                              "fontWeight": "650"
+                              "fontSize": 13,
+                              "fontWeight": "550"
                             },
                             {
                               "type": "frame",
@@ -4293,37 +4461,37 @@
                               "type": "rectangle",
                               "cornerRadius": 1,
                               "id": "tSxdU",
-                              "x": 765,
-                              "y": 127,
+                              "x": 764,
+                              "y": 126,
                               "name": "Компания → контракты",
                               "fill": "$blue",
-                              "width": 2,
-                              "height": 193
+                              "width": 4,
+                              "height": 195
                             },
                             {
                               "type": "path",
                               "id": "lrvY8",
                               "x": 688,
-                              "y": 314,
+                              "y": 313,
                               "name": "Направление связи",
-                              "geometry": "M9 0l-9 5 9 5z",
+                              "geometry": "M11 0l-11 6 11 6z",
                               "viewBox": [
                                 0,
                                 0,
-                                9,
-                                10
+                                11,
+                                12
                               ],
                               "fill": "$blue",
-                              "width": 9,
-                              "height": 10
+                              "width": 11,
+                              "height": 12
                             },
                             {
                               "type": "frame",
                               "id": "o86vN",
-                              "x": 661,
+                              "x": 641,
                               "y": 222,
                               "name": "Связь · поставщик",
-                              "width": 98,
+                              "width": 114,
                               "height": 22,
                               "fill": "#F8FAFD",
                               "cornerRadius": 4,
@@ -4339,7 +4507,7 @@
                                   "lineHeight": 1.38,
                                   "fontFamily": "$font",
                                   "fontSize": 12,
-                                  "fontWeight": "650"
+                                  "fontWeight": "750"
                                 }
                               ]
                             },
@@ -4867,21 +5035,21 @@
                               "type": "rectangle",
                               "id": "P83R73",
                               "x": 688,
-                              "y": 126,
+                              "y": 125,
                               "name": "Ребро · от компании",
                               "fill": "$blue",
-                              "width": 79,
-                              "height": 2
+                              "width": 80,
+                              "height": 4
                             },
                             {
                               "type": "rectangle",
                               "id": "sYxrm",
                               "x": 688,
-                              "y": 318,
+                              "y": 317,
                               "name": "Ребро · к контрактам",
                               "fill": "$blue",
-                              "width": 78,
-                              "height": 2
+                              "width": 80,
+                              "height": 4
                             },
                             {
                               "type": "rectangle",
@@ -5227,18 +5395,26 @@
                             {
                               "type": "frame",
                               "id": "a32ThK",
-                              "name": "Источник",
+                              "name": "Выбранный источник · Реестр контрактов",
                               "width": "fill_container",
-                              "gap": 7,
+                              "fill": "$blue-soft",
+                              "cornerRadius": 6,
+                              "stroke": "$blue",
+                              "strokeWidth": {
+                                "left": 3
+                              },
+                              "strokeAlignment": "inner",
+                              "gap": 8,
+                              "padding": [
+                                8,
+                                10
+                              ],
                               "alignItems": "center",
                               "children": [
                                 {
                                   "type": "icon",
                                   "id": "KFWVq",
-                                  "x": 0,
-                                  "y": 0.5,
                                   "name": "Иконка · files",
-                                  "enabled": false,
                                   "width": 16,
                                   "height": 16,
                                   "icon": "files",
@@ -5252,13 +5428,26 @@
                                   "fill": "$blue",
                                   "textGrowth": "fixed-width",
                                   "width": "fill_container",
-                                  "content": "Реестр · 5 контрактов на 38 млн ₽",
+                                  "content": "Реестр контрактов",
                                   "lineHeight": 1.38,
                                   "fontFamily": "$font",
                                   "fontSize": 13,
-                                  "fontWeight": "550"
+                                  "fontWeight": "650"
                                 }
                               ]
+                            },
+                            {
+                              "type": "text",
+                              "id": "KH0OC",
+                              "name": "Связь с графом",
+                              "fill": "$muted",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Выбрано ребро «поставщик»",
+                              "lineHeight": 1.42,
+                              "fontFamily": "$font",
+                              "fontSize": 12,
+                              "fontWeight": "normal"
                             },
                             {
                               "type": "frame",
@@ -5266,6 +5455,12 @@
                               "name": "Источник",
                               "width": "fill_container",
                               "gap": 7,
+                              "padding": [
+                                4,
+                                0,
+                                0,
+                                0
+                              ],
                               "alignItems": "center",
                               "children": [
                                 {
@@ -5285,10 +5480,10 @@
                                   "type": "text",
                                   "id": "MU8tw",
                                   "name": "273-ФЗ · ст. 10",
-                                  "fill": "$blue",
+                                  "fill": "$muted",
                                   "textGrowth": "fixed-width",
                                   "width": "fill_container",
-                                  "content": "273-ФЗ · ст. 10",
+                                  "content": "Правовое основание · 273-ФЗ, ст. 10",
                                   "lineHeight": 1.38,
                                   "fontFamily": "$font",
                                   "fontSize": 13,
