@@ -2,6 +2,83 @@ import { expect, test } from '@playwright/test';
 
 const API = process.env.API_URL ?? 'http://localhost:8000/api/v1';
 
+test('на телефоне второй кейс добавляется в панели и все отметки видны без боковой прокрутки', async ({
+  page,
+  request,
+}) => {
+  const { items } = await (
+    await request.get(`${API}/officials?sort=-risk_score&limit=2&offset=0`)
+  ).json();
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/officials');
+  await page.getByRole('button', { name: 'Инструменты аналитика', exact: true }).click();
+  await page.getByRole('menuitem', { name: /Сравнение/ }).click();
+  const panel = page.getByRole('dialog', { name: 'Сравнение служащих' });
+  await panel.getByRole('button', { name: 'Добавить служащего', exact: true }).click();
+  for (const item of items) {
+    await panel
+      .getByRole('textbox', { name: 'Поиск служащего для сравнения', exact: true })
+      .fill(item.full_name);
+    await panel
+      .getByRole('button', { name: `Добавить в сравнение: ${item.full_name}`, exact: true })
+      .click();
+  }
+  await expect(panel.locator('.comparison-case')).toHaveCount(2);
+  await expect(panel.locator('.rule-mobile-matrix')).toBeVisible();
+  await expect(panel.locator('.rule-mobile-cases').first().getByRole('group')).toHaveCount(2);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+});
+
+test('из панели можно добавить первого, второго и третьего служащего, затем заменить выбранного', async ({
+  page,
+  request,
+}) => {
+  const { items } = await (
+    await request.get(`${API}/officials?sort=-risk_score&limit=3&offset=0`)
+  ).json();
+  await page.goto('/officials');
+  await page.getByRole('button', { name: 'Открыть сравнение', exact: true }).click();
+  const panel = page.getByRole('dialog', { name: 'Сравнение служащих' });
+  const add = panel.getByRole('button', { name: 'Добавить служащего', exact: true });
+  await add.click();
+  const search = panel.getByRole('textbox', { name: 'Поиск служащего для сравнения', exact: true });
+  await expect(search).toBeFocused();
+  await search.fill(items[0].full_name);
+  await panel
+    .getByRole('button', { name: `Добавить в сравнение: ${items[0].full_name}`, exact: true })
+    .click();
+  await expect(panel.locator('.comparison-case')).toHaveCount(1);
+  await expect(add).toBeEnabled();
+  await panel.getByRole('button', { name: 'Закрыть выбор служащего', exact: true }).click();
+  await panel.getByRole('button', { name: 'Выбрать ещё одного служащего', exact: true }).click();
+  await search.fill(items[1].full_name);
+  await panel
+    .getByRole('button', { name: `Добавить в сравнение: ${items[1].full_name}`, exact: true })
+    .click();
+  await expect(panel.locator('.comparison-case')).toHaveCount(2);
+  await expect(panel.getByRole('table', { name: 'Совпадения правил по служащим' })).toBeVisible();
+  await expect(panel.locator('.rule-matrix tr[data-shared]').first()).toBeVisible();
+  await search.fill(items[2].full_name);
+  await panel
+    .getByRole('button', { name: `Добавить в сравнение: ${items[2].full_name}`, exact: true })
+    .click();
+  await expect(panel.locator('.comparison-case')).toHaveCount(3);
+  await expect(add).toBeDisabled();
+  await expect(
+    panel.getByText('Все три места заняты. Уберите кейс, чтобы добавить другого служащего.'),
+  ).toBeVisible();
+  await panel
+    .getByRole('button', { name: `Убрать из сравнения: ${items[1].full_name}`, exact: true })
+    .click();
+  await expect(add).toBeEnabled();
+  await search.fill(items[1].full_name);
+  await panel
+    .getByRole('button', { name: `Добавить в сравнение: ${items[1].full_name}`, exact: true })
+    .click();
+  await expect(panel.locator('.comparison-case')).toHaveCount(3);
+  await expect(page).toHaveURL(/\/officials$/);
+});
+
 test('сохранённый кейс остаётся после перезагрузки, открывается и удаляется', async ({
   page,
   request,
@@ -21,7 +98,9 @@ test('сохранённый кейс остаётся после перезаг
   await expect(panel).toContainText('На этом устройстве');
   await panel.getByRole('link', { name: person.full_name, exact: true }).click();
   await expect(page).toHaveURL(new RegExp(`/officials/${person.id}$`));
+  await expect(panel).toBeHidden();
   await page
+    .getByRole('main')
     .getByRole('button', { name: `Убрать из сохранённых: ${person.full_name}`, exact: true })
     .click();
   await page.getByRole('button', { name: 'Открыть сохранённые кейсы', exact: true }).click();
