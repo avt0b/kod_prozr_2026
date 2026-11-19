@@ -1,6 +1,5 @@
-import { Badge, Card, Group, Stack, Text, ThemeIcon } from '@mantine/core';
-import { IconChevronRight, IconScale } from '@tabler/icons-react';
-import { Fragment, type CSSProperties } from 'react';
+import { Badge, Card, Group, Stack, Text } from '@mantine/core';
+import type { CSSProperties } from 'react';
 import type { RiskFlag } from '@/shared/api';
 import {
   NODE_TYPE_LABELS,
@@ -60,48 +59,41 @@ export function FlagList({ flags, selectedId, onSelect }: Props) {
               </Text>
             </Group>
 
-            <Text size="sm">{f.explanation}</Text>
-
-            {f.legal_ref && (
-              <Group gap={6} mt="xs" wrap="nowrap" align="flex-start">
-                <ThemeIcon size="sm" variant="light" color="gray">
-                  <IconScale size={14} />
-                </ThemeIcon>
-                <Text size="xs" c="dimmed">
-                  {f.legal_ref}
-                </Text>
-              </Group>
-            )}
-
-            {f.evidence.length > 0 && (
-              <Group gap={4} mt="xs">
-                <Text size="xs" c="dimmed">
-                  Цепочка:
-                </Text>
-                {f.evidence.map((e, i) => (
-                  <Fragment key={e.node_id}>
-                    {i > 0 && <IconChevronRight size={12} />}
-                    <Badge
-                      size="sm"
-                      variant="outline"
-                      color="gray"
-                      tt="none"
-                      radius="sm"
-                      fw={500}
-                      h="auto"
-                      py={2}
-                      maw="100%"
-                      title={`${NODE_TYPE_LABELS[e.type]}: ${e.label}`}
-                      styles={{
-                        label: { whiteSpace: 'normal', overflow: 'visible', textAlign: 'left' },
-                      }}
-                    >
-                      {e.label}
-                    </Badge>
-                  </Fragment>
-                ))}
-              </Group>
-            )}
+            <dl className="flag-evidence-details">
+              <div>
+                <dt>Факт и пояснение</dt>
+                <dd>{f.explanation}</dd>
+              </div>
+              <div>
+                <dt>Записи-источники</dt>
+                <dd>
+                  {f.evidence.length ? (
+                    <ol>
+                      {f.evidence.map((e) => (
+                        <li key={e.node_id}>
+                          <span className="flag-source-type">{NODE_TYPE_LABELS[e.type]}</span>
+                          <span title={e.node_id}>{e.label}</span>
+                        </li>
+                      ))}
+                    </ol>
+                  ) : (
+                    <Text size="sm" c="dimmed">
+                      В данных не указаны
+                    </Text>
+                  )}
+                </dd>
+              </div>
+              <div>
+                <dt>Правовое основание</dt>
+                <dd>
+                  {f.legal_ref || (
+                    <Text size="sm" c="dimmed">
+                      В данных не указано
+                    </Text>
+                  )}
+                </dd>
+              </div>
+            </dl>
           </Card>
         );
       })}

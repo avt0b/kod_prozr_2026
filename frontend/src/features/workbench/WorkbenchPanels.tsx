@@ -1,15 +1,4 @@
-import {
-  Anchor,
-  Badge,
-  Button,
-  Card,
-  Drawer,
-  Group,
-  SimpleGrid,
-  Stack,
-  Text,
-  Title,
-} from '@mantine/core';
+import { Anchor, Button, Card, Drawer, Group, SimpleGrid, Stack, Text, Title } from '@mantine/core';
 import { useQueries } from '@tanstack/react-query';
 import { IconBookmark, IconColumns3, IconX, IconPlus } from '@tabler/icons-react';
 import { useRef, useState } from 'react';
@@ -17,7 +6,6 @@ import { Link } from 'react-router';
 import { api } from '@/shared/api';
 import { officialsKeys } from '@/features/officials/api';
 import { routes } from '@/shared/config/routes';
-import { RULE_TITLES } from '@/shared/lib/labels';
 import { QueryState, RiskScoreBadge } from '@/shared/ui';
 import { useWorkbench } from './context';
 import { CaseActions } from './CaseActions';
@@ -31,7 +19,7 @@ function EmptyCollection({ saved }: { saved: boolean }) {
   return (
     <div className="workbench-empty">
       <Icon size={44} stroke={1.3} />
-      <Title order={3}>{saved ? 'Важные кейсы — под рукой' : 'Сравните картину целиком'}</Title>
+      <Title order={3}>{saved ? 'Важные кейсы — под рукой' : 'Служащие не выбраны'}</Title>
       <Text c="dimmed">
         {saved
           ? 'Сохраните кейс кнопкой закладки в рейтинге или профиле. Он останется в списке на этом устройстве.'
@@ -57,12 +45,6 @@ function ComparisonContent() {
     })),
   });
   const allLoaded = queries.every((query) => query.isSuccess && query.data);
-  const common =
-    allLoaded && queries.length > 1
-      ? [...new Set(queries[0].data!.risk.flags.map((flag) => flag.rule_code))].filter((code) =>
-          queries.every((query) => query.data!.risk.flags.some((flag) => flag.rule_code === code)),
-        )
-      : [];
   const closePicker = () => {
     setAdding(false);
     if (full) clearRef.current?.focus();
@@ -72,7 +54,7 @@ function ComparisonContent() {
     <Stack gap="lg">
       <Group justify="space-between">
         <Text c="dimmed" size="sm">
-          {state.comparison.length} из 3 кейсов · текущие данные API
+          {state.comparison.length} из 3 кейсов
         </Text>
         <Group gap="sm">
           <Button
@@ -108,9 +90,13 @@ function ComparisonContent() {
       {!state.comparison.length ? (
         <EmptyCollection saved={false} />
       ) : (
-        <SimpleGrid className="comparison-grid" cols={{ base: 1, sm: 2, md: 3 }} spacing="md">
+        <SimpleGrid
+          className="comparison-grid"
+          cols={{ base: 1, sm: Math.min(state.comparison.length, 2), md: state.comparison.length }}
+          spacing="lg"
+        >
           {state.comparison.map((item, index) => (
-            <Card key={item.id} className="comparison-case">
+            <Card component="article" key={item.id} className="comparison-case">
               <Group
                 className="comparison-case-heading"
                 justify="space-between"
@@ -160,23 +146,6 @@ function ComparisonContent() {
                         <dd>{new Set(profile.companies.map((link) => link.company.id)).size}</dd>
                       </div>
                     </dl>
-                    <Group gap={6} mt="md">
-                      {profile.risk.flags.map((flag) => (
-                        <Badge
-                          key={flag.id}
-                          variant="light"
-                          color={common.includes(flag.rule_code) ? 'brand' : 'gray'}
-                          title={RULE_TITLES[flag.rule_code]}
-                        >
-                          {flag.rule_code}
-                        </Badge>
-                      ))}
-                      {!profile.risk.flags.length && (
-                        <Text c="dimmed" size="sm">
-                          Флагов не выявлено
-                        </Text>
-                      )}
-                    </Group>
                   </>
                 )}
               </QueryState>
@@ -191,25 +160,6 @@ function ComparisonContent() {
               </Anchor>
             </Card>
           ))}
-          {!full && (
-            <button
-              type="button"
-              className="comparison-add"
-              data-remaining={COMPARISON_LIMIT - state.comparison.length}
-              onClick={() => setAdding(true)}
-              aria-label="Выбрать ещё одного служащего"
-            >
-              <span>
-                <IconPlus size={28} stroke={1.5} />
-              </span>
-              <strong>Добавить ещё</strong>
-              <small>
-                {state.comparison.length === 1
-                  ? 'Ещё два места для сравнения'
-                  : 'Ещё одно место для сравнения'}
-              </small>
-            </button>
-          )}
         </SimpleGrid>
       )}
       <Text size="xs" c="dimmed">
@@ -272,6 +222,7 @@ export function WorkbenchPanels() {
         opened={panel === 'comparison'}
         onClose={() => openPanel(null)}
         title="Сравнение служащих"
+        overlayProps={{ blur: 0, backgroundOpacity: 0.36 }}
         closeButtonProps={{ 'aria-label': 'Закрыть сравнение' }}
         position="right"
         size="min(1140px, calc(100vw - 24px))"

@@ -890,3 +890,95 @@
     backdrop-filter: none;
   }
 }
+
+/* Analyst review: state hierarchy and evidence readability, retaining existing tokens. */
+.officials-filter[data-active] .workspace-field,
+.officials-filter .workspace-field[data-active] {
+  background: var(--workspace-tint);
+  border-color: var(--mantine-primary-color-filled);
+}
+.officials-sort {
+  width: 100%;
+  color: var(--workspace-muted);
+}
+.officials-sort[data-active] {
+  color: var(--workspace-ink);
+}
+.officials-sort[data-numeric] > .mantine-Group-root {
+  justify-content: flex-end;
+}
+.officials-sort-arrow {
+  opacity: 0.35;
+}
+.officials-sort[data-active] .officials-sort-arrow {
+  opacity: 1;
+  color: var(--mantine-primary-color-light-color);
+}
+.officials-table tbody tr {
+  animation: none;
+}
+.officials-table tbody tr[data-compared] {
+  box-shadow: inset 3px 0 var(--mantine-primary-color-filled);
+}
+.officials-table td:nth-child(3) {
+  min-width: 180px;
+  width: 26%;
+  white-space: normal;
+  overflow-wrap: break-word;
+}
+.officials-table td:nth-child(4) {
+  min-width: 230px;
+  white-space: normal;
+  overflow-wrap: break-word;
+}
+.officials-table th,
+.officials-table td {
+  box-shadow: none;
+}
+.workspace-profile-graph .workspace-graph {
+  background: var(--workspace-raised);
+}
+.workspace-profile-graph .workspace-segmented,
+.workspace-profile-graph .workspace-segment-indicator {
+  box-shadow: none;
+  background-image: none;
+}
+.flag-evidence-details {
+  margin: 14px 0 0;
+  font-size: 14px;
+  line-height: 1.65;
+}
+.flag-evidence-details > div + div {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid var(--workspace-edge);
+}
+.flag-evidence-details dt {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--workspace-muted);
+  margin-bottom: 6px;
+}
+.flag-evidence-details dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.flag-evidence-details ol {
+  padding-left: 20px;
+  margin: 0;
+}
+.flag-evidence-details li {
+  padding-left: 4px;
+  margin-block: 8px;
+}
+.flag-source-type {
+  display: block;
+  font-size: 12px;
+  color: var(--workspace-muted);
+}
+.workspace-flag {
+  box-shadow: none;
+}
+.workspace-flag[data-selected] {
+  box-shadow: none;
+}

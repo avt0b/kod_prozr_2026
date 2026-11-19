@@ -73,7 +73,28 @@ export function buildStylesheet(dark: boolean): StylesheetJson {
       selector: 'edge[type = "kinship"]',
       style: { 'line-style': 'dashed', 'target-arrow-shape': 'none' },
     },
-    { selector: '.faded', style: { opacity: 0.18 } },
+    {
+      selector: 'node.faded',
+      style: {
+        opacity: 1,
+        'background-opacity': 0.3,
+        'border-opacity': 0.35,
+        'text-opacity': 1,
+        color: dark ? '#B5C5DE' : '#465773',
+        'text-background-opacity': 0.96,
+      },
+    },
+    {
+      selector: 'edge.faded',
+      style: {
+        opacity: 1,
+        'line-opacity': 0.14,
+        'target-arrow-color': dark ? '#455369' : '#CCD3DF',
+        'text-opacity': 1,
+        color: dark ? '#AFB4BF' : '#62656C',
+        'text-background-opacity': 0.96,
+      },
+    },
     {
       selector: 'node.hl',
       style: { 'overlay-color': '#FA5252', 'overlay-opacity': 0.25, 'overlay-padding': 6 },

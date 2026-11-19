@@ -51,7 +51,7 @@ test('из панели можно добавить первого, второг
   await expect(search).toHaveValue('');
   await expect(add).toBeEnabled();
   await panel.getByRole('button', { name: 'Закрыть выбор служащего', exact: true }).click();
-  await panel.getByRole('button', { name: 'Выбрать ещё одного служащего', exact: true }).click();
+  await panel.getByRole('button', { name: 'Добавить служащего', exact: true }).click();
   await search.fill(items[1].full_name);
   await panel
     .getByRole('button', { name: `Добавить в сравнение: ${items[1].full_name}`, exact: true })
@@ -136,7 +136,7 @@ test('сравнение ограничено тремя кейсами и по�
     .click();
   await expect(panel.locator('.comparison-case')).toHaveCount(2);
   await panel.getByRole('button', { name: 'Очистить сравнение', exact: true }).click();
-  await expect(panel.getByRole('heading', { name: 'Сравните картину целиком' })).toBeVisible();
+  await expect(panel.getByRole('heading', { name: 'Служащие не выбраны' })).toBeVisible();
 });
 
 test('ошибка загрузки сравниваемого профиля не превращается в вымышленные показатели', async ({
@@ -164,7 +164,7 @@ test('ошибка загрузки сравниваемого профиля н
   await panel
     .getByRole('button', { name: `Убрать из сравнения: ${items[0].full_name}`, exact: true })
     .click();
-  await expect(panel.getByRole('heading', { name: 'Сравните картину целиком' })).toBeVisible();
+  await expect(panel.getByRole('heading', { name: 'Служащие не выбраны' })).toBeVisible();
 });
 
 test('презентация расширяет экран, сохраняет фильтр и закрывается по Escape', async ({ page }) => {

@@ -27,9 +27,7 @@ import { FlagList } from '@/features/risk-flags/FlagList';
 import type { GraphNode, OfficialProfile, RiskFlag } from '@/shared/api';
 import { routes } from '@/shared/config/routes';
 import { RISK_LEVEL_COLORS, riskLevel } from '@/shared/lib/format';
-import { RULE_TITLES, SEVERITY_COLORS } from '@/shared/lib/labels';
 import { QueryState } from '@/shared/ui';
-import { useLiquidGlass } from '@/shared/ui/useLiquidGlass';
 import { AnimatedNumber } from '@/shared/ui/AnimatedNumber';
 import { CaseActions } from '@/features/workbench/CaseActions';
 
@@ -72,13 +70,6 @@ function ProfileHeader({ profile }: { profile: OfficialProfile }) {
                 {current.ended_at && ' (в прошлом)'}
               </Text>
             )}
-            <Group gap={4}>
-              {profile.risk.flags.map((f) => (
-                <Badge key={f.id} size="sm" variant="light" color={SEVERITY_COLORS[f.severity]}>
-                  {f.rule_code} · {RULE_TITLES[f.rule_code]}
-                </Badge>
-              ))}
-            </Group>
           </Stack>
         </Group>
         <Group gap="sm">
@@ -86,30 +77,9 @@ function ProfileHeader({ profile }: { profile: OfficialProfile }) {
           <CreateReportButton personId={profile.person.id} />
         </Group>
       </Group>
-    </Card>
-  );
-}
-
-function RiskSummary({ signal }: { signal: RiskFlag }) {
-  const color = SEVERITY_COLORS[signal.severity];
-  return (
-    <Card
-      className="workspace-risk-summary"
-      mb="lg"
-      style={{ '--summary-accent': `var(--mantine-color-${color}-light-color)` } as CSSProperties}
-    >
-      <Group justify="space-between" gap="xs" mb="xs">
-        <Title order={3}>Что повлияло на оценку</Title>
-        <Badge color={color} variant="light">
-          {signal.rule_code} · {RULE_TITLES[signal.rule_code]}
-        </Badge>
-      </Group>
-      <Text size="sm">{signal.explanation}</Text>
-      {signal.legal_ref && (
-        <Text size="xs" c="dimmed" mt="xs">
-          {signal.legal_ref}
-        </Text>
-      )}
+      <Text size="sm" c="dimmed" mt="md">
+        Балл задаёт приоритет проверки и не подтверждает нарушение.
+      </Text>
     </Card>
   );
 }
@@ -123,16 +93,8 @@ function GraphSignalPicker({
   selectedId: string | undefined;
   onSelect: (flag: RiskFlag | null) => void;
 }) {
-  const glass = useLiquidGlass<HTMLDivElement>();
-
   return (
-    <div
-      className="workspace-signal-picker workspace-glass"
-      role="group"
-      aria-label="Сигнал на графе"
-      {...glass.props}
-    >
-      {glass.lens}
+    <div className="workspace-signal-picker" role="group" aria-label="Сигнал на графе">
       <SegmentedControl
         size="xs"
         value={selectedId ?? 'all'}
@@ -170,16 +132,9 @@ export function OfficialProfilePage() {
       </Anchor>
       <QueryState query={profile}>
         {(p) => {
-          const signal =
-            selectedFlag ??
-            p.risk.flags.reduce<RiskFlag | null>(
-              (highest, flag) => (!highest || flag.weight > highest.weight ? flag : highest),
-              null,
-            );
           return (
             <>
               <ProfileHeader profile={p} />
-              {signal && <RiskSummary key={signal.id} signal={signal} />}
               <Grid gutter="lg">
                 <Grid.Col span={{ base: 12, lg: 7 }}>
                   <Card className="workspace-profile-graph">

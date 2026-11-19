@@ -44,7 +44,7 @@ export function RuleComparison({
     <section className="rule-comparison" aria-label="Матрица сигналов риска">
       <Group justify="space-between" align="flex-start" gap="md">
         <div>
-          <Title order={3}>Что совпадает, а что отличается</Title>
+          <Title order={3}>Правила риска</Title>
           <Text size="sm" c="dimmed" mt={6}>
             Общие правила выделены. В каждой ячейке — наличие и тяжесть сигнала.
           </Text>

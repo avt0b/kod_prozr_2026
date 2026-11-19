@@ -34,17 +34,15 @@
   color: var(--workspace-ink);
 }
 .comparison-case {
-  padding: 24px;
-  animation: motion-caption 450ms var(--motion-arrive) backwards;
-}
-.comparison-case:nth-child(2) {
-  animation-delay: 60ms;
-}
-.comparison-case:nth-child(3) {
-  animation-delay: 120ms;
+  padding: 16px 0;
+  animation: none;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
 }
 .comparison-case h3 {
-  font-size: 20px;
+  font-size: 17px;
   line-height: 1.3;
   font-weight: 600;
   letter-spacing: -0.035em;
@@ -53,18 +51,18 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  padding-block: 24px;
+  padding-block: 12px;
 }
 .comparison-score > span {
   color: var(--workspace-muted);
-  font-size: 12px;
-  max-width: 9ch;
+  font-size: 13px;
+  max-width: none;
 }
 .comparison-score .workspace-risk-badge {
-  height: 52px;
-  min-width: 72px;
-  font-size: 29px;
-  border-radius: 14px;
+  height: 36px;
+  min-width: 52px;
+  font-size: 22px;
+  border-radius: 9px;
   font-weight: 550;
 }
 .comparison-metrics {
@@ -76,14 +74,14 @@
   justify-content: space-between;
   gap: 14px;
   border-top: 1px solid var(--workspace-edge);
-  padding-block: 14px;
+  padding-block: 9px;
 }
 .comparison-metrics dt {
   font-size: 14px;
   color: var(--workspace-muted);
 }
 .comparison-metrics dd {
-  font-size: 20px;
+  font-size: 16px;
   font-weight: 600;
   margin: 0;
   font-variant-numeric: tabular-nums;
@@ -115,7 +113,12 @@
     padding-inline: 18px;
   }
   .comparison-case {
-    padding: 20px;
+    padding: 16px 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    animation: none;
   }
   .workbench-empty {
     padding: 32px 8px;
@@ -175,51 +178,11 @@
 .comparison-candidate button {
   min-height: 36px;
 }
-.comparison-add {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 12px;
-  padding: 28px;
-  min-height: 240px;
-  border: 1px dashed #4273bf;
-  border-radius: 21px;
-  background: var(--workspace-tint);
-  color: var(--workspace-ink);
-  font: inherit;
-  cursor: pointer;
-  transition:
-    border-color 180ms,
-    background-color 180ms;
-}
-.comparison-add > span {
-  display: grid;
-  place-items: center;
-  width: 56px;
-  height: 56px;
-  border-radius: 18px;
-  background: var(--workspace-raised);
-  color: var(--mantine-primary-color-light-color);
-}
-.comparison-add strong {
-  font-size: 19px;
-  font-weight: 600;
-  letter-spacing: -0.02em;
-}
-.comparison-add small {
-  font-size: 14px;
-  line-height: 1.6;
-  color: var(--workspace-muted);
-}
-.comparison-add:hover {
-  background: var(--workspace-surface);
-}
 .rule-comparison {
-  padding: 24px;
-  border: 1px solid var(--workspace-edge);
-  border-radius: 21px;
-  background: var(--workspace-surface);
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
 }
 .rule-comparison h3 {
   font-size: 23px;
@@ -253,8 +216,9 @@
 .rule-matrix-scroll {
   overflow: auto;
   margin-top: 24px;
-  border: 1px solid var(--workspace-edge);
-  border-radius: 14px;
+  border: 0;
+  border-radius: 0;
+  border-block: 1px solid var(--workspace-edge);
 }
 .rule-matrix-scroll:focus-visible {
   outline: 2px solid var(--workspace-focus);
@@ -359,20 +323,8 @@
   background: #363322;
   color: #dbd08a;
 }
-@media (min-width: 62em) {
-  .comparison-add[data-remaining='2'] {
-    grid-column: span 2;
-  }
-  .comparison-case-heading {
-    min-height: 52px;
-  }
-  .comparison-case-organ {
-    min-height: 60px;
-  }
-}
 @media (max-width: 47.99em) {
-  .comparison-picker,
-  .rule-comparison {
+  .comparison-picker {
     padding: 16px;
   }
   .rule-comparison h3 {
@@ -382,9 +334,6 @@
     width: 100%;
     justify-content: space-between;
     gap: 12px;
-  }
-  .comparison-add {
-    min-height: 180px;
   }
   .comparison-candidate {
     align-items: stretch;
@@ -396,6 +345,9 @@
   }
   .rule-matrix-scroll {
     display: none;
+    border: 0;
+    border-block: 1px solid var(--workspace-edge);
+    border-radius: 0;
   }
   .rule-mobile-matrix {
     display: grid;
@@ -404,8 +356,9 @@
   }
   .rule-mobile-row {
     padding: 14px 10px;
-    border: 1px solid var(--workspace-edge);
-    border-radius: 14px;
+    border: 0;
+    border-radius: 0;
+    border-bottom: 1px solid var(--workspace-edge);
   }
   .rule-mobile-row[data-shared] {
     background: var(--workspace-tint);
