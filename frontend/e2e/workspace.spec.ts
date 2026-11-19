@@ -53,7 +53,7 @@ test('повтор анимаций сохраняет вопрос и выбр�
     await request.get(`${API}/officials?sort=-risk_score&limit=1&offset=0`)
   ).json();
   await page.goto(`/officials/${top.items[0].id}`);
-  const flag = page.locator('.workspace-flag').first();
+  const flag = page.locator('.workspace-flag').first().getByRole('button');
   await flag.click();
   await expect(flag).toHaveAttribute('aria-pressed', 'true');
   await page.getByRole('button', { name: 'Повторить анимации', exact: true }).click();
@@ -171,13 +171,12 @@ for (const width of [390, 1440]) {
         expect(contrast).toBeGreaterThanOrEqual(4.5);
       }
       if (width === 390) {
-        await page.getByRole('button', { name: 'Меню разделов' }).click();
-        await page.getByRole('link', { name: 'Ассистент', exact: true }).click();
+        const assistant = page
+          .getByRole('navigation', { name: 'Разделы приложения' })
+          .getByRole('link', { name: 'Ассистент', exact: true });
+        await assistant.click();
         await expect(page).toHaveURL(/assistant$/);
-        await expect(page.getByRole('button', { name: 'Меню разделов' })).toHaveAttribute(
-          'aria-expanded',
-          'false',
-        );
+        await expect(assistant).toHaveAttribute('aria-current', 'page');
         const lastSuggestion = page.getByRole('button', { name: /Определить приоритет/ });
         await lastSuggestion.scrollIntoViewIfNeeded();
         await expect(lastSuggestion).toBeInViewport();

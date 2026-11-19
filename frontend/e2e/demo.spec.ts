@@ -100,7 +100,9 @@ async function graphState(graph: Locator) {
 }
 
 async function clickGraphNode(page: Page, graph: Locator, nodeId: string) {
-  const pos = await graph.evaluate((el, id) => {
+  const pos = await graph.evaluate(async (el, id) => {
+    el.scrollIntoView({ block: 'center', behavior: 'instant' });
+    await Promise.allSettled(el.getAnimations().map((animation) => animation.finished));
     const cy = (el as unknown as { _cyreg: { cy: CyLike } })._cyreg.cy;
     const node = cy.getElementById(id);
     return node.renderedPosition();
@@ -390,7 +392,7 @@ test('сценарий демо docs/demo.md проходит на реальн�
         `/officials?rule_code=${rule}&sort=-risk_score&limit=20&offset=0`,
       );
       await expect
-        .poll(() => tableRows(page).locator('td:nth-child(3)').allInnerTexts())
+        .poll(() => tableRows(page).getByRole('link').allInnerTexts())
         .toEqual(api.items.map((i) => i.full_name));
       const top3 = api.items.slice(0, 3).map((i) => i.full_name);
       expect(top3, `${rule}: ${name} в первой тройке`).toContain(name);

@@ -1,7 +1,7 @@
 import { Link } from 'react-router';
 import type { StatsOverview } from '@/shared/api';
 import { routes } from '@/shared/config/routes';
-import { SEVERITY_LABELS } from '@/shared/lib/labels';
+import { APPEAL_STATUS_LABELS, SEVERITY_LABELS } from '@/shared/lib/labels';
 import { AnimatedNumber } from '@/shared/ui/AnimatedNumber';
 
 export function StatCards({ stats }: { stats: StatsOverview }) {
@@ -41,9 +41,13 @@ export function StatCards({ stats }: { stats: StatsOverview }) {
         <strong>
           <AnimatedNumber value={stats.appeals_total} />
         </strong>
-        <span className="stat-caption">
-          {stats.appeals_by_status.analyzed} проанализировано · {stats.appeals_by_status.new} новых
-        </span>
+        <div className="stat-severities">
+          {(['new', 'analyzed', 'routed', 'closed'] as const).map((status) => (
+            <span key={status}>
+              {APPEAL_STATUS_LABELS[status]} <b>{stats.appeals_by_status[status]}</b>
+            </span>
+          ))}
+        </div>
         <div className="stat-track" aria-hidden="true">
           <span
             style={{

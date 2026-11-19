@@ -37,7 +37,7 @@ export function AppealForm({ submitting, onSubmit }: Props) {
           label="Текст обращения"
           description="Минимум 20 символов. После отправки обращение будет автоматически проанализировано."
           autosize
-          minRows={6}
+          minRows={8}
           maxRows={16}
           value={text}
           onChange={(e) => setText(e.currentTarget.value)}

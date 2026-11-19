@@ -54,9 +54,14 @@ export function RiskMapPage() {
         }
         actions={
           <SegmentedControl
+            size="xs"
+            className="workspace-risk-metrics"
             value={metric}
             onChange={(v) => update({ metric: v === 'flagged_share' ? null : v })}
-            data={RISK_METRICS.map((m) => ({ value: m, label: METRIC_LABELS[m] }))}
+            data={RISK_METRICS.map((m) => ({
+              value: m,
+              label: m === 'max_score' ? 'Макс. балл' : METRIC_LABELS[m],
+            }))}
           />
         }
       />

@@ -1,5 +1,5 @@
 import { Anchor, Group, Table, Text, UnstyledButton } from '@mantine/core';
-import { IconArrowDown, IconArrowUp, IconSelector } from '@tabler/icons-react';
+import { IconArrowDown, IconArrowUp, IconChevronRight, IconSelector } from '@tabler/icons-react';
 import { Link, useNavigate } from 'react-router';
 import type { OfficialListItem, OfficialsSort } from '@/shared/api';
 import { routes } from '@/shared/config/routes';
@@ -49,14 +49,15 @@ export function OfficialsTable({ items, sort, onSortChange, startIndex = 0 }: Pr
         <Table.Thead>
           <Table.Tr>
             <Table.Th w={40}>#</Table.Th>
-            <Table.Th w={90}>
-              <SortHeader label="Балл" field="risk_score" sort={sort} onSortChange={onSortChange} />
-            </Table.Th>
             <Table.Th>
               <SortHeader label="ФИО" field="full_name" sort={sort} onSortChange={onSortChange} />
             </Table.Th>
             <Table.Th>Должность и орган</Table.Th>
             <Table.Th>Флаги</Table.Th>
+            <Table.Th w={90}>
+              <SortHeader label="Балл" field="risk_score" sort={sort} onSortChange={onSortChange} />
+            </Table.Th>
+            <Table.Th w={32} aria-label="Профиль" />
           </Table.Tr>
         </Table.Thead>
         <Table.Tbody>
@@ -68,14 +69,13 @@ export function OfficialsTable({ items, sort, onSortChange, startIndex = 0 }: Pr
             >
               <Table.Td c="dimmed">{startIndex + i + 1}</Table.Td>
               <Table.Td>
-                <RiskScoreBadge score={o.risk_score} />
-              </Table.Td>
-              <Table.Td fw={500}>
                 <Anchor
-                  className="official-name-link"
                   component={Link}
                   to={routes.official(o.id)}
                   onClick={(event) => event.stopPropagation()}
+                  className="workspace-row-link"
+                  fw={650}
+                  size="sm"
                 >
                   {o.full_name}
                 </Anchor>
@@ -97,6 +97,12 @@ export function OfficialsTable({ items, sort, onSortChange, startIndex = 0 }: Pr
                     <FlagBadge key={f.rule_code} ruleCode={f.rule_code} severity={f.severity} />
                   ))}
                 </Group>
+              </Table.Td>
+              <Table.Td>
+                <RiskScoreBadge score={o.risk_score} />
+              </Table.Td>
+              <Table.Td c="dimmed">
+                <IconChevronRight size={15} aria-hidden />
               </Table.Td>
             </Table.Tr>
           ))}
