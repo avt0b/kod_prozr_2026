@@ -1,6 +1,6 @@
-import { Group, Table, Text, UnstyledButton } from '@mantine/core';
+import { Anchor, Group, Table, Text, UnstyledButton } from '@mantine/core';
 import { IconArrowDown, IconArrowUp, IconSelector } from '@tabler/icons-react';
-import { useNavigate } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import type { OfficialListItem, OfficialsSort } from '@/shared/api';
 import { routes } from '@/shared/config/routes';
 import { FlagBadge, RiskScoreBadge } from '@/shared/ui';
@@ -70,7 +70,16 @@ export function OfficialsTable({ items, sort, onSortChange, startIndex = 0 }: Pr
               <Table.Td>
                 <RiskScoreBadge score={o.risk_score} />
               </Table.Td>
-              <Table.Td fw={500}>{o.full_name}</Table.Td>
+              <Table.Td fw={500}>
+                <Anchor
+                  className="official-name-link"
+                  component={Link}
+                  to={routes.official(o.id)}
+                  onClick={(event) => event.stopPropagation()}
+                >
+                  {o.full_name}
+                </Anchor>
+              </Table.Td>
               <Table.Td>
                 <Text size="sm">{o.position}</Text>
                 <Text size="xs" c="dimmed">

@@ -1,18 +1,18 @@
 :root {
   --workspace-gutter: 16px;
-  --workspace-ink: #13223f;
-  --workspace-muted: #465773;
-  --workspace-surface: #f8fbff;
+  --workspace-ink: #202124;
+  --workspace-muted: #62656c;
+  --workspace-surface: #ffffff;
   --workspace-raised: #ffffff;
-  --workspace-edge: #cbd8eb;
-  --workspace-tint: #e9f0ff;
+  --workspace-edge: #dfe2e7;
+  --workspace-tint: #eef3fa;
   --workspace-grid: #9eb3d374;
   --workspace-glass: #f4faff69;
   --workspace-glass-rim: #ffffffd6;
   --workspace-glass-edge: #54749a45;
   --workspace-glass-glint: #fff;
   --workspace-shadow: #29487622;
-  --workspace-sky: #dbe9fb;
+  --workspace-sky: #f5f5f7;
   --workspace-halo: #a5cdf9;
   --workspace-halo-alt: #ded4f3;
   --workspace-light-band: #f3fefff2;
@@ -24,19 +24,19 @@
 }
 
 :root[data-mantine-color-scheme='dark'] {
-  --workspace-ink: #edf3ff;
-  --workspace-muted: #b5c5de;
-  --workspace-surface: #17243d;
-  --workspace-raised: #1b2a44;
-  --workspace-edge: #334965;
-  --workspace-tint: #25395c;
+  --workspace-ink: #f4f5f7;
+  --workspace-muted: #afb4bf;
+  --workspace-surface: #1c1e23;
+  --workspace-raised: #24272e;
+  --workspace-edge: #383c45;
+  --workspace-tint: #293243;
   --workspace-grid: #819fc04d;
   --workspace-glass: #1d365c8c;
   --workspace-glass-rim: #c9e3ff8c;
   --workspace-glass-edge: #080f25b3;
   --workspace-glass-glint: #d8f3ffcf;
   --workspace-shadow: #030a2366;
-  --workspace-sky: #0d172d;
+  --workspace-sky: #111317;
   --workspace-halo: #274b7c;
   --workspace-halo-alt: #3e3056;
   --workspace-light-band: #abc9ff88;
@@ -47,18 +47,9 @@
 
 body {
   color: var(--workspace-ink);
-  background:
-    radial-gradient(
-      ellipse at 4% 14%,
-      transparent 28%,
-      color-mix(in srgb, var(--workspace-halo), transparent 32%) 30%,
-      var(--workspace-light-band) 32%,
-      transparent 34%
-    ),
-    radial-gradient(ellipse at 90% 0%, var(--workspace-halo-alt), transparent 45%),
-    radial-gradient(ellipse at 13% 17%, var(--workspace-halo), transparent 58%),
-    var(--workspace-sky);
-  background-attachment: fixed;
+  background: var(--workspace-sky);
+  -webkit-font-smoothing: antialiased;
+  font-variant-numeric: tabular-nums;
 }
 
 .workspace-shell .workspace-header {

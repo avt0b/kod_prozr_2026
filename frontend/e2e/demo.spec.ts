@@ -169,12 +169,14 @@ test('сценарий демо docs/demo.md проходит на реальн�
     await page.goto('/');
     await expect(page.getByRole('heading', { name: 'Обзор', level: 2 })).toBeVisible();
     await expect(page.getByText('Баллы риска рассчитаны:')).toBeVisible();
-    const officialsCard = page.locator('.mantine-Card-root', { hasText: 'Служащие' }).first();
+    const officialsCard = page.getByRole('link', { name: /Служащие в системе/ });
     await expect(officialsCard).toContainText(String(stats.officials_total));
-    await expect(page.getByText(`высокий: ${stats.flags_by_severity.high}`)).toBeVisible();
-    await expect(
-      page.locator('.mantine-Card-root', { hasText: 'Обращения граждан' }).first(),
-    ).toContainText(String(stats.appeals_total));
+    await expect(page.getByRole('link', { name: /Флаги риска/ })).toContainText(
+      `высокий ${stats.flags_by_severity.high}`,
+    );
+    await expect(page.getByRole('link', { name: /Обращения граждан/ })).toContainText(
+      String(stats.appeals_total),
+    );
     const top = page.locator('.mantine-Card-root', { hasText: 'Топ-10 по риску' });
     await expect(tableRows(top)).toHaveCount(10);
     await expect(tableRows(top).filter({ hasText: SOKOLOV })).toBeVisible();

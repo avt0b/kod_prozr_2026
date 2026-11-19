@@ -10,7 +10,7 @@ import {
   useMantineColorScheme,
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import type { CSSProperties } from 'react';
+import { useLayoutEffect, type CSSProperties } from 'react';
 import {
   IconChartBar,
   IconListNumbers,
@@ -24,8 +24,7 @@ import {
 import { Link, NavLink as RouterNavLink, Outlet, useLocation } from 'react-router';
 import { env } from '@/shared/config/env';
 import { routes } from '@/shared/config/routes';
-import { useLiquidGlass } from '@/shared/ui/useLiquidGlass';
-import { useControlGlint } from './useControlGlint';
+import { WorkspaceSearch } from './WorkspaceSearch';
 
 const NAV = [
   { to: routes.overview(), label: 'Обзор', icon: IconChartBar, end: true },
@@ -55,12 +54,12 @@ function ColorSchemeToggle() {
 export function AppLayout() {
   const [opened, { toggle, close }] = useDisclosure();
   const { pathname } = useLocation();
-  const headerGlass = useLiquidGlass<HTMLElement>();
-  const navigationGlass = useLiquidGlass<HTMLElement>();
+  useLayoutEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+  }, [pathname]);
   const activeSection = NAV.findIndex((item) =>
     item.end ? pathname === item.to : pathname === item.to || pathname.startsWith(`${item.to}/`),
   );
-  useControlGlint();
 
   return (
     <AppShell
@@ -69,8 +68,10 @@ export function AppLayout() {
       navbar={{ width: 250, breakpoint: 'sm', collapsed: { mobile: !opened } }}
       padding="lg"
     >
-      <AppShell.Header className="workspace-header workspace-glass" {...headerGlass.props}>
-        {headerGlass.lens}
+      <a className="workspace-skip-link" href="#workspace-content">
+        К содержимому
+      </a>
+      <AppShell.Header className="workspace-header workspace-glass">
         <Group h="100%" px="md" justify="space-between">
           <Group gap="xs" wrap="nowrap">
             <Burger
@@ -83,8 +84,12 @@ export function AppLayout() {
               aria-controls="workspace-navigation"
             />
             <Link className="workspace-brand" to={routes.overview()} onClick={close}>
-              <IconShieldSearch size={24} color="var(--mantine-primary-color-filled)" />
-              <span className="workspace-brand-title">Рабочее место аналитика</span>
+              <span className="workspace-brand-mark">
+                <IconShieldSearch size={22} stroke={1.65} />
+              </span>
+              <span className="workspace-brand-title">
+                Код прозрачности<span>Рабочее место аналитика</span>
+              </span>
             </Link>
             {env.useMocks && (
               <Tooltip label="Данные из src/shared/api/mocks (VITE_USE_MOCKS=true)">
@@ -94,7 +99,10 @@ export function AppLayout() {
               </Tooltip>
             )}
           </Group>
-          <ColorSchemeToggle />
+          <Group gap="sm" wrap="nowrap">
+            <WorkspaceSearch />
+            <ColorSchemeToggle />
+          </Group>
         </Group>
       </AppShell.Header>
 
@@ -104,9 +112,8 @@ export function AppLayout() {
         data-menu-open={opened || undefined}
         className="workspace-navbar workspace-glass"
         p="sm"
-        {...navigationGlass.props}
       >
-        {navigationGlass.lens}
+        <span className="workspace-navigation-caption">Рабочее пространство</span>
         <div
           className="workspace-nav-list"
           style={{ '--workspace-active-section': Math.max(0, activeSection) } as CSSProperties}
@@ -130,9 +137,14 @@ export function AppLayout() {
             />
           ))}
         </div>
+        <div className="workspace-navigation-note">
+          <IconShieldSearch size={23} stroke={1.4} />
+          <strong>Данные. Связи. Основания.</strong>
+          <p>Сигнал помогает начать проверку. Решение принимает человек.</p>
+        </div>
       </AppShell.Navbar>
 
-      <AppShell.Main className="workspace-main">
+      <AppShell.Main className="workspace-main" id="workspace-content" tabIndex={-1}>
         <div className="workspace-page" key={pathname}>
           <Outlet />
         </div>

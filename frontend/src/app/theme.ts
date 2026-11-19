@@ -77,9 +77,9 @@ export const theme = createTheme({
   defaultRadius: 'md',
   respectReducedMotion: true,
   radius: { xs: '6px', sm: '9px', md: '13px', lg: '21px', xl: '28px' },
-  fontFamily: 'Inter, system-ui, -apple-system, "Segoe UI", sans-serif',
+  fontFamily: '"Segoe UI Variable", system-ui, -apple-system, "Segoe UI", sans-serif',
   fontFamilyMonospace: 'ui-monospace, SFMono-Regular, Consolas, monospace',
-  headings: { fontWeight: '735' },
+  headings: { fontWeight: '650' },
   components: {
     Card: Card.extend({ ...surface, defaultProps: { ...surface.defaultProps, padding: 'lg' } }),
     Paper: Paper.extend(surface),
