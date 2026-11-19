@@ -86,7 +86,7 @@
                   "id": "ymTVg",
                   "name": "Компонент · Кнопка",
                   "reusable": true,
-                  "height": 36,
+                  "height": 32,
                   "fill": "$paper",
                   "cornerRadius": 7,
                   "stroke": "$line",
@@ -128,7 +128,7 @@
                   "name": "Компонент · Поле фильтра",
                   "reusable": true,
                   "width": 238,
-                  "height": 58,
+                  "height": 48,
                   "fill": "$paper",
                   "cornerRadius": 7,
                   "stroke": "$line",
@@ -226,7 +226,10 @@
                     {
                       "type": "text",
                       "id": "CQ80X",
+                      "x": 14,
+                      "y": 72,
                       "name": "Демонстрационные данные",
+                      "enabled": false,
                       "fill": "$muted",
                       "content": "Демонстрационные данные",
                       "lineHeight": 1.38,
@@ -298,16 +301,14 @@
                   "strokeWidth": 1,
                   "strokeAlignment": "inner",
                   "layout": "vertical",
-                  "gap": 5,
-                  "padding": [
-                    12,
-                    14
-                  ],
+                  "gap": 8,
+                  "padding": 16,
                   "children": [
                     {
                       "type": "frame",
                       "id": "Rwa8U",
                       "name": "Код и уровень",
+                      "width": "fill_container",
                       "gap": 8,
                       "alignItems": "center",
                       "children": [
@@ -324,6 +325,19 @@
                         },
                         {
                           "type": "text",
+                          "id": "BPTFJ",
+                          "name": "Причина срабатывания",
+                          "fill": "$ink",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Причина срабатывания",
+                          "lineHeight": 1.42,
+                          "fontFamily": "$font",
+                          "fontSize": 14,
+                          "fontWeight": "600"
+                        },
+                        {
+                          "type": "text",
                           "id": "gEwT6",
                           "name": "Высокий",
                           "fill": "$rose",
@@ -332,21 +346,18 @@
                           "fontFamily": "$font",
                           "fontSize": 12,
                           "fontWeight": "650"
+                        },
+                        {
+                          "type": "icon",
+                          "id": "vL6EX",
+                          "name": "Индикатор раскрытия флага",
+                          "width": 14,
+                          "height": 14,
+                          "icon": "chevron-down",
+                          "library": "lucide",
+                          "fill": "$subtle"
                         }
                       ]
-                    },
-                    {
-                      "type": "text",
-                      "id": "BPTFJ",
-                      "name": "Причина срабатывания",
-                      "fill": "$ink",
-                      "textGrowth": "fixed-width",
-                      "width": "fill_container",
-                      "content": "Причина срабатывания",
-                      "lineHeight": 1.38,
-                      "fontFamily": "$font",
-                      "fontSize": 15,
-                      "fontWeight": "650"
                     },
                     {
                       "type": "text",
@@ -358,7 +369,7 @@
                       "content": "Наблюдаемый факт и причина дополнительной проверки.",
                       "lineHeight": 1.38,
                       "fontFamily": "$font",
-                      "fontSize": 13
+                      "fontSize": 14
                     },
                     {
                       "type": "text",
@@ -487,7 +498,7 @@
           "name": "Основная навигация",
           "width": "fill_container",
           "layout": "vertical",
-          "gap": 19,
+          "gap": 16,
           "children": [
             {
               "type": "frame",
@@ -576,7 +587,10 @@
                 {
                   "type": "frame",
                   "id": "Fdguq",
+                  "x": 0,
+                  "y": 0,
                   "name": "Подпись навигации",
+                  "enabled": false,
                   "height": 26,
                   "padding": [
                     0,
@@ -835,11 +849,18 @@
         {
           "type": "frame",
           "id": "uHmfB",
+          "x": 12,
+          "y": 904,
           "name": "Среда",
-          "width": "fill_container",
-          "height": 52,
-          "fill": "$nav-active",
-          "cornerRadius": 8,
+          "enabled": false,
+          "width": "fill_container(192)",
+          "height": 36,
+          "fill": "#00000000",
+          "stroke": "$nav-active",
+          "strokeWidth": {
+            "top": 1
+          },
+          "strokeAlignment": "inner",
           "gap": 9,
           "padding": [
             0,
@@ -850,7 +871,10 @@
             {
               "type": "icon",
               "id": "jzk0l",
+              "x": 10,
+              "y": 17.5,
               "name": "Иконка · flask-conical",
+              "enabled": false,
               "width": 17,
               "height": 17,
               "icon": "flask-conical",
@@ -878,7 +902,10 @@
                 {
                   "type": "text",
                   "id": "o8M6e",
+                  "x": 0,
+                  "y": 19,
                   "name": "Синтетические записи",
+                  "enabled": false,
                   "fill": "$nav-text",
                   "content": "Синтетические записи",
                   "lineHeight": 1.38,
@@ -938,7 +965,7 @@
               "id": "V7r47o",
               "name": "Верхняя панель",
               "width": "fill_container",
-              "height": 64,
+              "height": 56,
               "fill": "$paper",
               "stroke": "$line",
               "strokeWidth": {
@@ -962,7 +989,10 @@
                     {
                       "type": "icon",
                       "id": "AFifq",
+                      "x": 0,
+                      "y": 1,
                       "name": "Иконка · panels-top-left",
+                      "enabled": false,
                       "width": 16,
                       "height": 16,
                       "icon": "panels-top-left",
@@ -1015,18 +1045,23 @@
                       "type": "ref",
                       "ref": "a7bJmn",
                       "name": "Демонстрационные данные",
-                      "fill": "$blue-soft",
+                      "fill": "#00000000",
+                      "padding": 0,
                       "descendants": {
                         "lGrKl": {
                           "content": "Демонстрационные данные",
-                          "fill": "$blue"
+                          "fill": "$muted",
+                          "fontWeight": "500"
                         }
                       }
                     },
                     {
                       "type": "ellipse",
                       "id": "sjKRs",
+                      "x": 196,
+                      "y": 0,
                       "name": "Аватар аналитика",
+                      "enabled": false,
                       "fill": "$soft",
                       "width": 24,
                       "height": 24
@@ -1034,7 +1069,10 @@
                     {
                       "type": "text",
                       "id": "wpmGc",
+                      "x": 234,
+                      "y": 3,
                       "name": "Аналитик",
+                      "enabled": false,
                       "fill": "$muted",
                       "content": "Аналитик",
                       "lineHeight": 1.38,
@@ -1052,7 +1090,7 @@
               "name": "Содержимое",
               "width": "fill_container",
               "layout": "vertical",
-              "gap": 20,
+              "gap": 16,
               "padding": [
                 24,
                 32
@@ -1080,7 +1118,10 @@
                     {
                       "type": "text",
                       "id": "P9tzsS",
+                      "x": 0,
+                      "y": 43,
                       "name": "Очередь аналитической проверки по убыванию балла риска",
+                      "enabled": false,
                       "fill": "$muted",
                       "content": "Очередь аналитической проверки по убыванию балла риска",
                       "lineHeight": 1.38,
@@ -1202,8 +1243,11 @@
                     {
                       "type": "frame",
                       "id": "VtFAx",
+                      "x": 0,
+                      "y": 0,
                       "name": "Заголовок таблицы",
-                      "width": "fill_container",
+                      "enabled": false,
+                      "width": "fill_container(1160)",
                       "height": 54,
                       "padding": [
                         0,
@@ -1282,7 +1326,7 @@
                           "name": "Орган",
                           "fill": "$muted",
                           "textGrowth": "fixed-width",
-                          "width": 244,
+                          "width": 280,
                           "content": "Орган",
                           "lineHeight": 1.38,
                           "fontFamily": "$font",
@@ -1296,8 +1340,9 @@
                           "fill": "$blue",
                           "textGrowth": "fixed-width",
                           "width": 112,
-                          "content": "Балл риска ↓",
+                          "content": "Балл ↓",
                           "lineHeight": 1.38,
+                          "textAlign": "right",
                           "fontFamily": "$font",
                           "fontSize": 12,
                           "fontWeight": "650"
@@ -1309,7 +1354,7 @@
                           "fill": "$muted",
                           "textGrowth": "fixed-width",
                           "width": 184,
-                          "content": "Основные флаги",
+                          "content": "Флаги",
                           "lineHeight": 1.38,
                           "fontFamily": "$font",
                           "fontSize": 12,
@@ -1323,7 +1368,7 @@
                       "ref": "c4OKBE",
                       "name": "Строка 1",
                       "width": "fill_container",
-                      "height": 66,
+                      "height": 56,
                       "fill": "$blue-soft",
                       "children": [
                         {
@@ -1357,7 +1402,10 @@
                                     {
                                       "type": "frame",
                                       "id": "Vm4YE",
+                                      "x": 0,
+                                      "y": 10.5,
                                       "name": "Инициалы",
+                                      "enabled": false,
                                       "width": 32,
                                       "height": 32,
                                       "fill": "$blue",
@@ -1382,7 +1430,7 @@
                                       "type": "frame",
                                       "id": "uGLVi",
                                       "name": "Имя и переход",
-                                      "width": 192,
+                                      "width": 252,
                                       "layout": "vertical",
                                       "gap": 2,
                                       "children": [
@@ -1396,13 +1444,16 @@
                                           "content": "Соколов Александр Викторович",
                                           "lineHeight": 1.38,
                                           "fontFamily": "$font",
-                                          "fontSize": 13,
-                                          "fontWeight": "650"
+                                          "fontSize": 14,
+                                          "fontWeight": "550"
                                         },
                                         {
                                           "type": "text",
                                           "id": "qu4nj",
+                                          "x": 0,
+                                          "y": 38,
                                           "name": "Открыть профиль ↗",
+                                          "enabled": false,
                                           "fill": "$blue",
                                           "content": "Открыть профиль ↗",
                                           "lineHeight": 1.38,
@@ -1426,7 +1477,7 @@
                               "content": "Начальник отдела закупок",
                               "lineHeight": 1.38,
                               "fontFamily": "$font",
-                              "fontSize": 13
+                              "fontSize": 14
                             },
                             {
                               "type": "text",
@@ -1434,11 +1485,11 @@
                               "name": "Департамент дорожного хозяйства",
                               "fill": "$muted",
                               "textGrowth": "fixed-width",
-                              "width": 244,
+                              "width": 280,
                               "content": "Департамент дорожного хозяйства",
                               "lineHeight": 1.38,
                               "fontFamily": "$font",
-                              "fontSize": 13
+                              "fontSize": 14
                             },
                             {
                               "type": "frame",
@@ -1457,21 +1508,23 @@
                                   "width": "fill_container",
                                   "content": "88 / 100",
                                   "lineHeight": 1.38,
+                                  "textAlign": "right",
                                   "fontFamily": "$font",
-                                  "fontSize": 13,
+                                  "fontSize": 15,
                                   "fontWeight": "650"
                                 },
                                 {
                                   "type": "text",
                                   "id": "EG4X1",
                                   "name": "Высокий",
-                                  "fill": "$muted",
+                                  "fill": "$rose",
                                   "textGrowth": "fixed-width",
                                   "width": "fill_container",
                                   "content": "Высокий",
                                   "lineHeight": 1.38,
+                                  "textAlign": "right",
                                   "fontFamily": "$font",
-                                  "fontSize": 11
+                                  "fontSize": 12
                                 }
                               ]
                             },
@@ -1495,7 +1548,11 @@
                                       "type": "ref",
                                       "ref": "a7bJmn",
                                       "name": "R01",
-                                      "fill": "$rose-soft",
+                                      "fill": "#00000000",
+                                      "padding": [
+                                        0,
+                                        4
+                                      ],
                                       "descendants": {
                                         "lGrKl": {
                                           "content": "R01",
@@ -1508,7 +1565,11 @@
                                       "type": "ref",
                                       "ref": "a7bJmn",
                                       "name": "R06",
-                                      "fill": "$rose-soft",
+                                      "fill": "#00000000",
+                                      "padding": [
+                                        0,
+                                        4
+                                      ],
                                       "descendants": {
                                         "lGrKl": {
                                           "content": "R06",
@@ -1521,7 +1582,11 @@
                                       "type": "ref",
                                       "ref": "a7bJmn",
                                       "name": "R07",
-                                      "fill": "$amber-soft",
+                                      "fill": "#00000000",
+                                      "padding": [
+                                        0,
+                                        4
+                                      ],
                                       "descendants": {
                                         "lGrKl": {
                                           "content": "R07",
@@ -1543,7 +1608,7 @@
                       "ref": "c4OKBE",
                       "name": "Строка 2",
                       "width": "fill_container",
-                      "height": 66,
+                      "height": 56,
                       "fill": "$paper",
                       "children": [
                         {
@@ -1577,7 +1642,10 @@
                                     {
                                       "type": "frame",
                                       "id": "xQB8O",
+                                      "x": 0,
+                                      "y": 0,
                                       "name": "Инициалы",
+                                      "enabled": false,
                                       "width": 32,
                                       "height": 32,
                                       "fill": "$soft",
@@ -1602,7 +1670,7 @@
                                       "type": "frame",
                                       "id": "mShPh",
                                       "name": "Имя и переход",
-                                      "width": 192,
+                                      "width": 252,
                                       "layout": "vertical",
                                       "gap": 2,
                                       "children": [
@@ -1610,14 +1678,14 @@
                                           "type": "text",
                                           "id": "R5mZ8",
                                           "name": "Лебедева Ирина Сергеевна",
-                                          "fill": "$ink",
+                                          "fill": "$blue",
                                           "textGrowth": "fixed-width",
                                           "width": "fill_container",
                                           "content": "Лебедева Ирина Сергеевна",
                                           "lineHeight": 1.38,
                                           "fontFamily": "$font",
-                                          "fontSize": 13,
-                                          "fontWeight": "650"
+                                          "fontSize": 14,
+                                          "fontWeight": "550"
                                         }
                                       ]
                                     }
@@ -1635,7 +1703,7 @@
                               "content": "Заместитель руководителя",
                               "lineHeight": 1.38,
                               "fontFamily": "$font",
-                              "fontSize": 13
+                              "fontSize": 14
                             },
                             {
                               "type": "text",
@@ -1643,11 +1711,11 @@
                               "name": "Департамент городского хозяйства",
                               "fill": "$muted",
                               "textGrowth": "fixed-width",
-                              "width": 244,
+                              "width": 280,
                               "content": "Департамент городского хозяйства",
                               "lineHeight": 1.38,
                               "fontFamily": "$font",
-                              "fontSize": 13
+                              "fontSize": 14
                             },
                             {
                               "type": "frame",
@@ -1666,21 +1734,23 @@
                                   "width": "fill_container",
                                   "content": "84 / 100",
                                   "lineHeight": 1.38,
+                                  "textAlign": "right",
                                   "fontFamily": "$font",
-                                  "fontSize": 13,
+                                  "fontSize": 15,
                                   "fontWeight": "650"
                                 },
                                 {
                                   "type": "text",
                                   "id": "U14gO",
                                   "name": "Высокий",
-                                  "fill": "$muted",
+                                  "fill": "$rose",
                                   "textGrowth": "fixed-width",
                                   "width": "fill_container",
                                   "content": "Высокий",
                                   "lineHeight": 1.38,
+                                  "textAlign": "right",
                                   "fontFamily": "$font",
-                                  "fontSize": 11
+                                  "fontSize": 12
                                 }
                               ]
                             },
@@ -1704,7 +1774,11 @@
                                       "type": "ref",
                                       "ref": "a7bJmn",
                                       "name": "R02",
-                                      "fill": "$rose-soft",
+                                      "fill": "#00000000",
+                                      "padding": [
+                                        0,
+                                        4
+                                      ],
                                       "descendants": {
                                         "lGrKl": {
                                           "content": "R02",
@@ -1717,7 +1791,11 @@
                                       "type": "ref",
                                       "ref": "a7bJmn",
                                       "name": "R06",
-                                      "fill": "$amber-soft",
+                                      "fill": "#00000000",
+                                      "padding": [
+                                        0,
+                                        4
+                                      ],
                                       "descendants": {
                                         "lGrKl": {
                                           "content": "R06",
@@ -1739,7 +1817,7 @@
                       "ref": "c4OKBE",
                       "name": "Строка 3",
                       "width": "fill_container",
-                      "height": 66,
+                      "height": 56,
                       "fill": "$paper",
                       "children": [
                         {
@@ -1773,7 +1851,10 @@
                                     {
                                       "type": "frame",
                                       "id": "XO6ZI",
+                                      "x": 0,
+                                      "y": 0,
                                       "name": "Инициалы",
+                                      "enabled": false,
                                       "width": 32,
                                       "height": 32,
                                       "fill": "$soft",
@@ -1798,7 +1879,7 @@
                                       "type": "frame",
                                       "id": "zFmzl",
                                       "name": "Имя и переход",
-                                      "width": 192,
+                                      "width": 252,
                                       "layout": "vertical",
                                       "gap": 2,
                                       "children": [
@@ -1806,14 +1887,14 @@
                                           "type": "text",
                                           "id": "rUjEn",
                                           "name": "Гусев Павел Игоревич",
-                                          "fill": "$ink",
+                                          "fill": "$blue",
                                           "textGrowth": "fixed-width",
                                           "width": "fill_container",
                                           "content": "Гусев Павел Игоревич",
                                           "lineHeight": 1.38,
                                           "fontFamily": "$font",
-                                          "fontSize": 13,
-                                          "fontWeight": "650"
+                                          "fontSize": 14,
+                                          "fontWeight": "550"
                                         }
                                       ]
                                     }
@@ -1831,7 +1912,7 @@
                               "content": "Начальник контрольного отдела",
                               "lineHeight": 1.38,
                               "fontFamily": "$font",
-                              "fontSize": 13
+                              "fontSize": 14
                             },
                             {
                               "type": "text",
@@ -1839,11 +1920,11 @@
                               "name": "Управление муниципального контроля",
                               "fill": "$muted",
                               "textGrowth": "fixed-width",
-                              "width": 244,
+                              "width": 280,
                               "content": "Управление муниципального контроля",
                               "lineHeight": 1.38,
                               "fontFamily": "$font",
-                              "fontSize": 13
+                              "fontSize": 14
                             },
                             {
                               "type": "frame",
@@ -1862,21 +1943,23 @@
                                   "width": "fill_container",
                                   "content": "80 / 100",
                                   "lineHeight": 1.38,
+                                  "textAlign": "right",
                                   "fontFamily": "$font",
-                                  "fontSize": 13,
+                                  "fontSize": 15,
                                   "fontWeight": "650"
                                 },
                                 {
                                   "type": "text",
                                   "id": "KypA3",
                                   "name": "Высокий",
-                                  "fill": "$muted",
+                                  "fill": "$rose",
                                   "textGrowth": "fixed-width",
                                   "width": "fill_container",
                                   "content": "Высокий",
                                   "lineHeight": 1.38,
+                                  "textAlign": "right",
                                   "fontFamily": "$font",
-                                  "fontSize": 11
+                                  "fontSize": 12
                                 }
                               ]
                             },
@@ -1900,7 +1983,11 @@
                                       "type": "ref",
                                       "ref": "a7bJmn",
                                       "name": "R03",
-                                      "fill": "$rose-soft",
+                                      "fill": "#00000000",
+                                      "padding": [
+                                        0,
+                                        4
+                                      ],
                                       "descendants": {
                                         "lGrKl": {
                                           "content": "R03",
@@ -1913,7 +2000,11 @@
                                       "type": "ref",
                                       "ref": "a7bJmn",
                                       "name": "R08",
-                                      "fill": "$amber-soft",
+                                      "fill": "#00000000",
+                                      "padding": [
+                                        0,
+                                        4
+                                      ],
                                       "descendants": {
                                         "lGrKl": {
                                           "content": "R08",
@@ -1935,7 +2026,7 @@
                       "ref": "c4OKBE",
                       "name": "Строка 4",
                       "width": "fill_container",
-                      "height": 66,
+                      "height": 56,
                       "fill": "$paper",
                       "children": [
                         {
@@ -1969,7 +2060,10 @@
                                     {
                                       "type": "frame",
                                       "id": "lRguO",
+                                      "x": 0,
+                                      "y": 0,
                                       "name": "Инициалы",
+                                      "enabled": false,
                                       "width": 32,
                                       "height": 32,
                                       "fill": "$soft",
@@ -1994,7 +2088,7 @@
                                       "type": "frame",
                                       "id": "BZ0Ou",
                                       "name": "Имя и переход",
-                                      "width": 192,
+                                      "width": 252,
                                       "layout": "vertical",
                                       "gap": 2,
                                       "children": [
@@ -2002,14 +2096,14 @@
                                           "type": "text",
                                           "id": "DC3Ph",
                                           "name": "Морозов Денис Олегович",
-                                          "fill": "$ink",
+                                          "fill": "$blue",
                                           "textGrowth": "fixed-width",
                                           "width": "fill_container",
                                           "content": "Морозов Денис Олегович",
                                           "lineHeight": 1.38,
                                           "fontFamily": "$font",
-                                          "fontSize": 13,
-                                          "fontWeight": "650"
+                                          "fontSize": 14,
+                                          "fontWeight": "550"
                                         }
                                       ]
                                     }
@@ -2027,7 +2121,7 @@
                               "content": "Начальник отдела разрешений",
                               "lineHeight": 1.38,
                               "fontFamily": "$font",
-                              "fontSize": 13
+                              "fontSize": 14
                             },
                             {
                               "type": "text",
@@ -2035,11 +2129,11 @@
                               "name": "Департамент городского хозяйства",
                               "fill": "$muted",
                               "textGrowth": "fixed-width",
-                              "width": 244,
+                              "width": 280,
                               "content": "Департамент городского хозяйства",
                               "lineHeight": 1.38,
                               "fontFamily": "$font",
-                              "fontSize": 13
+                              "fontSize": 14
                             },
                             {
                               "type": "frame",
@@ -2058,21 +2152,23 @@
                                   "width": "fill_container",
                                   "content": "74 / 100",
                                   "lineHeight": 1.38,
+                                  "textAlign": "right",
                                   "fontFamily": "$font",
-                                  "fontSize": 13,
+                                  "fontSize": 15,
                                   "fontWeight": "650"
                                 },
                                 {
                                   "type": "text",
                                   "id": "lpdCJ",
                                   "name": "Средний",
-                                  "fill": "$muted",
+                                  "fill": "$amber",
                                   "textGrowth": "fixed-width",
                                   "width": "fill_container",
                                   "content": "Средний",
                                   "lineHeight": 1.38,
+                                  "textAlign": "right",
                                   "fontFamily": "$font",
-                                  "fontSize": 11
+                                  "fontSize": 12
                                 }
                               ]
                             },
@@ -2096,7 +2192,11 @@
                                       "type": "ref",
                                       "ref": "a7bJmn",
                                       "name": "R04",
-                                      "fill": "$amber-soft",
+                                      "fill": "#00000000",
+                                      "padding": [
+                                        0,
+                                        4
+                                      ],
                                       "descendants": {
                                         "lGrKl": {
                                           "content": "R04",
@@ -2109,7 +2209,11 @@
                                       "type": "ref",
                                       "ref": "a7bJmn",
                                       "name": "R07",
-                                      "fill": "$amber-soft",
+                                      "fill": "#00000000",
+                                      "padding": [
+                                        0,
+                                        4
+                                      ],
                                       "descendants": {
                                         "lGrKl": {
                                           "content": "R07",
@@ -2131,7 +2235,7 @@
                       "ref": "c4OKBE",
                       "name": "Строка 5",
                       "width": "fill_container",
-                      "height": 66,
+                      "height": 56,
                       "fill": "$paper",
                       "children": [
                         {
@@ -2165,7 +2269,10 @@
                                     {
                                       "type": "frame",
                                       "id": "a3bAH0",
+                                      "x": 0,
+                                      "y": 0,
                                       "name": "Инициалы",
+                                      "enabled": false,
                                       "width": 32,
                                       "height": 32,
                                       "fill": "$soft",
@@ -2190,7 +2297,7 @@
                                       "type": "frame",
                                       "id": "N80gK",
                                       "name": "Имя и переход",
-                                      "width": 192,
+                                      "width": 252,
                                       "layout": "vertical",
                                       "gap": 2,
                                       "children": [
@@ -2198,14 +2305,14 @@
                                           "type": "text",
                                           "id": "czNzU",
                                           "name": "Белова Елена Андреевна",
-                                          "fill": "$ink",
+                                          "fill": "$blue",
                                           "textGrowth": "fixed-width",
                                           "width": "fill_container",
                                           "content": "Белова Елена Андреевна",
                                           "lineHeight": 1.38,
                                           "fontFamily": "$font",
-                                          "fontSize": 13,
-                                          "fontWeight": "650"
+                                          "fontSize": 14,
+                                          "fontWeight": "550"
                                         }
                                       ]
                                     }
@@ -2223,7 +2330,7 @@
                               "content": "Руководитель контрактной службы",
                               "lineHeight": 1.38,
                               "fontFamily": "$font",
-                              "fontSize": 13
+                              "fontSize": 14
                             },
                             {
                               "type": "text",
@@ -2231,11 +2338,11 @@
                               "name": "Департамент дорожного хозяйства",
                               "fill": "$muted",
                               "textGrowth": "fixed-width",
-                              "width": 244,
+                              "width": 280,
                               "content": "Департамент дорожного хозяйства",
                               "lineHeight": 1.38,
                               "fontFamily": "$font",
-                              "fontSize": 13
+                              "fontSize": 14
                             },
                             {
                               "type": "frame",
@@ -2254,21 +2361,23 @@
                                   "width": "fill_container",
                                   "content": "69 / 100",
                                   "lineHeight": 1.38,
+                                  "textAlign": "right",
                                   "fontFamily": "$font",
-                                  "fontSize": 13,
+                                  "fontSize": 15,
                                   "fontWeight": "650"
                                 },
                                 {
                                   "type": "text",
                                   "id": "I9kcvv",
                                   "name": "Средний",
-                                  "fill": "$muted",
+                                  "fill": "$amber",
                                   "textGrowth": "fixed-width",
                                   "width": "fill_container",
                                   "content": "Средний",
                                   "lineHeight": 1.38,
+                                  "textAlign": "right",
                                   "fontFamily": "$font",
-                                  "fontSize": 11
+                                  "fontSize": 12
                                 }
                               ]
                             },
@@ -2292,7 +2401,11 @@
                                       "type": "ref",
                                       "ref": "a7bJmn",
                                       "name": "R05",
-                                      "fill": "$amber-soft",
+                                      "fill": "#00000000",
+                                      "padding": [
+                                        0,
+                                        4
+                                      ],
                                       "descendants": {
                                         "lGrKl": {
                                           "content": "R05",
@@ -2305,7 +2418,11 @@
                                       "type": "ref",
                                       "ref": "a7bJmn",
                                       "name": "R06",
-                                      "fill": "$amber-soft",
+                                      "fill": "#00000000",
+                                      "padding": [
+                                        0,
+                                        4
+                                      ],
                                       "descendants": {
                                         "lGrKl": {
                                           "content": "R06",
@@ -2327,7 +2444,7 @@
                       "ref": "c4OKBE",
                       "name": "Строка 6",
                       "width": "fill_container",
-                      "height": 66,
+                      "height": 56,
                       "fill": "$paper",
                       "children": [
                         {
@@ -2361,7 +2478,10 @@
                                     {
                                       "type": "frame",
                                       "id": "bGaBx",
+                                      "x": 0,
+                                      "y": 0,
                                       "name": "Инициалы",
+                                      "enabled": false,
                                       "width": 32,
                                       "height": 32,
                                       "fill": "$soft",
@@ -2386,7 +2506,7 @@
                                       "type": "frame",
                                       "id": "H2Vgwx",
                                       "name": "Имя и переход",
-                                      "width": 192,
+                                      "width": 252,
                                       "layout": "vertical",
                                       "gap": 2,
                                       "children": [
@@ -2394,14 +2514,14 @@
                                           "type": "text",
                                           "id": "VpOwG",
                                           "name": "Климов Максим Петрович",
-                                          "fill": "$ink",
+                                          "fill": "$blue",
                                           "textGrowth": "fixed-width",
                                           "width": "fill_container",
                                           "content": "Климов Максим Петрович",
                                           "lineHeight": 1.38,
                                           "fontFamily": "$font",
-                                          "fontSize": 13,
-                                          "fontWeight": "650"
+                                          "fontSize": 14,
+                                          "fontWeight": "550"
                                         }
                                       ]
                                     }
@@ -2419,7 +2539,7 @@
                               "content": "Главный специалист",
                               "lineHeight": 1.38,
                               "fontFamily": "$font",
-                              "fontSize": 13
+                              "fontSize": 14
                             },
                             {
                               "type": "text",
@@ -2427,11 +2547,11 @@
                               "name": "Управление муниципального контроля",
                               "fill": "$muted",
                               "textGrowth": "fixed-width",
-                              "width": 244,
+                              "width": 280,
                               "content": "Управление муниципального контроля",
                               "lineHeight": 1.38,
                               "fontFamily": "$font",
-                              "fontSize": 13
+                              "fontSize": 14
                             },
                             {
                               "type": "frame",
@@ -2450,21 +2570,23 @@
                                   "width": "fill_container",
                                   "content": "65 / 100",
                                   "lineHeight": 1.38,
+                                  "textAlign": "right",
                                   "fontFamily": "$font",
-                                  "fontSize": 13,
+                                  "fontSize": 15,
                                   "fontWeight": "650"
                                 },
                                 {
                                   "type": "text",
                                   "id": "W7JaJ",
                                   "name": "Средний",
-                                  "fill": "$muted",
+                                  "fill": "$amber",
                                   "textGrowth": "fixed-width",
                                   "width": "fill_container",
                                   "content": "Средний",
                                   "lineHeight": 1.38,
+                                  "textAlign": "right",
                                   "fontFamily": "$font",
-                                  "fontSize": 11
+                                  "fontSize": 12
                                 }
                               ]
                             },
@@ -2488,7 +2610,11 @@
                                       "type": "ref",
                                       "ref": "a7bJmn",
                                       "name": "R08",
-                                      "fill": "$amber-soft",
+                                      "fill": "#00000000",
+                                      "padding": [
+                                        0,
+                                        4
+                                      ],
                                       "descendants": {
                                         "lGrKl": {
                                           "content": "R08",
@@ -2510,7 +2636,7 @@
                       "ref": "c4OKBE",
                       "name": "Строка 7",
                       "width": "fill_container",
-                      "height": 66,
+                      "height": 56,
                       "fill": "$paper",
                       "children": [
                         {
@@ -2544,7 +2670,10 @@
                                     {
                                       "type": "frame",
                                       "id": "vpFIb",
+                                      "x": 0,
+                                      "y": 0,
                                       "name": "Инициалы",
+                                      "enabled": false,
                                       "width": 32,
                                       "height": 32,
                                       "fill": "$soft",
@@ -2569,7 +2698,7 @@
                                       "type": "frame",
                                       "id": "zCzQk",
                                       "name": "Имя и переход",
-                                      "width": 192,
+                                      "width": 252,
                                       "layout": "vertical",
                                       "gap": 2,
                                       "children": [
@@ -2577,14 +2706,14 @@
                                           "type": "text",
                                           "id": "vP851",
                                           "name": "Рябова Ольга Михайловна",
-                                          "fill": "$ink",
+                                          "fill": "$blue",
                                           "textGrowth": "fixed-width",
                                           "width": "fill_container",
                                           "content": "Рябова Ольга Михайловна",
                                           "lineHeight": 1.38,
                                           "fontFamily": "$font",
-                                          "fontSize": 13,
-                                          "fontWeight": "650"
+                                          "fontSize": 14,
+                                          "fontWeight": "550"
                                         }
                                       ]
                                     }
@@ -2602,7 +2731,7 @@
                               "content": "Ведущий специалист",
                               "lineHeight": 1.38,
                               "fontFamily": "$font",
-                              "fontSize": 13
+                              "fontSize": 14
                             },
                             {
                               "type": "text",
@@ -2610,11 +2739,11 @@
                               "name": "Департамент городского хозяйства",
                               "fill": "$muted",
                               "textGrowth": "fixed-width",
-                              "width": 244,
+                              "width": 280,
                               "content": "Департамент городского хозяйства",
                               "lineHeight": 1.38,
                               "fontFamily": "$font",
-                              "fontSize": 13
+                              "fontSize": 14
                             },
                             {
                               "type": "frame",
@@ -2633,21 +2762,23 @@
                                   "width": "fill_container",
                                   "content": "61 / 100",
                                   "lineHeight": 1.38,
+                                  "textAlign": "right",
                                   "fontFamily": "$font",
-                                  "fontSize": 13,
+                                  "fontSize": 15,
                                   "fontWeight": "650"
                                 },
                                 {
                                   "type": "text",
                                   "id": "J0lDf",
                                   "name": "Средний",
-                                  "fill": "$muted",
+                                  "fill": "$amber",
                                   "textGrowth": "fixed-width",
                                   "width": "fill_container",
                                   "content": "Средний",
                                   "lineHeight": 1.38,
+                                  "textAlign": "right",
                                   "fontFamily": "$font",
-                                  "fontSize": 11
+                                  "fontSize": 12
                                 }
                               ]
                             },
@@ -2671,7 +2802,11 @@
                                       "type": "ref",
                                       "ref": "a7bJmn",
                                       "name": "R07",
-                                      "fill": "$amber-soft",
+                                      "fill": "#00000000",
+                                      "padding": [
+                                        0,
+                                        4
+                                      ],
                                       "descendants": {
                                         "lGrKl": {
                                           "content": "R07",
@@ -2705,7 +2840,7 @@
                           "id": "Y8fGp9",
                           "name": "Показано 1–7 из 17",
                           "fill": "$muted",
-                          "content": "Показано 1–7 из 17",
+                          "content": "1–7 из 17 служащих",
                           "lineHeight": 1.38,
                           "fontFamily": "$font",
                           "fontSize": 12
@@ -2730,19 +2865,17 @@
                   "id": "GBBPp",
                   "name": "Балл — приоритет проверки",
                   "width": "fill_container",
-                  "fill": "$blue-soft",
-                  "cornerRadius": 8,
+                  "fill": "#00000000",
                   "gap": 12,
-                  "padding": [
-                    12,
-                    16
-                  ],
                   "alignItems": "center",
                   "children": [
                     {
                       "type": "icon",
                       "id": "ZvhWr",
+                      "x": 16,
+                      "y": 22,
                       "name": "Иконка · info",
+                      "enabled": false,
                       "width": 18,
                       "height": 18,
                       "icon": "info",
@@ -2760,7 +2893,10 @@
                         {
                           "type": "text",
                           "id": "k8r6k",
+                          "x": 0,
+                          "y": 0,
                           "name": "Балл — приоритет проверки",
+                          "enabled": false,
                           "fill": "$blue",
                           "content": "Балл — приоритет проверки",
                           "lineHeight": 1.38,
@@ -2775,7 +2911,7 @@
                           "fill": "$muted",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "Высокий балл помогает выбрать кейс для проверки. Он не означает, что нарушение установлено.",
+                          "content": "Балл задаёт приоритет проверки, но не подтверждает нарушение.",
                           "lineHeight": 1.38,
                           "fontFamily": "$font",
                           "fontSize": 13
@@ -2837,7 +2973,7 @@
               "id": "u7j72",
               "name": "Верхняя панель",
               "width": "fill_container",
-              "height": 64,
+              "height": 56,
               "fill": "$paper",
               "stroke": "$line",
               "strokeWidth": {
@@ -2861,7 +2997,10 @@
                     {
                       "type": "icon",
                       "id": "HvP1V",
+                      "x": 0,
+                      "y": 1,
                       "name": "Иконка · panels-top-left",
+                      "enabled": false,
                       "width": 16,
                       "height": 16,
                       "icon": "panels-top-left",
@@ -2914,18 +3053,23 @@
                       "type": "ref",
                       "ref": "a7bJmn",
                       "name": "Демонстрационные данные",
-                      "fill": "$blue-soft",
+                      "fill": "#00000000",
+                      "padding": 0,
                       "descendants": {
                         "lGrKl": {
                           "content": "Демонстрационные данные",
-                          "fill": "$blue"
+                          "fill": "$muted",
+                          "fontWeight": "500"
                         }
                       }
                     },
                     {
                       "type": "ellipse",
                       "id": "nCSEw",
+                      "x": 196,
+                      "y": 0,
                       "name": "Аватар аналитика",
+                      "enabled": false,
                       "fill": "$soft",
                       "width": 24,
                       "height": 24
@@ -2933,7 +3077,10 @@
                     {
                       "type": "text",
                       "id": "rCBvD",
+                      "x": 234,
+                      "y": 3,
                       "name": "Аналитик",
+                      "enabled": false,
                       "fill": "$muted",
                       "content": "Аналитик",
                       "lineHeight": 1.38,
@@ -2951,7 +3098,7 @@
               "name": "Содержимое",
               "width": "fill_container",
               "layout": "vertical",
-              "gap": 20,
+              "gap": 16,
               "padding": [
                 24,
                 32
@@ -2987,7 +3134,10 @@
                         {
                           "type": "text",
                           "id": "vvf4B",
+                          "x": 0,
+                          "y": 43,
                           "name": "← К рейтингу   /   Личное дело · СЛ–042",
+                          "enabled": false,
                           "fill": "$muted",
                           "content": "← К рейтингу   /   Личное дело · СЛ–042",
                           "lineHeight": 1.38,
@@ -3019,16 +3169,13 @@
                   "id": "HpTcz",
                   "name": "Сводка профиля",
                   "width": "fill_container",
-                  "height": 122,
+                  "height": 104,
                   "fill": "$paper",
                   "cornerRadius": 8,
                   "stroke": "$line",
                   "strokeWidth": 1,
                   "strokeAlignment": "inner",
-                  "padding": [
-                    16,
-                    20
-                  ],
+                  "padding": 16,
                   "justifyContent": "space_between",
                   "alignItems": "center",
                   "children": [
@@ -3042,7 +3189,10 @@
                         {
                           "type": "frame",
                           "id": "hWQe8",
+                          "x": 0,
+                          "y": 9.5,
                           "name": "Инициалы СА",
+                          "enabled": false,
                           "width": 54,
                           "height": 54,
                           "fill": "$blue-soft",
@@ -3078,7 +3228,7 @@
                               "content": "Соколов Александр Викторович",
                               "lineHeight": 1.38,
                               "fontFamily": "$font",
-                              "fontSize": 22,
+                              "fontSize": 24,
                               "fontWeight": "700"
                             },
                             {
@@ -3110,7 +3260,7 @@
                       "type": "frame",
                       "id": "Ymnpv",
                       "name": "Оценка риска",
-                      "width": 244,
+                      "width": 232,
                       "layout": "vertical",
                       "gap": 4,
                       "children": [
@@ -3172,9 +3322,9 @@
                       "type": "frame",
                       "id": "X3u4h",
                       "name": "Флаги",
-                      "width": 674,
+                      "width": 672,
                       "layout": "vertical",
-                      "gap": 10,
+                      "gap": 8,
                       "children": [
                         {
                           "type": "frame",
@@ -3194,18 +3344,6 @@
                               "fontFamily": "$font",
                               "fontSize": 17,
                               "fontWeight": "650"
-                            },
-                            {
-                              "type": "text",
-                              "id": "QU4Vq",
-                              "name": "Причины срабатывания правил и записи, на которых они основаны.",
-                              "fill": "$muted",
-                              "textGrowth": "fixed-width",
-                              "width": "fill_container",
-                              "content": "Причины срабатывания правил и записи, на которых они основаны.",
-                              "lineHeight": 1.38,
-                              "fontFamily": "$font",
-                              "fontSize": 13
                             }
                           ]
                         },
@@ -3215,25 +3353,29 @@
                           "ref": "CdpA7",
                           "name": "R01 · Компания супруги поставляет услуги органу",
                           "width": "fill_container",
+                          "stroke": "$blue-border",
                           "descendants": {
                             "is9fR": {
                               "content": "R01"
+                            },
+                            "BPTFJ": {
+                              "content": "Компания супруги — поставщик департамента"
                             },
                             "gEwT6": {
                               "content": "Высокий",
                               "fill": "$rose"
                             },
-                            "BPTFJ": {
-                              "content": "Компания супруги поставляет услуги органу"
+                            "vL6EX": {
+                              "icon": "chevron-up"
                             },
                             "FsrU2": {
-                              "content": "Супруга служащего — учредитель компании, у которой пять контрактов с его департаментом. Служащий участвует в закупках по соответствующему направлению."
+                              "content": "Супруга Соколова — учредитель поставщика. У компании пять контрактов с департаментом, где Соколов участвует в закупках."
                             },
                             "L41Ouh": {
-                              "content": "Основание: конфликт интересов, 273-ФЗ, ст. 10"
+                              "content": "Основание: ст. 10 273-ФЗ"
                             },
                             "BU7Rh": {
-                              "content": "Источники: сведения о связях, карточка компании, реестр контрактов"
+                              "content": "Источники: сведения о родстве, карточка компании, реестр контрактов."
                             }
                           }
                         },
@@ -3243,6 +3385,11 @@
                           "ref": "CdpA7",
                           "name": "R06 · Высокая доля закупок у одного поставщика",
                           "width": "fill_container",
+                          "padding": [
+                            12,
+                            16
+                          ],
+                          "gap": 0,
                           "descendants": {
                             "is9fR": {
                               "content": "R06"
@@ -3251,17 +3398,26 @@
                               "content": "Высокий",
                               "fill": "$rose"
                             },
-                            "BPTFJ": {
-                              "content": "Высокая доля закупок у одного поставщика"
-                            },
                             "FsrU2": {
-                              "content": "На компанию приходится 58% суммы закупок отдела по этому направлению."
+                              "content": "На компанию приходится 58% суммы закупок отдела по этому направлению.",
+                              "enabled": false,
+                              "textGrowth": "auto",
+                              "width": 300
                             },
                             "L41Ouh": {
-                              "content": "Основание: индикатор концентрации закупок"
+                              "content": "Основание: индикатор концентрации закупок",
+                              "enabled": false,
+                              "textGrowth": "auto",
+                              "width": 300
                             },
                             "BU7Rh": {
-                              "content": "Источник: выборка контрактов отдела"
+                              "content": "Источник: выборка контрактов отдела",
+                              "enabled": false,
+                              "textGrowth": "auto",
+                              "width": 300
+                            },
+                            "kj8QD": {
+                              "enabled": false
                             }
                           }
                         },
@@ -3271,6 +3427,11 @@
                           "ref": "CdpA7",
                           "name": "R07 · Поступило связанное обращение",
                           "width": "fill_container",
+                          "padding": [
+                            12,
+                            16
+                          ],
+                          "gap": 0,
                           "descendants": {
                             "is9fR": {
                               "content": "R07"
@@ -3279,19 +3440,41 @@
                               "content": "Средний",
                               "fill": "$amber"
                             },
-                            "BPTFJ": {
-                              "content": "Поступило связанное обращение"
-                            },
                             "FsrU2": {
-                              "content": "В тексте названы служащий и компания. Сведения требуют проверки."
+                              "content": "В тексте названы служащий и компания. Сведения требуют проверки.",
+                              "enabled": false,
+                              "textGrowth": "auto",
+                              "width": 300
                             },
                             "L41Ouh": {
-                              "content": "Основание: правило обработки обращений"
+                              "content": "Основание: правило обработки обращений",
+                              "enabled": false,
+                              "textGrowth": "auto",
+                              "width": 300
                             },
                             "BU7Rh": {
-                              "content": "Источник: обращение ОБР–0107"
+                              "content": "Источник: обращение ОБР–0107",
+                              "enabled": false,
+                              "textGrowth": "auto",
+                              "width": 300
+                            },
+                            "kj8QD": {
+                              "enabled": false
                             }
                           }
+                        },
+                        {
+                          "type": "text",
+                          "id": "igeIt",
+                          "name": "Пояснение к флагам",
+                          "fill": "$muted",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Флаг — повод для проверки, не вывод о нарушении.",
+                          "lineHeight": 1.42,
+                          "fontFamily": "$font",
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         }
                       ]
                     },
@@ -3300,8 +3483,12 @@
                       "id": "H6eZK",
                       "name": "Полномочия, связи и контракты",
                       "width": "fill_container",
+                      "fill": "$paper",
+                      "cornerRadius": 8,
+                      "stroke": "$line",
+                      "strokeWidth": 1,
+                      "strokeAlignment": "inner",
                       "layout": "vertical",
-                      "gap": 12,
                       "children": [
                         {
                           "type": "frame",
@@ -3309,12 +3496,13 @@
                           "name": "Полномочия",
                           "width": "fill_container",
                           "fill": "$paper",
-                          "cornerRadius": 8,
                           "stroke": "$line",
-                          "strokeWidth": 1,
+                          "strokeWidth": {
+                            "bottom": 1
+                          },
                           "strokeAlignment": "inner",
                           "layout": "vertical",
-                          "gap": 7,
+                          "gap": 4,
                           "padding": 16,
                           "children": [
                             {
@@ -3327,7 +3515,10 @@
                                 {
                                   "type": "icon",
                                   "id": "D0b44r",
+                                  "x": 0,
+                                  "y": 2.5,
                                   "name": "Иконка · briefcase-business",
+                                  "enabled": false,
                                   "width": 16,
                                   "height": 16,
                                   "icon": "briefcase-business",
@@ -3354,18 +3545,21 @@
                               "fill": "$muted",
                               "textGrowth": "fixed-width",
                               "width": "fill_container",
-                              "content": "Участие в закупках дорожных работ по направлению ОКПД2 42.11.",
+                              "content": "Участвует в закупках дорожных работ (ОКПД2 42.11).",
                               "lineHeight": 1.38,
                               "fontFamily": "$font",
-                              "fontSize": 13
+                              "fontSize": 14
                             },
                             {
                               "type": "text",
                               "id": "E3GSyi",
+                              "x": 16,
+                              "y": 69,
                               "name": "Открыть сведения о должности ↗",
+                              "enabled": false,
                               "fill": "$blue",
                               "textGrowth": "fixed-width",
-                              "width": "fill_container",
+                              "width": "fill_container(438)",
                               "content": "Открыть сведения о должности ↗",
                               "lineHeight": 1.38,
                               "fontFamily": "$font",
@@ -3380,12 +3574,13 @@
                           "name": "Связанные лица и компании",
                           "width": "fill_container",
                           "fill": "$paper",
-                          "cornerRadius": 8,
                           "stroke": "$line",
-                          "strokeWidth": 1,
+                          "strokeWidth": {
+                            "bottom": 1
+                          },
                           "strokeAlignment": "inner",
                           "layout": "vertical",
-                          "gap": 7,
+                          "gap": 4,
                           "padding": 16,
                           "children": [
                             {
@@ -3398,7 +3593,10 @@
                                 {
                                   "type": "icon",
                                   "id": "L73S9I",
+                                  "x": 0,
+                                  "y": 2.5,
                                   "name": "Иконка · users",
+                                  "enabled": false,
                                   "width": 16,
                                   "height": 16,
                                   "icon": "users",
@@ -3425,18 +3623,21 @@
                               "fill": "$muted",
                               "textGrowth": "fixed-width",
                               "width": "fill_container",
-                              "content": "Супруга · Соколова Марина Игоревна\nУчредитель ООО «ДорСтройРесурс».",
+                              "content": "Марина Игоревна Соколова, супруга. Учредитель ООО «ДорСтройРесурс».",
                               "lineHeight": 1.38,
                               "fontFamily": "$font",
-                              "fontSize": 13
+                              "fontSize": 14
                             },
                             {
                               "type": "text",
                               "id": "P3OW9",
+                              "x": 16,
+                              "y": 87,
                               "name": "Посмотреть на графе ↗",
+                              "enabled": false,
                               "fill": "$blue",
                               "textGrowth": "fixed-width",
-                              "width": "fill_container",
+                              "width": "fill_container(438)",
                               "content": "Посмотреть на графе ↗",
                               "lineHeight": 1.38,
                               "fontFamily": "$font",
@@ -3451,12 +3652,13 @@
                           "name": "Госконтракты",
                           "width": "fill_container",
                           "fill": "$paper",
-                          "cornerRadius": 8,
                           "stroke": "$line",
-                          "strokeWidth": 1,
+                          "strokeWidth": {
+                            "bottom": 1
+                          },
                           "strokeAlignment": "inner",
                           "layout": "vertical",
-                          "gap": 7,
+                          "gap": 4,
                           "padding": 16,
                           "children": [
                             {
@@ -3469,7 +3671,10 @@
                                 {
                                   "type": "icon",
                                   "id": "v7gIWc",
+                                  "x": 0,
+                                  "y": 2.5,
                                   "name": "Иконка · files",
+                                  "enabled": false,
                                   "width": 16,
                                   "height": 16,
                                   "icon": "files",
@@ -3496,10 +3701,10 @@
                               "fill": "$muted",
                               "textGrowth": "fixed-width",
                               "width": "fill_container",
-                              "content": "5 контрактов · 38 млн ₽\nПоставщик: ООО «ДорСтройРесурс».",
+                              "content": "ООО «ДорСтройРесурс»: 5 контрактов на 38 млн ₽.",
                               "lineHeight": 1.38,
                               "fontFamily": "$font",
-                              "fontSize": 13
+                              "fontSize": 14
                             },
                             {
                               "type": "text",
@@ -3508,7 +3713,7 @@
                               "fill": "$blue",
                               "textGrowth": "fixed-width",
                               "width": "fill_container",
-                              "content": "Записи в реестре контрактов ↗",
+                              "content": "Открыть реестр контрактов",
                               "lineHeight": 1.38,
                               "fontFamily": "$font",
                               "fontSize": 12,
@@ -3519,8 +3724,11 @@
                         {
                           "type": "frame",
                           "id": "g2VsSw",
+                          "x": 0,
+                          "y": 378,
                           "name": "Важно",
-                          "width": "fill_container",
+                          "enabled": false,
+                          "width": "fill_container(470)",
                           "fill": "$blue-soft",
                           "cornerRadius": 8,
                           "gap": 12,
@@ -3533,7 +3741,10 @@
                             {
                               "type": "icon",
                               "id": "noXZR",
+                              "x": 16,
+                              "y": 22,
                               "name": "Иконка · info",
+                              "enabled": false,
                               "width": 18,
                               "height": 18,
                               "icon": "info",
@@ -3632,7 +3843,7 @@
               "id": "dp4lS",
               "name": "Верхняя панель",
               "width": "fill_container",
-              "height": 64,
+              "height": 56,
               "fill": "$paper",
               "stroke": "$line",
               "strokeWidth": {
@@ -3656,7 +3867,10 @@
                     {
                       "type": "icon",
                       "id": "onYHT",
+                      "x": 0,
+                      "y": 1,
                       "name": "Иконка · panels-top-left",
+                      "enabled": false,
                       "width": 16,
                       "height": 16,
                       "icon": "panels-top-left",
@@ -3709,18 +3923,23 @@
                       "type": "ref",
                       "ref": "a7bJmn",
                       "name": "Демонстрационные данные",
-                      "fill": "$blue-soft",
+                      "fill": "#00000000",
+                      "padding": 0,
                       "descendants": {
                         "lGrKl": {
                           "content": "Демонстрационные данные",
-                          "fill": "$blue"
+                          "fill": "$muted",
+                          "fontWeight": "500"
                         }
                       }
                     },
                     {
                       "type": "ellipse",
                       "id": "wJVKf",
+                      "x": 196,
+                      "y": 0,
                       "name": "Аватар аналитика",
+                      "enabled": false,
                       "fill": "$soft",
                       "width": 24,
                       "height": 24
@@ -3728,7 +3947,10 @@
                     {
                       "type": "text",
                       "id": "hMltj",
+                      "x": 234,
+                      "y": 3,
                       "name": "Аналитик",
+                      "enabled": false,
                       "fill": "$muted",
                       "content": "Аналитик",
                       "lineHeight": 1.38,
@@ -3746,7 +3968,7 @@
               "name": "Содержимое",
               "width": "fill_container",
               "layout": "vertical",
-              "gap": 20,
+              "gap": 16,
               "padding": [
                 24,
                 32
@@ -3803,7 +4025,8 @@
                           "type": "ref",
                           "ref": "a7bJmn",
                           "name": "R01 · Высокий",
-                          "fill": "$rose-soft",
+                          "fill": "#00000000",
+                          "padding": 0,
                           "descendants": {
                             "lGrKl": {
                               "content": "R01 · Высокий",
@@ -3820,7 +4043,7 @@
                           "lineHeight": 1.38,
                           "fontFamily": "$font",
                           "fontSize": 15,
-                          "fontWeight": "650"
+                          "fontWeight": "600"
                         }
                       ]
                     },
@@ -3867,18 +4090,21 @@
                           "id": "W47vGD",
                           "name": "Управление графом",
                           "width": "fill_container",
-                          "height": 52,
+                          "height": 40,
                           "padding": [
                             0,
                             16
                           ],
-                          "justifyContent": "space_between",
+                          "justifyContent": "end",
                           "alignItems": "center",
                           "children": [
                             {
                               "type": "text",
                               "id": "v3Dpa",
+                              "x": 16,
+                              "y": 15.5,
                               "name": "Цепочка подтверждающих записей",
+                              "enabled": false,
                               "fill": "$ink",
                               "content": "Цепочка подтверждающих записей",
                               "lineHeight": 1.38,
@@ -4004,7 +4230,7 @@
                                   "content": "супруга",
                                   "lineHeight": 1.38,
                                   "fontFamily": "$font",
-                                  "fontSize": 11,
+                                  "fontSize": 12,
                                   "fontWeight": "650"
                                 }
                               ]
@@ -4058,7 +4284,7 @@
                                   "content": "учредитель",
                                   "lineHeight": 1.38,
                                   "fontFamily": "$font",
-                                  "fontSize": 11,
+                                  "fontSize": 12,
                                   "fontWeight": "650"
                                 }
                               ]
@@ -4112,7 +4338,7 @@
                                   "content": "поставщик",
                                   "lineHeight": 1.38,
                                   "fontFamily": "$font",
-                                  "fontSize": 11,
+                                  "fontSize": 12,
                                   "fontWeight": "650"
                                 }
                               ]
@@ -4166,7 +4392,7 @@
                                   "content": "заказчик",
                                   "lineHeight": 1.38,
                                   "fontFamily": "$font",
-                                  "fontSize": 11,
+                                  "fontSize": 12,
                                   "fontWeight": "650"
                                 }
                               ]
@@ -4214,7 +4440,7 @@
                                   "content": "вне выбранного флага",
                                   "lineHeight": 1.38,
                                   "fontFamily": "$font",
-                                  "fontSize": 11,
+                                  "fontSize": 12,
                                   "fontWeight": "650"
                                 }
                               ]
@@ -4273,7 +4499,7 @@
                                   "content": "Соколов А. В.",
                                   "lineHeight": 1.38,
                                   "fontFamily": "$font",
-                                  "fontSize": 12,
+                                  "fontSize": 14,
                                   "fontWeight": "650"
                                 },
                                 {
@@ -4284,7 +4510,7 @@
                                   "content": "Служащий",
                                   "lineHeight": 1.38,
                                   "fontFamily": "$font",
-                                  "fontSize": 11
+                                  "fontSize": 12
                                 }
                               ]
                             },
@@ -4342,7 +4568,7 @@
                                   "content": "Соколова М. И.",
                                   "lineHeight": 1.38,
                                   "fontFamily": "$font",
-                                  "fontSize": 12,
+                                  "fontSize": 14,
                                   "fontWeight": "650"
                                 },
                                 {
@@ -4353,7 +4579,7 @@
                                   "content": "Связанное лицо",
                                   "lineHeight": 1.38,
                                   "fontFamily": "$font",
-                                  "fontSize": 11
+                                  "fontSize": 12
                                 }
                               ]
                             },
@@ -4412,7 +4638,7 @@
                                   "content": "ООО «ДорСтройРесурс»",
                                   "lineHeight": 1.38,
                                   "fontFamily": "$font",
-                                  "fontSize": 12,
+                                  "fontSize": 14,
                                   "fontWeight": "650"
                                 },
                                 {
@@ -4423,7 +4649,7 @@
                                   "content": "Компания",
                                   "lineHeight": 1.38,
                                   "fontFamily": "$font",
-                                  "fontSize": 11
+                                  "fontSize": 12
                                 }
                               ]
                             },
@@ -4482,7 +4708,7 @@
                                   "content": "5 госконтрактов",
                                   "lineHeight": 1.38,
                                   "fontFamily": "$font",
-                                  "fontSize": 12,
+                                  "fontSize": 14,
                                   "fontWeight": "650"
                                 },
                                 {
@@ -4493,7 +4719,7 @@
                                   "content": "38 млн ₽",
                                   "lineHeight": 1.38,
                                   "fontFamily": "$font",
-                                  "fontSize": 11
+                                  "fontSize": 12
                                 }
                               ]
                             },
@@ -4552,7 +4778,7 @@
                                   "content": "Дорожный департамент",
                                   "lineHeight": 1.38,
                                   "fontFamily": "$font",
-                                  "fontSize": 12,
+                                  "fontSize": 14,
                                   "fontWeight": "650"
                                 },
                                 {
@@ -4563,7 +4789,7 @@
                                   "content": "Орган служащего",
                                   "lineHeight": 1.38,
                                   "fontFamily": "$font",
-                                  "fontSize": 11
+                                  "fontSize": 12
                                 }
                               ]
                             },
@@ -4622,7 +4848,7 @@
                                   "content": "Обращение ОБР–0107",
                                   "lineHeight": 1.38,
                                   "fontFamily": "$font",
-                                  "fontSize": 12,
+                                  "fontSize": 14,
                                   "fontWeight": "650"
                                 },
                                 {
@@ -4633,7 +4859,7 @@
                                   "content": "Связано с профилем",
                                   "lineHeight": 1.38,
                                   "fontFamily": "$font",
-                                  "fontSize": 11
+                                  "fontSize": 12
                                 }
                               ]
                             },
@@ -4855,8 +5081,12 @@
                       "id": "t71LRN",
                       "name": "Боковая панель графа",
                       "width": "fill_container",
+                      "fill": "$paper",
+                      "cornerRadius": 8,
+                      "stroke": "$line",
+                      "strokeWidth": 1,
+                      "strokeAlignment": "inner",
                       "layout": "vertical",
-                      "gap": 12,
                       "children": [
                         {
                           "id": "uCPMs",
@@ -4864,15 +5094,25 @@
                           "ref": "K0FxwI",
                           "name": "Почему сработал R01",
                           "width": "fill_container",
+                          "cornerRadius": 0,
+                          "stroke": "$line",
+                          "strokeWidth": {
+                            "bottom": 1
+                          },
+                          "strokeAlignment": "inner",
                           "descendants": {
                             "A1wNZ": {
-                              "content": "АКТИВНЫЙ ФЛАГ · R01"
+                              "content": "АКТИВНЫЙ ФЛАГ · R01",
+                              "enabled": false
                             },
                             "G7kKq": {
-                              "content": "Почему нужна проверка"
+                              "content": "Почему сработал флаг",
+                              "fontSize": 16,
+                              "lineHeight": 1.38
                             },
                             "bIkFz": {
-                              "content": "Супруга служащего — учредитель поставщика. Компания получила пять контрактов от департамента, где служащий участвует в закупках."
+                              "content": "Супруга Соколова — учредитель поставщика. Компания заключила пять контрактов с департаментом, где Соколов участвует в закупках.",
+                              "fontSize": 14
                             }
                           }
                         },
@@ -4882,12 +5122,13 @@
                           "name": "Подтверждающие записи",
                           "width": "fill_container",
                           "fill": "$paper",
-                          "cornerRadius": 8,
                           "stroke": "$line",
-                          "strokeWidth": 1,
+                          "strokeWidth": {
+                            "bottom": 1
+                          },
                           "strokeAlignment": "inner",
                           "layout": "vertical",
-                          "gap": 10,
+                          "gap": 8,
                           "padding": 16,
                           "children": [
                             {
@@ -4903,10 +5144,10 @@
                                   "id": "yO6GY",
                                   "name": "Источники и основание",
                                   "fill": "$ink",
-                                  "content": "Источники и основание",
+                                  "content": "Источники",
                                   "lineHeight": 1.38,
                                   "fontFamily": "$font",
-                                  "fontSize": 17,
+                                  "fontSize": 16,
                                   "fontWeight": "650"
                                 }
                               ]
@@ -4922,7 +5163,10 @@
                                 {
                                   "type": "icon",
                                   "id": "SQNjN",
+                                  "x": 0,
+                                  "y": 0.5,
                                   "name": "Иконка · users",
+                                  "enabled": false,
                                   "width": 16,
                                   "height": 16,
                                   "icon": "users",
@@ -4939,8 +5183,8 @@
                                   "content": "Сведения о родственной связи",
                                   "lineHeight": 1.38,
                                   "fontFamily": "$font",
-                                  "fontSize": 12,
-                                  "fontWeight": "600"
+                                  "fontSize": 13,
+                                  "fontWeight": "550"
                                 }
                               ]
                             },
@@ -4955,7 +5199,10 @@
                                 {
                                   "type": "icon",
                                   "id": "VKxOX",
+                                  "x": 0,
+                                  "y": 0.5,
                                   "name": "Иконка · building-2",
+                                  "enabled": false,
                                   "width": 16,
                                   "height": 16,
                                   "icon": "building-2",
@@ -4972,8 +5219,8 @@
                                   "content": "Карточка компании · учредитель",
                                   "lineHeight": 1.38,
                                   "fontFamily": "$font",
-                                  "fontSize": 12,
-                                  "fontWeight": "600"
+                                  "fontSize": 13,
+                                  "fontWeight": "550"
                                 }
                               ]
                             },
@@ -4988,7 +5235,10 @@
                                 {
                                   "type": "icon",
                                   "id": "KFWVq",
+                                  "x": 0,
+                                  "y": 0.5,
                                   "name": "Иконка · files",
+                                  "enabled": false,
                                   "width": 16,
                                   "height": 16,
                                   "icon": "files",
@@ -5005,8 +5255,8 @@
                                   "content": "Реестр · 5 контрактов на 38 млн ₽",
                                   "lineHeight": 1.38,
                                   "fontFamily": "$font",
-                                  "fontSize": 12,
-                                  "fontWeight": "600"
+                                  "fontSize": 13,
+                                  "fontWeight": "550"
                                 }
                               ]
                             },
@@ -5021,7 +5271,10 @@
                                 {
                                   "type": "icon",
                                   "id": "R3yRIA",
+                                  "x": 0,
+                                  "y": 0.5,
                                   "name": "Иконка · book-open",
+                                  "enabled": false,
                                   "width": 16,
                                   "height": 16,
                                   "icon": "book-open",
@@ -5038,8 +5291,8 @@
                                   "content": "273-ФЗ · ст. 10",
                                   "lineHeight": 1.38,
                                   "fontFamily": "$font",
-                                  "fontSize": 12,
-                                  "fontWeight": "600"
+                                  "fontSize": 13,
+                                  "fontWeight": "550"
                                 }
                               ]
                             }
@@ -5050,19 +5303,18 @@
                           "id": "xX90Y",
                           "name": "Не вывод о нарушении",
                           "width": "fill_container",
-                          "fill": "$blue-soft",
-                          "cornerRadius": 8,
+                          "fill": "#00000000",
                           "gap": 12,
-                          "padding": [
-                            12,
-                            16
-                          ],
+                          "padding": 16,
                           "alignItems": "center",
                           "children": [
                             {
                               "type": "icon",
                               "id": "i0SZPV",
+                              "x": 16,
+                              "y": 31,
                               "name": "Иконка · info",
+                              "enabled": false,
                               "width": 18,
                               "height": 18,
                               "icon": "info",
@@ -5080,7 +5332,10 @@
                                 {
                                   "type": "text",
                                   "id": "Q3aSN",
+                                  "x": 0,
+                                  "y": 0,
                                   "name": "Не вывод о нарушении",
+                                  "enabled": false,
                                   "fill": "$blue",
                                   "content": "Не вывод о нарушении",
                                   "lineHeight": 1.38,
@@ -5095,7 +5350,7 @@
                                   "fill": "$muted",
                                   "textGrowth": "fixed-width",
                                   "width": "fill_container",
-                                  "content": "Сверьте записи и полномочия служащего на даты контрактов.",
+                                  "content": "Проверьте записи и полномочия на даты контрактов. Флаг не подтверждает нарушение.",
                                   "lineHeight": 1.38,
                                   "fontFamily": "$font",
                                   "fontSize": 13
@@ -5161,7 +5416,7 @@
               "id": "m2GjW",
               "name": "Верхняя панель",
               "width": "fill_container",
-              "height": 64,
+              "height": 56,
               "fill": "$paper",
               "stroke": "$line",
               "strokeWidth": {
@@ -5185,7 +5440,10 @@
                     {
                       "type": "icon",
                       "id": "G03bO",
+                      "x": 0,
+                      "y": 1,
                       "name": "Иконка · panels-top-left",
+                      "enabled": false,
                       "width": 16,
                       "height": 16,
                       "icon": "panels-top-left",
@@ -5238,18 +5496,23 @@
                       "type": "ref",
                       "ref": "a7bJmn",
                       "name": "Демонстрационные данные",
-                      "fill": "$blue-soft",
+                      "fill": "#00000000",
+                      "padding": 0,
                       "descendants": {
                         "lGrKl": {
                           "content": "Демонстрационные данные",
-                          "fill": "$blue"
+                          "fill": "$muted",
+                          "fontWeight": "500"
                         }
                       }
                     },
                     {
                       "type": "ellipse",
                       "id": "BCX80",
+                      "x": 196,
+                      "y": 0,
                       "name": "Аватар аналитика",
+                      "enabled": false,
                       "fill": "$soft",
                       "width": 24,
                       "height": 24
@@ -5257,7 +5520,10 @@
                     {
                       "type": "text",
                       "id": "GHapl",
+                      "x": 234,
+                      "y": 3,
                       "name": "Аналитик",
+                      "enabled": false,
                       "fill": "$muted",
                       "content": "Аналитик",
                       "lineHeight": 1.38,
@@ -5275,7 +5541,7 @@
               "name": "Содержимое",
               "width": "fill_container",
               "layout": "vertical",
-              "gap": 20,
+              "gap": 16,
               "padding": [
                 24,
                 32
@@ -5311,7 +5577,10 @@
                         {
                           "type": "text",
                           "id": "zz86y",
+                          "x": 0,
+                          "y": 43,
                           "name": "Сводка по сигналам риска и работе с обращениями",
+                          "enabled": false,
                           "fill": "$muted",
                           "content": "Сводка по сигналам риска и работе с обращениями",
                           "lineHeight": 1.38,
@@ -5343,7 +5612,11 @@
                   "id": "EPiqW",
                   "name": "Основные показатели",
                   "width": "fill_container",
-                  "gap": 12,
+                  "fill": "$paper",
+                  "cornerRadius": 8,
+                  "stroke": "$line",
+                  "strokeWidth": 1,
+                  "strokeAlignment": "inner",
                   "alignItems": "center",
                   "children": [
                     {
@@ -5352,6 +5625,18 @@
                       "ref": "OCzPo",
                       "name": "Служащие",
                       "width": "fill_container",
+                      "height": 88,
+                      "padding": [
+                        12,
+                        16
+                      ],
+                      "gap": 4,
+                      "cornerRadius": 0,
+                      "stroke": "$line",
+                      "strokeWidth": {
+                        "right": 1
+                      },
+                      "strokeAlignment": "inner",
                       "descendants": {
                         "Xb9n4": {
                           "content": "Служащие"
@@ -5370,6 +5655,18 @@
                       "ref": "OCzPo",
                       "name": "Служащие с флагами",
                       "width": "fill_container",
+                      "height": 88,
+                      "padding": [
+                        12,
+                        16
+                      ],
+                      "gap": 4,
+                      "cornerRadius": 0,
+                      "stroke": "$line",
+                      "strokeWidth": {
+                        "right": 1
+                      },
+                      "strokeAlignment": "inner",
                       "descendants": {
                         "Xb9n4": {
                           "content": "Служащие с флагами"
@@ -5388,6 +5685,18 @@
                       "ref": "OCzPo",
                       "name": "Флаги высокого уровня",
                       "width": "fill_container",
+                      "height": 88,
+                      "padding": [
+                        12,
+                        16
+                      ],
+                      "gap": 4,
+                      "cornerRadius": 0,
+                      "stroke": "$line",
+                      "strokeWidth": {
+                        "right": 1
+                      },
+                      "strokeAlignment": "inner",
                       "descendants": {
                         "Xb9n4": {
                           "content": "Флаги высокого уровня"
@@ -5406,6 +5715,16 @@
                       "ref": "OCzPo",
                       "name": "Обращения",
                       "width": "fill_container",
+                      "height": 88,
+                      "padding": [
+                        12,
+                        16
+                      ],
+                      "gap": 4,
+                      "cornerRadius": 0,
+                      "stroke": "$line",
+                      "strokeWidth": 0,
+                      "strokeAlignment": "inner",
                       "descendants": {
                         "Xb9n4": {
                           "content": "Обращения"
@@ -5998,8 +6317,12 @@
                       "id": "JNq68",
                       "name": "Распределения",
                       "width": "fill_container",
+                      "fill": "$paper",
+                      "cornerRadius": 8,
+                      "stroke": "$line",
+                      "strokeWidth": 1,
+                      "strokeAlignment": "inner",
                       "layout": "vertical",
-                      "gap": 12,
                       "children": [
                         {
                           "type": "frame",
@@ -6007,9 +6330,10 @@
                           "name": "Флаги по уровням",
                           "width": "fill_container",
                           "fill": "$paper",
-                          "cornerRadius": 8,
                           "stroke": "$line",
-                          "strokeWidth": 1,
+                          "strokeWidth": {
+                            "bottom": 1
+                          },
                           "strokeAlignment": "inner",
                           "layout": "vertical",
                           "gap": 9,
@@ -6203,9 +6527,7 @@
                           "name": "Статусы обращений",
                           "width": "fill_container",
                           "fill": "$paper",
-                          "cornerRadius": 8,
                           "stroke": "$line",
-                          "strokeWidth": 1,
                           "strokeAlignment": "inner",
                           "layout": "vertical",
                           "gap": 9,
@@ -6455,19 +6777,18 @@
                   "id": "g4diN",
                   "name": "Назначение рейтинга",
                   "width": "fill_container",
-                  "fill": "$blue-soft",
-                  "cornerRadius": 8,
+                  "fill": "#00000000",
+                  "stroke": "#00000000",
                   "gap": 12,
-                  "padding": [
-                    12,
-                    16
-                  ],
                   "alignItems": "center",
                   "children": [
                     {
                       "type": "icon",
                       "id": "ZI9F3",
+                      "x": 16,
+                      "y": 22,
                       "name": "Иконка · info",
+                      "enabled": false,
                       "width": 18,
                       "height": 18,
                       "icon": "info",
@@ -6485,7 +6806,10 @@
                         {
                           "type": "text",
                           "id": "E4l4pQ",
+                          "x": 0,
+                          "y": 0,
                           "name": "Назначение рейтинга",
+                          "enabled": false,
                           "fill": "$blue",
                           "content": "Назначение рейтинга",
                           "lineHeight": 1.38,
@@ -6500,7 +6824,7 @@
                           "fill": "$muted",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "Используйте балл для очередности проверки. Оценку обстоятельств проводит аналитик.",
+                          "content": "Балл задаёт приоритет проверки, но не подтверждает нарушение.",
                           "lineHeight": 1.38,
                           "fontFamily": "$font",
                           "fontSize": 13
@@ -6562,7 +6886,7 @@
               "id": "G0ijtb",
               "name": "Верхняя панель",
               "width": "fill_container",
-              "height": 64,
+              "height": 56,
               "fill": "$paper",
               "stroke": "$line",
               "strokeWidth": {
@@ -6586,7 +6910,10 @@
                     {
                       "type": "icon",
                       "id": "NGlGn",
+                      "x": 0,
+                      "y": 1,
                       "name": "Иконка · panels-top-left",
+                      "enabled": false,
                       "width": 16,
                       "height": 16,
                       "icon": "panels-top-left",
@@ -6639,18 +6966,23 @@
                       "type": "ref",
                       "ref": "a7bJmn",
                       "name": "Демонстрационные данные",
-                      "fill": "$blue-soft",
+                      "fill": "#00000000",
+                      "padding": 0,
                       "descendants": {
                         "lGrKl": {
                           "content": "Демонстрационные данные",
-                          "fill": "$blue"
+                          "fill": "$muted",
+                          "fontWeight": "500"
                         }
                       }
                     },
                     {
                       "type": "ellipse",
                       "id": "Y5MmTg",
+                      "x": 196,
+                      "y": 0,
                       "name": "Аватар аналитика",
+                      "enabled": false,
                       "fill": "$soft",
                       "width": 24,
                       "height": 24
@@ -6658,7 +6990,10 @@
                     {
                       "type": "text",
                       "id": "RZzEp",
+                      "x": 234,
+                      "y": 3,
                       "name": "Аналитик",
+                      "enabled": false,
                       "fill": "$muted",
                       "content": "Аналитик",
                       "lineHeight": 1.38,
@@ -6676,7 +7011,7 @@
               "name": "Содержимое",
               "width": "fill_container",
               "layout": "vertical",
-              "gap": 20,
+              "gap": 16,
               "padding": [
                 24,
                 32
@@ -6706,7 +7041,7 @@
                       "id": "fFnTR",
                       "name": "Типовые риски полномочий и статистика сигналов — отдельно от оценки служ",
                       "fill": "$muted",
-                      "content": "Типовые риски полномочий и статистика сигналов — отдельно от оценки служащих",
+                      "content": "Типовой риск зависит от полномочий должности, а не от балла сотрудника.",
                       "lineHeight": 1.38,
                       "fontFamily": "$font",
                       "fontSize": 14
@@ -6746,7 +7081,10 @@
                     {
                       "type": "frame",
                       "id": "xmiw1",
+                      "x": 854,
+                      "y": 12,
                       "name": "Уровни риска",
+                      "enabled": false,
                       "gap": 8,
                       "alignItems": "center",
                       "children": [
@@ -7780,8 +8118,12 @@
                       "id": "a56gl",
                       "name": "Выбранная должность",
                       "width": "fill_container",
+                      "fill": "$paper",
+                      "cornerRadius": 8,
+                      "stroke": "$line",
+                      "strokeWidth": 1,
+                      "strokeAlignment": "inner",
                       "layout": "vertical",
-                      "gap": 12,
                       "children": [
                         {
                           "id": "Izn5C",
@@ -7789,9 +8131,17 @@
                           "ref": "K0FxwI",
                           "name": "Детали выбранной должности",
                           "width": "fill_container",
+                          "stroke": "$line",
+                          "strokeWidth": {
+                            "bottom": 1
+                          },
+                          "strokeAlignment": "inner",
+                          "cornerRadius": 0,
+                          "padding": 16,
                           "descendants": {
                             "A1wNZ": {
-                              "content": "ВЫБРАННАЯ ДОЛЖНОСТЬ"
+                              "content": "ВЫБРАННАЯ ДОЛЖНОСТЬ",
+                              "enabled": false
                             },
                             "G7kKq": {
                               "content": "Начальник отдела закупок"
@@ -7807,12 +8157,10 @@
                           "name": "Типовые риски и переходы",
                           "width": "fill_container",
                           "fill": "$paper",
-                          "cornerRadius": 8,
                           "stroke": "$line",
-                          "strokeWidth": 1,
                           "strokeAlignment": "inner",
                           "layout": "vertical",
-                          "gap": 12,
+                          "gap": 8,
                           "padding": 16,
                           "children": [
                             {
@@ -7820,7 +8168,8 @@
                               "type": "ref",
                               "ref": "a7bJmn",
                               "name": "Высокий · типовой риск",
-                              "fill": "$rose-soft",
+                              "fill": "#00000000",
+                              "padding": 0,
                               "descendants": {
                                 "lGrKl": {
                                   "content": "Высокий · типовой риск",
@@ -7846,10 +8195,10 @@
                               "fill": "$muted",
                               "textGrowth": "fixed-width",
                               "width": "fill_container",
-                              "content": "Связи с подрядчиками и концентрацию закупок у одного поставщика.",
+                              "content": "Связи с подрядчиками и долю закупок у одного поставщика.",
                               "lineHeight": 1.38,
                               "fontFamily": "$font",
-                              "fontSize": 13
+                              "fontSize": 14
                             },
                             {
                               "type": "rectangle",
@@ -7902,8 +8251,11 @@
                         {
                           "type": "frame",
                           "id": "ZBHcT",
+                          "x": 0,
+                          "y": 405,
                           "name": "Типовой риск — не личный балл",
-                          "width": "fill_container",
+                          "enabled": false,
+                          "width": "fill_container(368)",
                           "fill": "$blue-soft",
                           "cornerRadius": 8,
                           "gap": 12,
@@ -8015,7 +8367,7 @@
               "id": "a3gHX",
               "name": "Верхняя панель",
               "width": "fill_container",
-              "height": 64,
+              "height": 56,
               "fill": "$paper",
               "stroke": "$line",
               "strokeWidth": {
@@ -8039,7 +8391,10 @@
                     {
                       "type": "icon",
                       "id": "nkirl",
+                      "x": 0,
+                      "y": 1,
                       "name": "Иконка · panels-top-left",
+                      "enabled": false,
                       "width": 16,
                       "height": 16,
                       "icon": "panels-top-left",
@@ -8092,18 +8447,23 @@
                       "type": "ref",
                       "ref": "a7bJmn",
                       "name": "Демонстрационные данные",
-                      "fill": "$blue-soft",
+                      "fill": "#00000000",
+                      "padding": 0,
                       "descendants": {
                         "lGrKl": {
                           "content": "Демонстрационные данные",
-                          "fill": "$blue"
+                          "fill": "$muted",
+                          "fontWeight": "500"
                         }
                       }
                     },
                     {
                       "type": "ellipse",
                       "id": "BiT4v",
+                      "x": 196,
+                      "y": 0,
                       "name": "Аватар аналитика",
+                      "enabled": false,
                       "fill": "$soft",
                       "width": 24,
                       "height": 24
@@ -8111,7 +8471,10 @@
                     {
                       "type": "text",
                       "id": "LwOXs",
+                      "x": 234,
+                      "y": 3,
                       "name": "Аналитик",
+                      "enabled": false,
                       "fill": "$muted",
                       "content": "Аналитик",
                       "lineHeight": 1.38,
@@ -8129,7 +8492,7 @@
               "name": "Содержимое",
               "width": "fill_container",
               "layout": "vertical",
-              "gap": 20,
+              "gap": 16,
               "padding": [
                 24,
                 32
@@ -8165,7 +8528,10 @@
                         {
                           "type": "text",
                           "id": "rC6d0",
+                          "x": 0,
+                          "y": 43,
                           "name": "От регистрации сообщения до передачи на проверку",
+                          "enabled": false,
                           "fill": "$muted",
                           "content": "От регистрации сообщения до передачи на проверку",
                           "lineHeight": 1.38,
@@ -8285,8 +8651,11 @@
                     {
                       "type": "frame",
                       "id": "GhNgP",
+                      "x": 0,
+                      "y": 0,
                       "name": "Заголовок таблицы",
-                      "width": "fill_container",
+                      "enabled": false,
+                      "width": "fill_container(1160)",
                       "height": 54,
                       "padding": [
                         0,
@@ -8419,7 +8788,7 @@
                       "ref": "c4OKBE",
                       "name": "Строка 1",
                       "width": "fill_container",
-                      "height": 72,
+                      "height": 60,
                       "fill": "$blue-soft",
                       "children": [
                         {
@@ -8560,7 +8929,7 @@
                       "ref": "c4OKBE",
                       "name": "Строка 2",
                       "width": "fill_container",
-                      "height": 72,
+                      "height": 60,
                       "fill": "$paper",
                       "children": [
                         {
@@ -8701,7 +9070,7 @@
                       "ref": "c4OKBE",
                       "name": "Строка 3",
                       "width": "fill_container",
-                      "height": 72,
+                      "height": 60,
                       "fill": "$paper",
                       "children": [
                         {
@@ -8842,7 +9211,7 @@
                       "ref": "c4OKBE",
                       "name": "Строка 4",
                       "width": "fill_container",
-                      "height": 72,
+                      "height": 60,
                       "fill": "$paper",
                       "children": [
                         {
@@ -8983,7 +9352,7 @@
                       "ref": "c4OKBE",
                       "name": "Строка 5",
                       "width": "fill_container",
-                      "height": 72,
+                      "height": 60,
                       "fill": "$paper",
                       "children": [
                         {
@@ -9136,7 +9505,7 @@
                           "id": "dTsfI",
                           "name": "Показано 1–5 из 106",
                           "fill": "$muted",
-                          "content": "Показано 1–5 из 106",
+                          "content": "1–5 из 106 обращений",
                           "lineHeight": 1.38,
                           "fontFamily": "$font",
                           "fontSize": 12
@@ -9161,19 +9530,18 @@
                   "id": "kWPYO",
                   "name": "Сигналы из обращения — предварительные",
                   "width": "fill_container",
-                  "fill": "$blue-soft",
-                  "cornerRadius": 8,
+                  "fill": "#00000000",
+                  "stroke": "#00000000",
                   "gap": 12,
-                  "padding": [
-                    12,
-                    16
-                  ],
                   "alignItems": "center",
                   "children": [
                     {
                       "type": "icon",
                       "id": "i5KvYs",
+                      "x": 16,
+                      "y": 22,
                       "name": "Иконка · info",
+                      "enabled": false,
                       "width": 18,
                       "height": 18,
                       "icon": "info",
@@ -9191,7 +9559,10 @@
                         {
                           "type": "text",
                           "id": "LVOol",
+                          "x": 0,
+                          "y": 0,
                           "name": "Сигналы из обращения — предварительные",
+                          "enabled": false,
                           "fill": "$blue",
                           "content": "Сигналы из обращения — предварительные",
                           "lineHeight": 1.38,
@@ -9206,7 +9577,7 @@
                           "fill": "$muted",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "Текст обращения и результаты разбора проверяет компетентный сотрудник.",
+                          "content": "Результаты разбора предварительные. Их проверяет аналитик.",
                           "lineHeight": 1.38,
                           "fontFamily": "$font",
                           "fontSize": 13
@@ -9268,7 +9639,7 @@
               "id": "E79X9",
               "name": "Верхняя панель",
               "width": "fill_container",
-              "height": 64,
+              "height": 56,
               "fill": "$paper",
               "stroke": "$line",
               "strokeWidth": {
@@ -9292,7 +9663,10 @@
                     {
                       "type": "icon",
                       "id": "I5JSd",
+                      "x": 0,
+                      "y": 1,
                       "name": "Иконка · panels-top-left",
+                      "enabled": false,
                       "width": 16,
                       "height": 16,
                       "icon": "panels-top-left",
@@ -9345,18 +9719,23 @@
                       "type": "ref",
                       "ref": "a7bJmn",
                       "name": "Демонстрационные данные",
-                      "fill": "$blue-soft",
+                      "fill": "#00000000",
+                      "padding": 0,
                       "descendants": {
                         "lGrKl": {
                           "content": "Демонстрационные данные",
-                          "fill": "$blue"
+                          "fill": "$muted",
+                          "fontWeight": "500"
                         }
                       }
                     },
                     {
                       "type": "ellipse",
                       "id": "m7cFN",
+                      "x": 196,
+                      "y": 0,
                       "name": "Аватар аналитика",
+                      "enabled": false,
                       "fill": "$soft",
                       "width": 24,
                       "height": 24
@@ -9364,7 +9743,10 @@
                     {
                       "type": "text",
                       "id": "FJ0qR",
+                      "x": 234,
+                      "y": 3,
                       "name": "Аналитик",
+                      "enabled": false,
                       "fill": "$muted",
                       "content": "Аналитик",
                       "lineHeight": 1.38,
@@ -9382,7 +9764,7 @@
               "name": "Содержимое",
               "width": "fill_container",
               "layout": "vertical",
-              "gap": 20,
+              "gap": 16,
               "padding": [
                 24,
                 32
@@ -9410,7 +9792,10 @@
                     {
                       "type": "text",
                       "id": "fECI8",
+                      "x": 0,
+                      "y": 43,
                       "name": "← К реестру обращений",
+                      "enabled": false,
                       "fill": "$muted",
                       "content": "← К реестру обращений",
                       "lineHeight": 1.38,
@@ -9437,14 +9822,17 @@
                       "strokeWidth": 1,
                       "strokeAlignment": "inner",
                       "layout": "vertical",
-                      "gap": 18,
+                      "gap": 16,
                       "padding": 24,
                       "children": [
                         {
                           "type": "frame",
                           "id": "V9w4M",
+                          "x": 24,
+                          "y": 24,
                           "name": "Регистрация обращения",
-                          "width": "fill_container",
+                          "enabled": false,
+                          "width": "fill_container(712)",
                           "layout": "vertical",
                           "gap": 4,
                           "children": [
@@ -9519,10 +9907,10 @@
                               "id": "XZyPm",
                               "name": "Поле текста",
                               "width": "fill_container",
-                              "height": 216,
+                              "height": 160,
                               "fill": "$paper",
                               "cornerRadius": 8,
-                              "stroke": "$blue-border",
+                              "stroke": "$line",
                               "strokeWidth": 1,
                               "strokeAlignment": "inner",
                               "layout": "vertical",
@@ -9549,7 +9937,7 @@
                               "fill": "$muted",
                               "textGrowth": "fixed-width",
                               "width": "fill_container",
-                              "content": "Добавьте сведения, по которым можно найти записи: даты, суммы, названия.",
+                              "content": "Укажите даты, суммы и названия, по которым можно найти записи.",
                               "lineHeight": 1.38,
                               "fontFamily": "$font",
                               "fontSize": 12
@@ -9615,15 +10003,28 @@
                           "ref": "K0FxwI",
                           "name": "Что произойдёт дальше",
                           "width": "fill_container",
+                          "stroke": "$line",
+                          "strokeWidth": {
+                            "left": 1
+                          },
+                          "strokeAlignment": "inner",
+                          "cornerRadius": 0,
+                          "fill": "#00000000",
+                          "padding": [
+                            0,
+                            16
+                          ],
                           "descendants": {
                             "A1wNZ": {
-                              "content": "ПОСЛЕ РЕГИСТРАЦИИ"
+                              "content": "ПОСЛЕ РЕГИСТРАЦИИ",
+                              "enabled": false
                             },
                             "G7kKq": {
-                              "content": "Предварительный разбор"
+                              "content": "После отправки",
+                              "fontSize": 16
                             },
                             "bIkFz": {
-                              "content": "Система выделит упомянутые сущности, предложит категорию и покажет возможные связи с профилями. Результат проверяет аналитик."
+                              "content": "Система предложит категорию и связанные профили. Аналитик проверит результат."
                             }
                           }
                         }
@@ -9684,7 +10085,7 @@
               "id": "r2GP2C",
               "name": "Верхняя панель",
               "width": "fill_container",
-              "height": 64,
+              "height": 56,
               "fill": "$paper",
               "stroke": "$line",
               "strokeWidth": {
@@ -9708,7 +10109,10 @@
                     {
                       "type": "icon",
                       "id": "CIg3L",
+                      "x": 0,
+                      "y": 1,
                       "name": "Иконка · panels-top-left",
+                      "enabled": false,
                       "width": 16,
                       "height": 16,
                       "icon": "panels-top-left",
@@ -9761,18 +10165,23 @@
                       "type": "ref",
                       "ref": "a7bJmn",
                       "name": "Демонстрационные данные",
-                      "fill": "$blue-soft",
+                      "fill": "#00000000",
+                      "padding": 0,
                       "descendants": {
                         "lGrKl": {
                           "content": "Демонстрационные данные",
-                          "fill": "$blue"
+                          "fill": "$muted",
+                          "fontWeight": "500"
                         }
                       }
                     },
                     {
                       "type": "ellipse",
                       "id": "UoPBF",
+                      "x": 196,
+                      "y": 0,
                       "name": "Аватар аналитика",
+                      "enabled": false,
                       "fill": "$soft",
                       "width": 24,
                       "height": 24
@@ -9780,7 +10189,10 @@
                     {
                       "type": "text",
                       "id": "m0z1Ml",
+                      "x": 234,
+                      "y": 3,
                       "name": "Аналитик",
+                      "enabled": false,
                       "fill": "$muted",
                       "content": "Аналитик",
                       "lineHeight": 1.38,
@@ -9798,7 +10210,7 @@
               "name": "Содержимое",
               "width": "fill_container",
               "layout": "vertical",
-              "gap": 20,
+              "gap": 16,
               "padding": [
                 24,
                 32
@@ -9874,7 +10286,8 @@
                       "type": "ref",
                       "ref": "a7bJmn",
                       "name": "Разобрано",
-                      "fill": "$blue-soft",
+                      "fill": "#00000000",
+                      "padding": 0,
                       "descendants": {
                         "lGrKl": {
                           "content": "Разобрано",
@@ -9888,6 +10301,7 @@
                       "ref": "a7bJmn",
                       "name": "Закупки",
                       "fill": "$soft",
+                      "enabled": false,
                       "descendants": {
                         "lGrKl": {
                           "content": "Закупки",
@@ -9903,7 +10317,7 @@
                       "fill": "$amber-soft",
                       "descendants": {
                         "lGrKl": {
-                          "content": "Вывод предварительный",
+                          "content": "Предварительный вывод",
                           "fill": "$amber"
                         }
                       }
@@ -9953,10 +10367,13 @@
                             {
                               "type": "text",
                               "id": "QZGmb",
+                              "x": 0,
+                              "y": 27,
                               "name": "Сущности выделены цветом и отмечены в легенде.",
+                              "enabled": false,
                               "fill": "$muted",
                               "textGrowth": "fixed-width",
-                              "width": "fill_container",
+                              "width": "fill_container(616)",
                               "content": "Сущности выделены цветом и отмечены в легенде.",
                               "lineHeight": 1.38,
                               "fontFamily": "$font",
@@ -10238,8 +10655,12 @@
                       "id": "V6oUi8",
                       "name": "Результат разбора",
                       "width": "fill_container",
+                      "fill": "$paper",
+                      "cornerRadius": 8,
+                      "stroke": "$line",
+                      "strokeWidth": 1,
+                      "strokeAlignment": "inner",
                       "layout": "vertical",
-                      "gap": 12,
                       "children": [
                         {
                           "type": "frame",
@@ -10247,12 +10668,13 @@
                           "name": "Результат разбора",
                           "width": "fill_container",
                           "fill": "$paper",
-                          "cornerRadius": 8,
                           "stroke": "$line",
-                          "strokeWidth": 1,
+                          "strokeWidth": {
+                            "bottom": 1
+                          },
                           "strokeAlignment": "inner",
                           "layout": "vertical",
-                          "gap": 9,
+                          "gap": 8,
                           "padding": 16,
                           "children": [
                             {
@@ -10281,7 +10703,8 @@
                               "type": "ref",
                               "ref": "a7bJmn",
                               "name": "Категория · Закупки",
-                              "fill": "$blue-soft",
+                              "fill": "#00000000",
+                              "padding": 0,
                               "descendants": {
                                 "lGrKl": {
                                   "content": "Категория · Закупки",
@@ -10307,10 +10730,10 @@
                               "fill": "$muted",
                               "textGrowth": "fixed-width",
                               "width": "fill_container",
-                              "content": "Признаки: упомянуты служащий, компания, сумма и дата публикации контракта.",
+                              "content": "Выделены ФИО, компания, сумма и дата публикации контракта.",
                               "lineHeight": 1.38,
                               "fontFamily": "$font",
-                              "fontSize": 13
+                              "fontSize": 14
                             },
                             {
                               "type": "rectangle",
@@ -10338,10 +10761,10 @@
                               "fill": "$muted",
                               "textGrowth": "fixed-width",
                               "width": "fill_container",
-                              "content": "Подразделение профилактики коррупции · первичная проверка.",
+                              "content": "Подразделение профилактики коррупции: первичная проверка.",
                               "lineHeight": 1.38,
                               "fontFamily": "$font",
-                              "fontSize": 13
+                              "fontSize": 14
                             }
                           ]
                         },
@@ -10351,9 +10774,7 @@
                           "name": "Связанный профиль",
                           "width": "fill_container",
                           "fill": "$paper",
-                          "cornerRadius": 8,
                           "stroke": "$line",
-                          "strokeWidth": 1,
                           "strokeAlignment": "inner",
                           "layout": "vertical",
                           "gap": 8,
@@ -10398,7 +10819,7 @@
                               "fill": "$muted",
                               "textGrowth": "fixed-width",
                               "width": "fill_container",
-                              "content": "Совпадение по ФИО и должности в реестре.",
+                              "content": "Совпали ФИО и должность.",
                               "lineHeight": 1.38,
                               "fontFamily": "$font",
                               "fontSize": 13
@@ -10408,8 +10829,11 @@
                         {
                           "type": "frame",
                           "id": "aFtzy",
+                          "x": 0,
+                          "y": 357,
                           "name": "Требуется проверка",
-                          "width": "fill_container",
+                          "enabled": false,
+                          "width": "fill_container(484)",
                           "fill": "$blue-soft",
                           "cornerRadius": 8,
                           "gap": 12,
@@ -10422,7 +10846,10 @@
                             {
                               "type": "icon",
                               "id": "WydEC",
+                              "x": 16,
+                              "y": 31,
                               "name": "Иконка · info",
+                              "enabled": false,
                               "width": 18,
                               "height": 18,
                               "icon": "info",
@@ -10521,7 +10948,7 @@
               "id": "c8Q8J",
               "name": "Верхняя панель",
               "width": "fill_container",
-              "height": 64,
+              "height": 56,
               "fill": "$paper",
               "stroke": "$line",
               "strokeWidth": {
@@ -10545,7 +10972,10 @@
                     {
                       "type": "icon",
                       "id": "oXSaF",
+                      "x": 0,
+                      "y": 1,
                       "name": "Иконка · panels-top-left",
+                      "enabled": false,
                       "width": 16,
                       "height": 16,
                       "icon": "panels-top-left",
@@ -10598,18 +11028,23 @@
                       "type": "ref",
                       "ref": "a7bJmn",
                       "name": "Демонстрационные данные",
-                      "fill": "$blue-soft",
+                      "fill": "#00000000",
+                      "padding": 0,
                       "descendants": {
                         "lGrKl": {
                           "content": "Демонстрационные данные",
-                          "fill": "$blue"
+                          "fill": "$muted",
+                          "fontWeight": "500"
                         }
                       }
                     },
                     {
                       "type": "ellipse",
                       "id": "z3VKw",
+                      "x": 196,
+                      "y": 0,
                       "name": "Аватар аналитика",
+                      "enabled": false,
                       "fill": "$soft",
                       "width": 24,
                       "height": 24
@@ -10617,7 +11052,10 @@
                     {
                       "type": "text",
                       "id": "C20r8",
+                      "x": 234,
+                      "y": 3,
                       "name": "Аналитик",
+                      "enabled": false,
                       "fill": "$muted",
                       "content": "Аналитик",
                       "lineHeight": 1.38,
@@ -10635,7 +11073,7 @@
               "name": "Содержимое",
               "width": "fill_container",
               "layout": "vertical",
-              "gap": 20,
+              "gap": 16,
               "padding": [
                 24,
                 32
@@ -10671,7 +11109,10 @@
                         {
                           "type": "text",
                           "id": "nR1Ca",
+                          "x": 0,
+                          "y": 43,
                           "name": "← К профилю Соколова А. В.",
+                          "enabled": false,
                           "fill": "$muted",
                           "content": "← К профилю Соколова А. В.",
                           "lineHeight": 1.38,
@@ -10704,28 +11145,26 @@
                   "type": "frame",
                   "id": "f5WVqr",
                   "name": "Читаемый черновик",
-                  "width": 864,
+                  "width": 784,
                   "fill": "$paper",
                   "cornerRadius": 8,
                   "stroke": "$line",
                   "strokeWidth": 1,
                   "strokeAlignment": "inner",
                   "layout": "vertical",
-                  "gap": 14,
-                  "padding": [
-                    28,
-                    32
-                  ],
+                  "gap": 16,
+                  "padding": 32,
                   "children": [
                     {
                       "id": "N9VR6",
                       "type": "ref",
                       "ref": "a7bJmn",
                       "name": "Черновик · не утверждён",
-                      "fill": "$amber-soft",
+                      "fill": "#00000000",
+                      "padding": 0,
                       "descendants": {
                         "lGrKl": {
-                          "content": "Черновик · не утверждён",
+                          "content": "Черновик",
                           "fill": "$amber"
                         }
                       }
@@ -10774,7 +11213,7 @@
                           "id": "yxIds",
                           "name": "01  Установленные по реестрам связи",
                           "fill": "$ink",
-                          "content": "01  Установленные по реестрам связи",
+                          "content": "Сведения из реестров",
                           "lineHeight": 1.38,
                           "fontFamily": "$font",
                           "fontSize": 15,
@@ -10807,7 +11246,7 @@
                           "id": "UiKq9",
                           "name": "02  Источники и основание",
                           "fill": "$ink",
-                          "content": "02  Источники и основание",
+                          "content": "Источники и основание",
                           "lineHeight": 1.38,
                           "fontFamily": "$font",
                           "fontSize": 15,
@@ -10840,7 +11279,7 @@
                           "id": "O73jb5",
                           "name": "03  Что предлагается проверить",
                           "fill": "$ink",
-                          "content": "03  Что предлагается проверить",
+                          "content": "Что проверить",
                           "lineHeight": 1.38,
                           "fontFamily": "$font",
                           "fontSize": 15,
@@ -10853,7 +11292,7 @@
                           "fill": "$muted",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "Уточнить полномочия служащего на даты процедур, сверить сведения об участниках и проверить, заявлялся ли возможный конфликт интересов.",
+                          "content": "Сверить полномочия служащего на даты контрактов, состав участников процедур и сведения об уведомлении о возможном конфликте интересов.",
                           "lineHeight": 1.38,
                           "fontFamily": "$font",
                           "fontSize": 14
@@ -10865,19 +11304,26 @@
                       "id": "hPXvn",
                       "name": "Решение принимает уполномоченное лицо",
                       "width": "fill_container",
-                      "fill": "$blue-soft",
-                      "cornerRadius": 8,
+                      "fill": "#00000000",
+                      "stroke": "$line",
+                      "strokeWidth": {
+                        "top": 1
+                      },
+                      "strokeAlignment": "inner",
                       "gap": 12,
                       "padding": [
                         12,
-                        16
+                        0
                       ],
                       "alignItems": "center",
                       "children": [
                         {
                           "type": "icon",
                           "id": "gZWNM",
+                          "x": 16,
+                          "y": 22,
                           "name": "Иконка · info",
+                          "enabled": false,
                           "width": 18,
                           "height": 18,
                           "icon": "info",
@@ -10974,7 +11420,7 @@
               "id": "MGey0",
               "name": "Верхняя панель",
               "width": "fill_container",
-              "height": 64,
+              "height": 56,
               "fill": "$paper",
               "stroke": "$line",
               "strokeWidth": {
@@ -10998,7 +11444,10 @@
                     {
                       "type": "icon",
                       "id": "iMuOG",
+                      "x": 0,
+                      "y": 1,
                       "name": "Иконка · panels-top-left",
+                      "enabled": false,
                       "width": 16,
                       "height": 16,
                       "icon": "panels-top-left",
@@ -11051,18 +11500,23 @@
                       "type": "ref",
                       "ref": "a7bJmn",
                       "name": "Демонстрационные данные",
-                      "fill": "$blue-soft",
+                      "fill": "#00000000",
+                      "padding": 0,
                       "descendants": {
                         "lGrKl": {
                           "content": "Демонстрационные данные",
-                          "fill": "$blue"
+                          "fill": "$muted",
+                          "fontWeight": "500"
                         }
                       }
                     },
                     {
                       "type": "ellipse",
                       "id": "ioXx9",
+                      "x": 196,
+                      "y": 0,
                       "name": "Аватар аналитика",
+                      "enabled": false,
                       "fill": "$soft",
                       "width": 24,
                       "height": 24
@@ -11070,7 +11524,10 @@
                     {
                       "type": "text",
                       "id": "UXJry",
+                      "x": 234,
+                      "y": 3,
                       "name": "Аналитик",
+                      "enabled": false,
                       "fill": "$muted",
                       "content": "Аналитик",
                       "lineHeight": 1.38,
@@ -11088,7 +11545,7 @@
               "name": "Содержимое",
               "width": "fill_container",
               "layout": "vertical",
-              "gap": 20,
+              "gap": 16,
               "padding": [
                 24,
                 32
@@ -11116,7 +11573,10 @@
                     {
                       "type": "text",
                       "id": "wcE1b",
+                      "x": 0,
+                      "y": 43,
                       "name": "Поиск по демонстрационным данным с указанием источников",
+                      "enabled": false,
                       "fill": "$muted",
                       "content": "Поиск по демонстрационным данным с указанием источников",
                       "lineHeight": 1.38,
@@ -11149,7 +11609,10 @@
                         {
                           "type": "text",
                           "id": "kZ0S2",
+                          "x": 20,
+                          "y": 20,
                           "name": "ДИАЛОГ",
+                          "enabled": false,
                           "fill": "$blue",
                           "content": "ДИАЛОГ",
                           "lineHeight": 1.38,
@@ -11163,18 +11626,16 @@
                           "id": "F5ms63",
                           "name": "Вопрос аналитика",
                           "width": "fill_container",
-                          "fill": "$blue-soft",
-                          "cornerRadius": 8,
+                          "fill": "#00000000",
                           "layout": "vertical",
-                          "gap": 5,
-                          "padding": 14,
+                          "gap": 4,
                           "children": [
                             {
                               "type": "text",
                               "id": "A5HtoV",
                               "name": "Вы · 10:45",
-                              "fill": "$blue",
-                              "content": "Вы · 10:45",
+                              "fill": "$muted",
+                              "content": "Вопрос",
                               "lineHeight": 1.38,
                               "fontFamily": "$font",
                               "fontSize": 12,
@@ -11200,18 +11661,27 @@
                           "id": "GjSIh",
                           "name": "Ответ ассистента",
                           "width": "fill_container",
-                          "fill": "$soft",
-                          "cornerRadius": 8,
+                          "fill": "#00000000",
+                          "stroke": "$line",
+                          "strokeWidth": {
+                            "top": 1
+                          },
+                          "strokeAlignment": "inner",
                           "layout": "vertical",
                           "gap": 8,
-                          "padding": 14,
+                          "padding": [
+                            12,
+                            0,
+                            0,
+                            0
+                          ],
                           "children": [
                             {
                               "type": "text",
                               "id": "OkEV5",
                               "name": "Ассистент · 10:45",
-                              "fill": "$blue",
-                              "content": "Ассистент · 10:45",
+                              "fill": "$muted",
+                              "content": "Ответ",
                               "lineHeight": 1.38,
                               "fontFamily": "$font",
                               "fontSize": 12,
@@ -11224,7 +11694,7 @@
                               "fill": "$ink",
                               "textGrowth": "fixed-width",
                               "width": "fill_container",
-                              "content": "В демонстрационной выборке найден один подходящий профиль: Соколов А. В., начальник отдела закупок Департамента дорожного хозяйства.",
+                              "content": "Найден один профиль: Соколов А. В., начальник отдела закупок Департамента дорожного хозяйства.",
                               "lineHeight": 1.38,
                               "fontFamily": "$font",
                               "fontSize": 14
@@ -11236,7 +11706,7 @@
                               "fill": "$ink",
                               "textGrowth": "fixed-width",
                               "width": "fill_container",
-                              "content": "Его супруга указана как учредитель ООО «ДорСтройРесурс». У поставщика пять контрактов с департаментом на 38 млн ₽. Это сигнал для проверки, а не вывод о нарушении.",
+                              "content": "Его супруга — учредитель ООО «ДорСтройРесурс». У компании пять контрактов с департаментом на 38 млн ₽. Это сигнал для проверки, не вывод о нарушении.",
                               "lineHeight": 1.38,
                               "fontFamily": "$font",
                               "fontSize": 14
@@ -11298,8 +11768,12 @@
                       "id": "MftWA",
                       "name": "Источники ответа",
                       "width": "fill_container",
+                      "fill": "$paper",
+                      "cornerRadius": 8,
+                      "stroke": "$line",
+                      "strokeWidth": 1,
+                      "strokeAlignment": "inner",
                       "layout": "vertical",
-                      "gap": 12,
                       "children": [
                         {
                           "type": "frame",
@@ -11307,12 +11781,13 @@
                           "name": "Источники ответа",
                           "width": "fill_container",
                           "fill": "$paper",
-                          "cornerRadius": 8,
                           "stroke": "$line",
-                          "strokeWidth": 1,
+                          "strokeWidth": {
+                            "bottom": 1
+                          },
                           "strokeAlignment": "inner",
                           "layout": "vertical",
-                          "gap": 12,
+                          "gap": 8,
                           "padding": 16,
                           "children": [
                             {
@@ -11455,12 +11930,10 @@
                           "name": "Пример вопроса",
                           "width": "fill_container",
                           "fill": "$paper",
-                          "cornerRadius": 8,
                           "stroke": "$line",
-                          "strokeWidth": 1,
                           "strokeAlignment": "inner",
                           "layout": "vertical",
-                          "gap": 6,
+                          "gap": 4,
                           "padding": 16,
                           "children": [
                             {
