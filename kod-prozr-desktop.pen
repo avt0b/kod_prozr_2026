@@ -1357,7 +1357,12 @@
                       "name": "Строка 1",
                       "width": "fill_container",
                       "height": 56,
-                      "fill": "$blue-soft",
+                      "fill": "$soft",
+                      "stroke": "$blue",
+                      "strokeWidth": {
+                        "left": 3
+                      },
+                      "strokeAlignment": "inner",
                       "children": [
                         {
                           "type": "frame",
@@ -1433,7 +1438,7 @@
                                           "lineHeight": 1.38,
                                           "fontFamily": "$font",
                                           "fontSize": 14,
-                                          "fontWeight": "550"
+                                          "fontWeight": "650"
                                         },
                                         {
                                           "type": "text",
@@ -2834,15 +2839,131 @@
                           "fontSize": 12
                         },
                         {
-                          "type": "text",
-                          "id": "Q8UPAm",
-                          "name": "‹     1     2     3     ›",
-                          "fill": "$blue",
-                          "content": "‹     1     2     3     ›",
-                          "lineHeight": 1.38,
-                          "fontFamily": "$font",
-                          "fontSize": 13,
-                          "fontWeight": "600"
+                          "type": "frame",
+                          "id": "kkfbA",
+                          "name": "Страницы",
+                          "gap": 4,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "IHo67",
+                              "name": "Предыдущая страница · недоступна",
+                              "width": 28,
+                              "height": 28,
+                              "fill": "#00000000",
+                              "cornerRadius": 4,
+                              "justifyContent": "center",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "g8sJId",
+                                  "name": "‹",
+                                  "fill": "$subtle",
+                                  "content": "‹",
+                                  "fontFamily": "$font",
+                                  "fontSize": 16,
+                                  "fontWeight": "500"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "rnrKv",
+                              "name": "Текущая страница · 1",
+                              "width": 28,
+                              "height": 28,
+                              "fill": "$blue-soft",
+                              "cornerRadius": 4,
+                              "stroke": "$blue-border",
+                              "strokeWidth": 1,
+                              "strokeAlignment": "inner",
+                              "justifyContent": "center",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "cftJb",
+                                  "name": "1",
+                                  "fill": "$blue",
+                                  "content": "1",
+                                  "fontFamily": "$font",
+                                  "fontSize": 13,
+                                  "fontWeight": "700"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "DnQxE",
+                              "name": "Страница 2",
+                              "width": 28,
+                              "height": 28,
+                              "fill": "#00000000",
+                              "cornerRadius": 4,
+                              "justifyContent": "center",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "Q2b4tQ",
+                                  "name": "2",
+                                  "fill": "$blue",
+                                  "content": "2",
+                                  "fontFamily": "$font",
+                                  "fontSize": 13,
+                                  "fontWeight": "500"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "b4zaDH",
+                              "name": "Страница 3",
+                              "width": 28,
+                              "height": 28,
+                              "fill": "#00000000",
+                              "cornerRadius": 4,
+                              "justifyContent": "center",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "rHvMI",
+                                  "name": "3",
+                                  "fill": "$blue",
+                                  "content": "3",
+                                  "fontFamily": "$font",
+                                  "fontSize": 13,
+                                  "fontWeight": "500"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "uM3qo",
+                              "name": "Следующая страница",
+                              "width": 28,
+                              "height": 28,
+                              "fill": "#00000000",
+                              "cornerRadius": 4,
+                              "justifyContent": "center",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "puAW8",
+                                  "name": "›",
+                                  "fill": "$blue",
+                                  "content": "›",
+                                  "fontFamily": "$font",
+                                  "fontSize": 16,
+                                  "fontWeight": "500"
+                                }
+                              ]
+                            }
+                          ]
                         }
                       ]
                     }
@@ -3318,11 +3439,11 @@
                                 {
                                   "type": "text",
                                   "id": "JUwXW",
-                                  "name": "Факт и повод для проверки",
+                                  "name": "Супруга Соколова указана как учредитель ООО «ДорСтройРесурс». У компании пять контрактов с департаментом, в закупках которого участвует Соколов.",
                                   "fill": "$muted",
                                   "textGrowth": "fixed-width",
                                   "width": "fill_container",
-                                  "content": "Супруга Соколова — учредитель поставщика, заключившего пять контрактов с департаментом, где Соколов участвует в закупках.",
+                                  "content": "Супруга Соколова указана как учредитель ООО «ДорСтройРесурс». У компании пять контрактов с департаментом, в закупках которого участвует Соколов.",
                                   "lineHeight": 1.42,
                                   "fontFamily": "$font",
                                   "fontSize": 14,
@@ -5279,8 +5400,9 @@
                               "lineHeight": 1.38
                             },
                             "bIkFz": {
-                              "content": "Супруга Соколова — учредитель поставщика. Компания заключила пять контрактов с департаментом, где Соколов участвует в закупках.",
-                              "fontSize": 14
+                              "content": "Компания, учреждённая супругой Соколова, заключила пять контрактов с департаментом, в закупках которого он участвует.",
+                              "fontSize": 14,
+                              "name": "Компания, учреждённая супругой Соколова, заключила пять контрактов с департаментом, в закупках которого он участвует."
                             }
                           }
                         },
@@ -5344,11 +5466,11 @@
                                 {
                                   "type": "text",
                                   "id": "hU9St",
-                                  "name": "Сведения о родственной связи",
+                                  "name": "Сведения о связи",
                                   "fill": "$blue",
                                   "textGrowth": "fixed-width",
                                   "width": "fill_container",
-                                  "content": "Сведения о родственной связи",
+                                  "content": "Сведения о связи",
                                   "lineHeight": 1.38,
                                   "fontFamily": "$font",
                                   "fontSize": 13,
@@ -5380,11 +5502,11 @@
                                 {
                                   "type": "text",
                                   "id": "Hc2xm",
-                                  "name": "Карточка компании · учредитель",
+                                  "name": "Карточка компании",
                                   "fill": "$blue",
                                   "textGrowth": "fixed-width",
                                   "width": "fill_container",
-                                  "content": "Карточка компании · учредитель",
+                                  "content": "Карточка компании",
                                   "lineHeight": 1.38,
                                   "fontFamily": "$font",
                                   "fontSize": 13,
@@ -5448,19 +5570,25 @@
                               "fontFamily": "$font",
                               "fontSize": 12,
                               "fontWeight": "normal"
-                            },
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "xX90Y",
+                          "name": "Не вывод о нарушении",
+                          "width": "fill_container",
+                          "fill": "#00000000",
+                          "layout": "vertical",
+                          "gap": 8,
+                          "padding": 16,
+                          "children": [
                             {
                               "type": "frame",
                               "id": "HyB6V",
                               "name": "Источник",
                               "width": "fill_container",
                               "gap": 7,
-                              "padding": [
-                                4,
-                                0,
-                                0,
-                                0
-                              ],
                               "alignItems": "center",
                               "children": [
                                 {
@@ -5479,30 +5607,18 @@
                                 {
                                   "type": "text",
                                   "id": "MU8tw",
-                                  "name": "273-ФЗ · ст. 10",
+                                  "name": "Правовое основание: 273-ФЗ, ст. 10",
                                   "fill": "$muted",
                                   "textGrowth": "fixed-width",
                                   "width": "fill_container",
-                                  "content": "Правовое основание · 273-ФЗ, ст. 10",
+                                  "content": "Правовое основание: 273-ФЗ, ст. 10",
                                   "lineHeight": 1.38,
                                   "fontFamily": "$font",
                                   "fontSize": 13,
                                   "fontWeight": "550"
                                 }
                               ]
-                            }
-                          ]
-                        },
-                        {
-                          "type": "frame",
-                          "id": "xX90Y",
-                          "name": "Не вывод о нарушении",
-                          "width": "fill_container",
-                          "fill": "#00000000",
-                          "gap": 12,
-                          "padding": 16,
-                          "alignItems": "center",
-                          "children": [
+                            },
                             {
                               "type": "icon",
                               "id": "i0SZPV",
@@ -5541,11 +5657,11 @@
                                 {
                                   "type": "text",
                                   "id": "Oohzh",
-                                  "name": "Сверьте записи и полномочия служащего на даты контрактов.",
+                                  "name": "Проверьте полномочия на даты контрактов. Флаг не подтверждает нарушение.",
                                   "fill": "$muted",
                                   "textGrowth": "fixed-width",
                                   "width": "fill_container",
-                                  "content": "Проверьте записи и полномочия на даты контрактов. Флаг не подтверждает нарушение.",
+                                  "content": "Проверьте полномочия на даты контрактов. Флаг не подтверждает нарушение.",
                                   "lineHeight": 1.38,
                                   "fontFamily": "$font",
                                   "fontSize": 13
@@ -8406,9 +8522,9 @@
                             {
                               "type": "text",
                               "id": "A7d2Gt",
-                              "name": "3 из 7 служащих имеют флаги",
+                              "name": "С флагами: 3 из 7 служащих",
                               "fill": "$ink",
-                              "content": "3 из 7 служащих имеют флаги",
+                              "content": "С флагами: 3 из 7 служащих",
                               "lineHeight": 1.38,
                               "fontFamily": "$font",
                               "fontSize": 14,
@@ -8417,9 +8533,9 @@
                             {
                               "type": "text",
                               "id": "X1U4HD",
-                              "name": "Соколов А. В. · 88 / 100 ↗",
+                              "name": "Соколов А. В.: 88 / 100",
                               "fill": "$blue",
-                              "content": "Соколов А. В. · 88 / 100 ↗",
+                              "content": "Соколов А. В.: 88 / 100",
                               "lineHeight": 1.38,
                               "fontFamily": "$font",
                               "fontSize": 13,
@@ -8433,7 +8549,8 @@
                               "descendants": {
                                 "KioaP": {
                                   "icon": "arrow-right",
-                                  "fill": "$blue"
+                                  "fill": "$blue",
+                                  "enabled": false
                                 },
                                 "qEm9W": {
                                   "content": "Рейтинг по этому органу",
@@ -8984,7 +9101,12 @@
                       "name": "Строка 1",
                       "width": "fill_container",
                       "height": 60,
-                      "fill": "$blue-soft",
+                      "fill": "$soft",
+                      "stroke": "$blue",
+                      "strokeWidth": {
+                        "left": 3
+                      },
+                      "strokeAlignment": "inner",
                       "children": [
                         {
                           "type": "frame",
@@ -9010,11 +9132,11 @@
                                 {
                                   "type": "text",
                                   "id": "D5xwU",
-                                  "name": "ОБР–0107 ↗",
+                                  "name": "ОБР–0107",
                                   "fill": "$blue",
                                   "textGrowth": "fixed-width",
                                   "width": "fill_container",
-                                  "content": "ОБР–0107 ↗",
+                                  "content": "ОБР–0107",
                                   "lineHeight": 1.38,
                                   "fontFamily": "$font",
                                   "fontSize": 13,
@@ -9151,11 +9273,11 @@
                                 {
                                   "type": "text",
                                   "id": "T6uhUE",
-                                  "name": "ОБР–0106 ↗",
+                                  "name": "ОБР–0106",
                                   "fill": "$blue",
                                   "textGrowth": "fixed-width",
                                   "width": "fill_container",
-                                  "content": "ОБР–0106 ↗",
+                                  "content": "ОБР–0106",
                                   "lineHeight": 1.38,
                                   "fontFamily": "$font",
                                   "fontSize": 13,
@@ -9292,11 +9414,11 @@
                                 {
                                   "type": "text",
                                   "id": "YQAEr",
-                                  "name": "ОБР–0105 ↗",
+                                  "name": "ОБР–0105",
                                   "fill": "$blue",
                                   "textGrowth": "fixed-width",
                                   "width": "fill_container",
-                                  "content": "ОБР–0105 ↗",
+                                  "content": "ОБР–0105",
                                   "lineHeight": 1.38,
                                   "fontFamily": "$font",
                                   "fontSize": 13,
@@ -9433,11 +9555,11 @@
                                 {
                                   "type": "text",
                                   "id": "wRQjR",
-                                  "name": "ОБР–0104 ↗",
+                                  "name": "ОБР–0104",
                                   "fill": "$blue",
                                   "textGrowth": "fixed-width",
                                   "width": "fill_container",
-                                  "content": "ОБР–0104 ↗",
+                                  "content": "ОБР–0104",
                                   "lineHeight": 1.38,
                                   "fontFamily": "$font",
                                   "fontSize": 13,
@@ -9574,11 +9696,11 @@
                                 {
                                   "type": "text",
                                   "id": "Q7SKXu",
-                                  "name": "ОБР–0103 ↗",
+                                  "name": "ОБР–0103",
                                   "fill": "$blue",
                                   "textGrowth": "fixed-width",
                                   "width": "fill_container",
-                                  "content": "ОБР–0103 ↗",
+                                  "content": "ОБР–0103",
                                   "lineHeight": 1.38,
                                   "fontFamily": "$font",
                                   "fontSize": 13,
@@ -9706,15 +9828,131 @@
                           "fontSize": 12
                         },
                         {
-                          "type": "text",
-                          "id": "q7Hwwi",
-                          "name": "‹     1     2     3     ›",
-                          "fill": "$blue",
-                          "content": "‹     1     2     3     ›",
-                          "lineHeight": 1.38,
-                          "fontFamily": "$font",
-                          "fontSize": 13,
-                          "fontWeight": "600"
+                          "type": "frame",
+                          "id": "DUfuY",
+                          "name": "Страницы",
+                          "gap": 4,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "ORRrs",
+                              "name": "Предыдущая страница · недоступна",
+                              "width": 28,
+                              "height": 28,
+                              "fill": "#00000000",
+                              "cornerRadius": 4,
+                              "justifyContent": "center",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "kNRuc",
+                                  "name": "‹",
+                                  "fill": "$subtle",
+                                  "content": "‹",
+                                  "fontFamily": "$font",
+                                  "fontSize": 16,
+                                  "fontWeight": "500"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "rX4wK",
+                              "name": "Текущая страница · 1",
+                              "width": 28,
+                              "height": 28,
+                              "fill": "$blue-soft",
+                              "cornerRadius": 4,
+                              "stroke": "$blue-border",
+                              "strokeWidth": 1,
+                              "strokeAlignment": "inner",
+                              "justifyContent": "center",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "yn6nE",
+                                  "name": "1",
+                                  "fill": "$blue",
+                                  "content": "1",
+                                  "fontFamily": "$font",
+                                  "fontSize": 13,
+                                  "fontWeight": "700"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "AwUOg",
+                              "name": "Страница 2",
+                              "width": 28,
+                              "height": 28,
+                              "fill": "#00000000",
+                              "cornerRadius": 4,
+                              "justifyContent": "center",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "q0FzC",
+                                  "name": "2",
+                                  "fill": "$blue",
+                                  "content": "2",
+                                  "fontFamily": "$font",
+                                  "fontSize": 13,
+                                  "fontWeight": "500"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "VpgRo",
+                              "name": "Страница 3",
+                              "width": 28,
+                              "height": 28,
+                              "fill": "#00000000",
+                              "cornerRadius": 4,
+                              "justifyContent": "center",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "Wazyk",
+                                  "name": "3",
+                                  "fill": "$blue",
+                                  "content": "3",
+                                  "fontFamily": "$font",
+                                  "fontSize": 13,
+                                  "fontWeight": "500"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "CPDOt",
+                              "name": "Следующая страница",
+                              "width": 28,
+                              "height": 28,
+                              "fill": "#00000000",
+                              "cornerRadius": 4,
+                              "justifyContent": "center",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "x2p4p",
+                                  "name": "›",
+                                  "fill": "$blue",
+                                  "content": "›",
+                                  "fontFamily": "$font",
+                                  "fontSize": 16,
+                                  "fontWeight": "500"
+                                }
+                              ]
+                            }
+                          ]
                         }
                       ]
                     }
@@ -10919,18 +11157,6 @@
                               "fontWeight": "600"
                             },
                             {
-                              "type": "text",
-                              "id": "zxX3Z",
-                              "name": "Признаки: упомянуты служащий, компания, сумма и дата публикации контракт",
-                              "fill": "$muted",
-                              "textGrowth": "fixed-width",
-                              "width": "fill_container",
-                              "content": "Выделены ФИО, компания, сумма и дата публикации контракта.",
-                              "lineHeight": 1.38,
-                              "fontFamily": "$font",
-                              "fontSize": 14
-                            },
-                            {
                               "type": "rectangle",
                               "id": "GdQ5E",
                               "name": "Разделитель",
@@ -10999,9 +11225,9 @@
                             {
                               "type": "text",
                               "id": "nEU5T",
-                              "name": "Соколов А. В. · 88 / 100 ↗",
+                              "name": "Соколов А. В.: 88 / 100",
                               "fill": "$blue",
-                              "content": "Соколов А. В. · 88 / 100 ↗",
+                              "content": "Соколов А. В.: 88 / 100",
                               "lineHeight": 1.38,
                               "fontFamily": "$font",
                               "fontSize": 14,
@@ -12039,11 +12265,11 @@
                                 {
                                   "type": "text",
                                   "id": "F9QbG",
-                                  "name": "Профиль Соколова А. В. ↗",
+                                  "name": "Профиль Соколова А. В.",
                                   "fill": "$blue",
                                   "textGrowth": "fixed-width",
                                   "width": "fill_container",
-                                  "content": "Профиль Соколова А. В. ↗",
+                                  "content": "Профиль Соколова А. В.",
                                   "lineHeight": 1.38,
                                   "fontFamily": "$font",
                                   "fontSize": 13,
@@ -12072,11 +12298,11 @@
                                 {
                                   "type": "text",
                                   "id": "qNw4u",
-                                  "name": "Карточка ООО «ДорСтройРесурс» ↗",
+                                  "name": "Карточка ООО «ДорСтройРесурс»",
                                   "fill": "$blue",
                                   "textGrowth": "fixed-width",
                                   "width": "fill_container",
-                                  "content": "Карточка ООО «ДорСтройРесурс» ↗",
+                                  "content": "Карточка ООО «ДорСтройРесурс»",
                                   "lineHeight": 1.38,
                                   "fontFamily": "$font",
                                   "fontSize": 13,
@@ -12105,11 +12331,11 @@
                                 {
                                   "type": "text",
                                   "id": "K5Afk",
-                                  "name": "Госконтракты · 5 записей ↗",
+                                  "name": "Реестр контрактов: 5 записей",
                                   "fill": "$blue",
                                   "textGrowth": "fixed-width",
                                   "width": "fill_container",
-                                  "content": "Госконтракты · 5 записей ↗",
+                                  "content": "Реестр контрактов: 5 записей",
                                   "lineHeight": 1.38,
                                   "fontFamily": "$font",
                                   "fontSize": 13,
