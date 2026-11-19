@@ -118,11 +118,16 @@ export function AssistantChat() {
             <Paper
               key={m.id}
               p="md"
-              maw="85%"
+              maw={{ base: '94%', sm: '76%' }}
               ml={m.role === 'user' ? 'auto' : undefined}
-              bg={m.role === 'user' ? 'var(--mantine-primary-color-light)' : undefined}
+              bg={m.role === 'user' ? 'var(--workspace-tint)' : 'var(--workspace-neutral)'}
               style={m.error ? { borderColor: 'var(--mantine-color-red-6)' } : undefined}
             >
+              {m.role === 'assistant' && (
+                <Text size="xs" fw={650} c="dimmed" mb={6}>
+                  Ассистент
+                </Text>
+              )}
               <Text size="sm" style={{ whiteSpace: 'pre-wrap' }}>
                 {m.text}
               </Text>
@@ -139,7 +144,7 @@ export function AssistantChat() {
           send(draft);
         }}
       >
-        <Group align="flex-end" wrap="nowrap">
+        <Group className="workspace-chat-input workspace-glass" align="flex-end" wrap="nowrap">
           <Textarea
             style={{ flex: 1 }}
             placeholder="Ваш вопрос… (Enter — отправить, Shift+Enter — перенос строки)"
@@ -155,7 +160,13 @@ export function AssistantChat() {
               }
             }}
           />
-          <ActionIcon type="submit" size="xl" loading={ask.isPending} aria-label="Отправить">
+          <ActionIcon
+            type="submit"
+            size={42}
+            loading={ask.isPending}
+            disabled={!draft.trim()}
+            aria-label="Отправить"
+          >
             <IconSend size={20} />
           </ActionIcon>
         </Group>

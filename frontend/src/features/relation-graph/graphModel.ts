@@ -3,26 +3,53 @@ import type { GraphEdge, OfficialGraph } from '@/shared/api';
 /** Шаг раскладки «по уровням», px: между уровнями, между колонками одного уровня, между строками. */
 const LEVEL_GAP = 165;
 const SUB_COL_GAP = 140;
+const CHAIN_GAP = 185;
 const ROW_GAP = 100;
 const MAX_ROWS = 5;
+
+/** Раскладывает простую цепочку строками и оставляет прежнюю раскладку для ветвлений. */
+function chainPositions(graph: OfficialGraph, rootId: string | undefined, columns: number) {
+  const neighbours = new Map(graph.nodes.map((node) => [node.id, new Set<string>()]));
+  for (const edge of graph.edges) {
+    neighbours.get(edge.source)?.add(edge.target);
+    neighbours.get(edge.target)?.add(edge.source);
+  }
+  const ends = [...neighbours].filter(([, ids]) => ids.size === 1).map(([id]) => id);
+  if (ends.length !== 2 || [...neighbours.values()].some((ids) => ids.size > 2)) return null;
+  const start = rootId && ends.includes(rootId) ? rootId : ends[0];
+  const order = [start];
+  for (let i = 0; i < order.length; i++) {
+    const next = [...(neighbours.get(order[i]) ?? [])].find((id) => !order.includes(id));
+    if (next) order.push(next);
+  }
+  if (order.length !== neighbours.size) return null;
+
+  return Object.fromEntries(
+    order.map((id, index) => {
+      const row = Math.floor(index / columns);
+      const column = index % columns;
+      return [id, { x: (row % 2 ? columns - 1 - column : column) * CHAIN_GAP, y: row * ROW_GAP }];
+    }),
+  );
+}
 
 /** Horizontal levels keep H1's wide first neighbourhood readable on a laptop. */
 export function compactPositions(
   graph: OfficialGraph,
   rootId?: string,
   highlight: string[] = [],
+  chainColumns = 3,
 ): Record<string, { x: number; y: number }> {
   if (highlight.length) {
     const ids = new Set(highlight);
+    const evidence = {
+      ...graph,
+      nodes: graph.nodes.filter((node) => ids.has(node.id)),
+      edges: graph.edges.filter((edge) => evidenceEdge(edge, ids, graph)),
+    };
     return {
       ...compactPositions(graph, rootId),
-      ...compactPositions(
-        {
-          nodes: graph.nodes.filter((n) => ids.has(n.id)),
-          edges: graph.edges.filter((e) => evidenceEdge(e, ids, graph)),
-        },
-        rootId,
-      ),
+      ...(chainPositions(evidence, rootId, chainColumns) ?? compactPositions(evidence, rootId)),
     };
   }
   const root = rootId ?? graph.nodes[0]?.id;
@@ -72,11 +99,16 @@ export function evidenceEdge(edge: GraphEdge, ids: Set<string>, graph: OfficialG
   return !(hasContracts && ['works_in', 'appointment'].includes(edge.type));
 }
 
+function cardLabel(label: string): string {
+  const characters = Array.from(label);
+  return characters.length > 42 ? `${characters.slice(0, 41).join('').trimEnd()}…` : label;
+}
+
 export function graphElements(graph: OfficialGraph, rootId?: string) {
   const ids = new Set(graph.nodes.map((n) => n.id));
   return [
     ...graph.nodes.map((node) => ({
-      data: { ...node, risk: node.risk ?? undefined },
+      data: { ...node, cardLabel: cardLabel(node.label), risk: node.risk ?? undefined },
       classes: node.id === rootId ? 'root' : undefined,
     })),
     ...graph.edges

@@ -92,7 +92,7 @@ test('metric intensity is clamped to 0–1 and zero cells stay uncoloured', () =
   assert.equal(metricIntensity({ ...items[0], max_score: 140 }, 'max_score'), 1);
   assert.equal(metricIntensity({ ...items[0], avg_score: NaN }, 'avg_score'), 0);
   assert.equal(heatBackground(0), 'transparent');
-  assert.match(heatBackground(1), /color-mix\(in srgb, var\(--mantine-color-red-7\) 85%/);
+  assert.match(heatBackground(1), /color-mix\(in srgb, var\(--workspace-heat-tint\) 100%/);
   assert.equal(formatMetric(items[2], 'flagged_share'), '50%');
   assert.equal(formatMetric({ ...items[2], avg_score: 12.34 }, 'avg_score'), '12,3');
 });

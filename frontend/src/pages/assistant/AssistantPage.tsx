@@ -9,7 +9,7 @@ export function AssistantPage() {
         title="Ассистент аналитика"
         description="Вопросы на естественном языке к данным о служащих, связях и обращениях. Ответ содержит ссылки на источники."
       />
-      <Card maw={960}>
+      <Card>
         <AssistantChat />
       </Card>
     </>
