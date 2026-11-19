@@ -23,6 +23,7 @@ import {
 import { useOfficial, useOfficialGraph } from '@/features/officials/api';
 import { GraphLegend } from '@/features/relation-graph/GraphLegend';
 import { CreateReportButton } from '@/features/reports/CreateReportButton';
+import { CaseActions } from '@/features/workbench/CaseActions';
 import { FlagList } from '@/features/risk-flags/FlagList';
 import type { GraphNode, OfficialProfile, RiskFlag } from '@/shared/api';
 import { routes } from '@/shared/config/routes';
@@ -84,8 +85,12 @@ function ProfileHeader({ profile }: { profile: OfficialProfile }) {
             </Text>
           </Group>
         </Stack>
+        <CaseActions person={{ id: profile.person.id, name: profile.person.full_name }} />
         <CreateReportButton personId={profile.person.id} compact />
       </Group>
+      <Text size="sm" c="dimmed" w="100%">
+        Балл задаёт приоритет проверки и не подтверждает нарушение.
+      </Text>
     </Group>
   );
 }

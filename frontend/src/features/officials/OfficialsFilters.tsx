@@ -31,6 +31,8 @@ export function OfficialsFilters({ value, onChange }: Props) {
   return (
     <Group align="flex-end" gap="md" wrap="wrap">
       <TextInput
+        className="officials-filter"
+        data-active={Boolean(value.query) || undefined}
         label="Поиск"
         placeholder="ФИО или должность"
         leftSection={<IconSearch size={16} />}
@@ -41,8 +43,16 @@ export function OfficialsFilters({ value, onChange }: Props) {
         }}
         w={280}
       />
-      <OrganSelect value={value.organId} onChange={(organId) => onChange({ organId })} w={360} />
+      <OrganSelect
+        className="officials-filter"
+        data-active={Boolean(value.organId) || undefined}
+        value={value.organId}
+        onChange={(organId) => onChange({ organId })}
+        w={360}
+      />
       <NumberInput
+        className="officials-filter"
+        data-active={value.minScore !== null || undefined}
         label="Мин. балл"
         placeholder="0"
         min={0}
@@ -53,6 +63,8 @@ export function OfficialsFilters({ value, onChange }: Props) {
         w={120}
       />
       <Select
+        className="officials-filter"
+        data-active={Boolean(value.ruleCode) || undefined}
         label="Правило"
         placeholder="Любое"
         data={RULE_OPTIONS}

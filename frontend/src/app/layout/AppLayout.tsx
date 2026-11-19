@@ -2,6 +2,7 @@ import {
   ActionIcon,
   AppShell,
   Badge,
+  Box,
   Group,
   NavLink,
   Tooltip,
@@ -18,8 +19,10 @@ import {
   IconShieldSearch,
   IconSun,
 } from '@tabler/icons-react';
-import { useEffect, useLayoutEffect, type CSSProperties } from 'react';
+import { useEffect, useLayoutEffect, useState, type CSSProperties } from 'react';
 import { Link, NavLink as RouterNavLink, Outlet, useLocation } from 'react-router';
+import { WorkbenchPanels } from '@/features/workbench/WorkbenchPanels';
+import { WorkbenchTools } from '@/features/workbench/WorkbenchTools';
 import { env } from '@/shared/config/env';
 import { routes } from '@/shared/config/routes';
 import { useLiquidGlass } from '@/shared/ui/useLiquidGlass';
@@ -78,6 +81,17 @@ function MobileNavigation() {
 }
 
 export function AppLayout() {
+  const [presentation, setPresentation] = useState(false);
+  useEffect(() => {
+    if (!presentation) return;
+    const exit = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && !document.querySelector('[role="dialog"]'))
+        setPresentation(false);
+    };
+    // Capture Escape before a focused tooltip consumes it; open dialogs retain priority.
+    window.addEventListener('keydown', exit, true);
+    return () => window.removeEventListener('keydown', exit, true);
+  }, [presentation]);
   const { pathname } = useLocation();
   const headerGlass = useLiquidGlass<HTMLElement>();
   const navigationGlass = useLiquidGlass<HTMLElement>();
@@ -106,8 +120,9 @@ export function AppLayout() {
   return (
     <AppShell
       className="workspace-shell"
+      data-presentation={presentation || undefined}
       header={{ height: { base: 82, sm: 94 } }}
-      navbar={{ width: 240, breakpoint: 'sm', collapsed: { mobile: true } }}
+      navbar={{ width: 240, breakpoint: 'sm', collapsed: { mobile: true, desktop: presentation } }}
       padding={{ base: 14, sm: 24 }}
     >
       <a className="workspace-skip-link" href="#workspace-content">
@@ -127,8 +142,14 @@ export function AppLayout() {
           </Group>
           <Group gap="xs" wrap="nowrap">
             <WorkspaceSearch />
+            <WorkbenchTools
+              presentation={presentation}
+              onPresentation={() => setPresentation((value) => !value)}
+            />
             <MotionReplay />
-            <ColorSchemeToggle />
+            <Box visibleFrom="sm">
+              <ColorSchemeToggle />
+            </Box>
           </Group>
         </Group>
       </AppShell.Header>
@@ -185,7 +206,8 @@ export function AppLayout() {
           <Outlet />
         </div>
       </AppShell.Main>
-      <MobileNavigation />
+      {!presentation && <MobileNavigation />}
+      <WorkbenchPanels />
     </AppShell>
   );
 }

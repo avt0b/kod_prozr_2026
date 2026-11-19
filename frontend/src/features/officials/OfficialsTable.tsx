@@ -1,9 +1,11 @@
 import { Anchor, Group, Table, Text, UnstyledButton } from '@mantine/core';
-import { IconArrowDown, IconArrowUp, IconChevronRight, IconSelector } from '@tabler/icons-react';
+import { IconArrowDown, IconArrowUp, IconSelector } from '@tabler/icons-react';
 import { Link, useNavigate } from 'react-router';
 import type { OfficialListItem, OfficialsSort } from '@/shared/api';
 import { routes } from '@/shared/config/routes';
 import { FlagBadge, RiskScoreBadge } from '@/shared/ui';
+import { CaseActions } from '@/features/workbench/CaseActions';
+import { useWorkbench } from '@/features/workbench/context';
 
 interface Props {
   items: OfficialListItem[];
@@ -30,12 +32,18 @@ function SortHeader({
   const Icon = !active ? IconSelector : desc ? IconArrowDown : IconArrowUp;
   const next: OfficialsSort = active && desc ? field : (`-${field}` as OfficialsSort);
   return (
-    <UnstyledButton onClick={() => onSortChange(next)}>
+    <UnstyledButton
+      className="officials-sort"
+      data-active={active || undefined}
+      data-numeric={field === 'risk_score' || undefined}
+      aria-label={`${label}: сортировать по ${next.startsWith('-') ? 'убыванию' : 'возрастанию'}`}
+      onClick={() => onSortChange(next)}
+    >
       <Group gap={4} wrap="nowrap">
         <Text fw={600} size="sm">
           {label}
         </Text>
-        <Icon size={14} />
+        <Icon className="officials-sort-arrow" size={16} aria-hidden="true" />
       </Group>
     </UnstyledButton>
   );
@@ -43,39 +51,64 @@ function SortHeader({
 
 export function OfficialsTable({ items, sort, onSortChange, startIndex = 0 }: Props) {
   const navigate = useNavigate();
+  const { state } = useWorkbench();
   return (
     <Table.ScrollContainer minWidth={760}>
-      <Table>
+      <Table className="officials-table">
         <Table.Thead>
           <Table.Tr>
-            <Table.Th w={40}>#</Table.Th>
-            <Table.Th>
+            <Table.Th w={40} ta="right">
+              #
+            </Table.Th>
+            <Table.Th
+              w={90}
+              ta="right"
+              aria-sort={
+                sort?.replace('-', '') === 'risk_score'
+                  ? sort.startsWith('-')
+                    ? 'descending'
+                    : 'ascending'
+                  : undefined
+              }
+            >
+              <SortHeader label="Балл" field="risk_score" sort={sort} onSortChange={onSortChange} />
+            </Table.Th>
+            <Table.Th
+              aria-sort={
+                sort?.replace('-', '') === 'full_name'
+                  ? sort.startsWith('-')
+                    ? 'descending'
+                    : 'ascending'
+                  : undefined
+              }
+            >
               <SortHeader label="ФИО" field="full_name" sort={sort} onSortChange={onSortChange} />
             </Table.Th>
             <Table.Th>Должность и орган</Table.Th>
             <Table.Th>Флаги</Table.Th>
-            <Table.Th w={90}>
-              <SortHeader label="Балл" field="risk_score" sort={sort} onSortChange={onSortChange} />
-            </Table.Th>
-            <Table.Th w={32} aria-label="Профиль" />
+            <Table.Th w={90}>Кейс</Table.Th>
           </Table.Tr>
         </Table.Thead>
         <Table.Tbody>
           {items.map((o, i) => (
             <Table.Tr
               key={o.id}
+              data-compared={state.comparison.some((item) => item.id === o.id) || undefined}
               style={{ cursor: 'pointer' }}
               onClick={() => navigate(routes.official(o.id))}
             >
-              <Table.Td c="dimmed">{startIndex + i + 1}</Table.Td>
-              <Table.Td>
+              <Table.Td c="dimmed" ta="right">
+                {startIndex + i + 1}
+              </Table.Td>
+              <Table.Td ta="right">
+                <RiskScoreBadge score={o.risk_score} />
+              </Table.Td>
+              <Table.Td fw={500}>
                 <Anchor
+                  className="official-name-link workspace-row-link"
                   component={Link}
                   to={routes.official(o.id)}
                   onClick={(event) => event.stopPropagation()}
-                  className="workspace-row-link"
-                  fw={650}
-                  size="sm"
                 >
                   {o.full_name}
                 </Anchor>
@@ -99,10 +132,7 @@ export function OfficialsTable({ items, sort, onSortChange, startIndex = 0 }: Pr
                 </Group>
               </Table.Td>
               <Table.Td>
-                <RiskScoreBadge score={o.risk_score} />
-              </Table.Td>
-              <Table.Td c="dimmed">
-                <IconChevronRight size={15} aria-hidden />
+                <CaseActions person={{ id: o.id, name: o.full_name }} />
               </Table.Td>
             </Table.Tr>
           ))}

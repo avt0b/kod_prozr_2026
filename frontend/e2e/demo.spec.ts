@@ -293,7 +293,7 @@ test('сценарий демо docs/demo.md проходит на реальн�
     }
     await expect(page.getByText(/ДорСтройРесурс/).first()).toBeVisible();
     await expect(page.getByText(/273-ФЗ ст\. 10/).first()).toBeVisible();
-    await expect(page.getByText('Цепочка:').first()).toBeVisible();
+    await expect(page.getByText('Записи-источники').first()).toBeVisible();
     await expectNoHorizontalScroll(page);
     await shot(page, '07-profile');
     await shot(page, '07-profile-full', true);
