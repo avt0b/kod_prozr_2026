@@ -8,9 +8,10 @@ import {
   Text,
   useComputedColorScheme,
 } from '@mantine/core';
+import { IconMaximize } from '@tabler/icons-react';
 import { useMediaQuery, useReducedMotion } from '@mantine/hooks';
 import cytoscape, { type Core, type ElementDefinition } from 'cytoscape';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import type { GraphNode, OfficialGraph } from '@/shared/api';
 import { buildStylesheet } from './graphStyle';
 import { compactPositions, evidenceEdge, graphElements } from './graphModel';
@@ -37,11 +38,11 @@ interface Props {
   /** id узлов, которые надо подсветить (например, evidence выбранного флага). */
   highlight?: string[];
   onNodeClick?: (node: GraphNode) => void;
-  height?: number;
+  signalPicker?: ReactNode;
 }
 
 /** Тонкая обёртка над Cytoscape.js: создаёт инстанс на смену данных/темы, подсветку меняет классами. */
-export function RelationGraph({ graph, rootId, highlight, onNodeClick, height = 520 }: Props) {
+export function RelationGraph({ graph, rootId, highlight, onNodeClick, signalPicker }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const cyRef = useRef<Core | null>(null);
   const clickRef = useRef(onNodeClick);
@@ -177,7 +178,8 @@ export function RelationGraph({ graph, rootId, highlight, onNodeClick, height = 
 
   return (
     <Stack gap="xs">
-      <Group justify="space-between">
+      <Group className="profile-graph-toolbar" gap="xs">
+        {signalPicker}
         <Select
           aria-label="Раскладка графа"
           value={layout}
@@ -187,11 +189,21 @@ export function RelationGraph({ graph, rootId, highlight, onNodeClick, height = 
             { value: 'breadthfirst', label: 'По уровням' },
             { value: 'cose', label: 'Силовая' },
           ]}
-          w={170}
+          className="profile-graph-layout"
+          size="xs"
+        />
+        <Switch
+          label="Группировать"
+          aria-label="Группировать контракты одного поставщика и заказчика"
+          checked={grouped}
+          onChange={(e) => setGrouped(e.currentTarget.checked)}
+          size="xs"
         />
         <Button
+          className="profile-graph-fit"
           variant="default"
           size="xs"
+          leftSection={<IconMaximize size={14} aria-hidden />}
           onClick={() => {
             const cy = cyRef.current;
             if (cy) fitGraph(cy);
@@ -200,12 +212,6 @@ export function RelationGraph({ graph, rootId, highlight, onNodeClick, height = 
           Вписать граф
         </Button>
       </Group>
-      <Switch
-        label="Группировать контракты одного поставщика и заказчика"
-        checked={grouped}
-        onChange={(e) => setGrouped(e.currentTarget.checked)}
-        size="xs"
-      />
       {graph.nodes.length === 0 && <Alert>Связи не найдены</Alert>}
       {graph.truncated && (
         <Alert color="orange">Показана часть связей: сервер ограничил размер графа.</Alert>
@@ -216,17 +222,11 @@ export function RelationGraph({ graph, rootId, highlight, onNodeClick, height = 
         aria-label={`Граф связей: ${graph.nodes.length} узлов, ${graph.edges.length} связей`}
         data-testid="relation-graph"
         className="workspace-graph"
-        style={{
-          height: mobile ? Math.min(340, height) : height,
-          width: '100%',
-          borderRadius: 'var(--mantine-radius-md)',
-          border: '1px solid var(--mantine-color-default-border)',
-        }}
       />
-      <Text size="xs" c="dimmed" mih={32} role="status">
+      <Text className="profile-graph-status" size="xs" c="dimmed" role="status">
         {focused && prepared.graph.nodes.some((n) => n.id === focused.id)
           ? `${NODE_TYPE_LABELS[focused.type]}: ${focused.label}${focused.risk != null ? ` · риск ${focused.risk}/100` : ''}`
-          : 'Наведите указатель на узел, чтобы увидеть полную подпись.'}
+          : 'Наведите на узел для полной подписи. Профили и обращения открываются по нажатию.'}
       </Text>
     </Stack>
   );

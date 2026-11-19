@@ -285,7 +285,10 @@ test('сценарий демо docs/demo.md проходит на реальн�
     await expect(page).toHaveURL(new RegExp(`/officials/${before.id}$`));
     await expect(page.getByRole('heading', { name: SOKOLOV, level: 2 })).toBeVisible();
     await expect(page.getByText(/ОКПД2: .*42\.11/)).toBeVisible();
-    await expect(page.getByText(/Соколова Марина Олеговна/).first()).toBeVisible();
+    const relatives = page.locator('section').filter({
+      has: page.getByRole('heading', { name: 'Родственники', exact: true }),
+    });
+    await expect(relatives.getByText(/Соколова Марина Олеговна/)).toBeVisible();
     for (const code of ['R01', 'R05', 'R06', 'R07', 'R08']) {
       await expect(
         page.locator('.mantine-Badge-label', { hasText: new RegExp(`^${code}$`) }),

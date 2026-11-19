@@ -1,25 +1,20 @@
 import {
   Anchor,
   Badge,
+  Breadcrumbs,
   Card,
-  Center,
   Grid,
   Group,
-  Loader,
   SegmentedControl,
-  SimpleGrid,
+  Skeleton,
   Stack,
   Text,
   Title,
 } from '@mantine/core';
-import { lazy, Suspense, useState, type CSSProperties } from 'react';
+import { IconChevronRight } from '@tabler/icons-react';
+import { lazy, Suspense, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
-import {
-  AppointmentsSection,
-  AuthoritiesSection,
-  CompaniesSection,
-  RelativesSection,
-} from '@/features/officials/ProfileSections';
+import { ProfileSections } from '@/features/officials/ProfileSections';
 import { useOfficial, useOfficialGraph } from '@/features/officials/api';
 import { GraphLegend } from '@/features/relation-graph/GraphLegend';
 import { CreateReportButton } from '@/features/reports/CreateReportButton';
@@ -31,6 +26,7 @@ import { RISK_LEVEL_COLORS, riskLevel } from '@/shared/lib/format';
 import { QueryState } from '@/shared/ui';
 import { useLiquidGlass } from '@/shared/ui/useLiquidGlass';
 import { AnimatedNumber } from '@/shared/ui/AnimatedNumber';
+import './profile.css';
 
 // Cytoscape тяжёлый (~400 КБ) — грузим отдельным чанком только на странице профиля
 const RelationGraph = lazy(() =>
@@ -48,9 +44,9 @@ function ProfileHeader({ profile }: { profile: OfficialProfile }) {
   const current = profile.appointments[0];
   const level = riskLevel(profile.risk.score);
   return (
-    <Group justify="space-between" align="center" gap="md" mb="xl">
-      <Stack className="workspace-profile-name workspace-profile-identity" gap={5}>
-        <Title className="workspace-profile-title" order={2}>
+    <header className="profile-header">
+      <Stack className="workspace-profile-identity profile-identity" gap={5}>
+        <Title className="profile-title" order={2}>
           {profile.person.full_name}
         </Title>
         {current && (
@@ -65,33 +61,36 @@ function ProfileHeader({ profile }: { profile: OfficialProfile }) {
           </>
         )}
       </Stack>
-      <Group gap="md" className="workspace-profile-tools">
-        <Stack gap={4} align="flex-start">
-          <Badge color={RISK_LEVEL_COLORS[level]} variant="light">
-            {RISK_LABELS[level]}
-          </Badge>
-          <Group
-            gap={5}
-            align="baseline"
-            className="workspace-profile-score"
-            data-level={level}
-            style={{ '--score-ink': 'currentColor' } as CSSProperties}
-          >
-            <Text fz={26} fw={730} lh={1}>
-              <AnimatedNumber value={profile.risk.score} />
-            </Text>
-            <Text size="xs" c="dimmed">
-              из 100
-            </Text>
+      <div className="profile-header-side">
+        <Group align="center" gap="sm" className="profile-header-controls">
+          <Stack gap={4} align="flex-start">
+            <Badge
+              className="profile-risk-label"
+              data-level={level}
+              color={RISK_LEVEL_COLORS[level]}
+              variant="light"
+            >
+              {RISK_LABELS[level]}
+            </Badge>
+            <Group gap={5} align="baseline" className="workspace-profile-score" data-level={level}>
+              <Text className="profile-score-value" lh={1}>
+                <AnimatedNumber value={profile.risk.score} />
+              </Text>
+              <Text size="xs" c="dimmed">
+                из 100
+              </Text>
+            </Group>
+          </Stack>
+          <Group gap="xs" wrap="wrap" className="profile-actions">
+            <CaseActions person={{ id: profile.person.id, name: profile.person.full_name }} />
+            <CreateReportButton personId={profile.person.id} compact />
           </Group>
-        </Stack>
-        <CaseActions person={{ id: profile.person.id, name: profile.person.full_name }} />
-        <CreateReportButton personId={profile.person.id} compact />
-      </Group>
-      <Text size="sm" c="dimmed" w="100%">
-        Балл задаёт приоритет проверки и не подтверждает нарушение.
-      </Text>
-    </Group>
+        </Group>
+        <Text size="xs" c="dimmed">
+          Балл задаёт приоритет проверки и не подтверждает нарушение.
+        </Text>
+      </div>
+    </header>
   );
 }
 
@@ -145,71 +144,84 @@ export function OfficialProfilePage() {
   };
 
   return (
-    <>
-      <Anchor component={Link} to={routes.officials()} size="sm" mb="sm" display="inline-block">
-        ← К рейтингу
-      </Anchor>
+    <div className="official-profile">
+      <Breadcrumbs
+        aria-label="Путь к профилю"
+        className="profile-breadcrumbs"
+        component="nav"
+        separator={<IconChevronRight size={14} aria-hidden />}
+      >
+        <Anchor component={Link} to={routes.officials()} size="xs">
+          К рейтингу служащих
+        </Anchor>
+        <Text size="xs" c="dimmed" aria-current="page">
+          Профиль
+        </Text>
+      </Breadcrumbs>
       <QueryState query={profile}>
         {(p) => {
           const signal =
             selectedFlag ??
-            p.risk.flags.reduce<RiskFlag | null>(
+            p.risk.flags.reduce<RiskFlag | undefined>(
               (highest, flag) => (!highest || flag.weight > highest.weight ? flag : highest),
-              null,
+              undefined,
             );
+          const signalPicker = p.risk.flags.length > 0 && (
+            <GraphSignalPicker
+              flags={p.risk.flags}
+              selectedId={selectedFlag?.id}
+              onSelect={setSelectedFlag}
+            />
+          );
           return (
             <>
               <ProfileHeader profile={p} />
               <Grid gutter="lg">
                 <Grid.Col span={{ base: 12, lg: 8 }}>
                   <Card className="workspace-profile-graph">
-                    <Group justify="space-between" mb="sm">
-                      <Title order={4}>Граф связей</Title>
+                    <Group justify="space-between" gap="xs" mb="sm">
+                      <Title order={3} size="h4">
+                        Граф связей
+                      </Title>
                       {selectedFlag && (
                         <Badge color="brand" variant="light">
                           подсвечена цепочка {selectedFlag.rule_code}
                         </Badge>
                       )}
                     </Group>
-                    {p.risk.flags.length > 0 && (
-                      <GraphSignalPicker
-                        flags={p.risk.flags}
-                        selectedId={selectedFlag?.id}
-                        onSelect={setSelectedFlag}
-                      />
-                    )}
+                    {!graph.data && signalPicker}
                     <QueryState query={graph}>
                       {(g) => (
-                        <Suspense
-                          fallback={
-                            <Center h={400}>
-                              <Loader />
-                            </Center>
-                          }
-                        >
+                        <Suspense fallback={<Skeleton className="profile-graph-skeleton" />}>
                           <RelationGraph
                             graph={g}
                             rootId={id}
                             highlight={selectedFlag?.evidence.map((e) => e.node_id)}
                             onNodeClick={onNodeClick}
+                            signalPicker={signalPicker}
                           />
                         </Suspense>
                       )}
                     </QueryState>
-                    <Stack gap={4} mt="sm">
+                    <div className="profile-graph-legend">
                       <GraphLegend />
-                      <Text size="xs" c="dimmed">
-                        Выберите флаг, чтобы подсветить его связи. Нажмите на узел служащего или
-                        обращения, чтобы открыть карточку.
-                      </Text>
-                    </Stack>
+                    </div>
                   </Card>
                 </Grid.Col>
                 <Grid.Col span={{ base: 12, lg: 4 }}>
-                  <Card>
-                    <Title order={4} mb="sm">
-                      Флаги риска ({p.risk.flags.length})
-                    </Title>
+                  <Card className="profile-flags">
+                    <Group justify="space-between" mb="sm">
+                      <Title order={3} size="h4">
+                        Флаги риска
+                      </Title>
+                      <Badge
+                        variant="light"
+                        color="gray"
+                        aria-label={`Флагов: ${p.risk.flags.length}`}
+                      >
+                        {p.risk.flags.length}
+                      </Badge>
+                    </Group>
                     <FlagList
                       flags={p.risk.flags}
                       selectedId={selectedFlag?.id}
@@ -220,16 +232,11 @@ export function OfficialProfilePage() {
                 </Grid.Col>
               </Grid>
 
-              <SimpleGrid cols={{ base: 1, md: 2 }} mt="lg">
-                <AppointmentsSection profile={p} />
-                <AuthoritiesSection profile={p} />
-                <RelativesSection profile={p} />
-                <CompaniesSection profile={p} />
-              </SimpleGrid>
+              <ProfileSections profile={p} />
             </>
           );
         }}
       </QueryState>
-    </>
+    </div>
   );
 }

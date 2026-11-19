@@ -582,8 +582,7 @@ body {
   }
 }
 
-.workspace-page-heading h2,
-.workspace-profile-title {
+.workspace-page-heading h2 {
   font-size: clamp(1.8rem, 3.2vw, 2.7rem);
   line-height: 1.1;
   letter-spacing: -0.032em;
@@ -603,72 +602,6 @@ body {
 
 .workspace-page-heading .workspace-control {
   min-height: 42px;
-}
-
-.workspace-profile-name {
-  min-width: 0;
-  flex: 1 1 23rem;
-}
-
-.workspace-profile-score {
-  font-variant-numeric: tabular-nums;
-  color: var(--workspace-ink);
-}
-
-.workspace-profile-score[data-level='high'] {
-  color: var(--workspace-risk-high);
-}
-
-.workspace-profile-score[data-level='medium'] {
-  color: var(--workspace-risk-medium);
-}
-
-.workspace-profile-tools {
-  flex: 0 0 auto;
-}
-
-.workspace-profile-graph {
-  overflow: visible;
-}
-
-.workspace-signal-picker {
-  position: relative;
-  max-width: 100%;
-  width: fit-content;
-  border-radius: 22px;
-  margin-bottom: 12px;
-  overflow-x: auto;
-}
-
-.workspace-signal-picker .workspace-segmented {
-  border: 0;
-  box-shadow: none;
-  background: transparent;
-}
-
-.workspace-flag {
-  background: var(--workspace-surface);
-  transition:
-    border-color 180ms,
-    background-color 180ms;
-}
-
-.workspace-flag[data-expanded] {
-  background: var(--workspace-neutral);
-}
-
-.workspace-flag[data-selected] {
-  border-color: color-mix(in srgb, var(--workspace-accent), var(--workspace-edge) 45%);
-}
-
-.workspace-flag-trigger {
-  width: 100%;
-  border-radius: 10px;
-  font-weight: 650;
-}
-
-.workspace-flag-trigger:hover {
-  background: var(--workspace-neutral);
 }
 
 .workspace-priority .mantine-Text-root[data-line-clamp] {
@@ -710,20 +643,9 @@ body {
 }
 
 @media (max-width: 47.99em) {
-  .workspace-profile-name {
-    flex-basis: 100%;
-  }
-
   .workspace-overview-stat + .workspace-overview-stat {
     border-inline-start: 0;
     padding-inline-start: 0;
-  }
-}
-
-@media (min-width: 75em) and (min-height: 53em) {
-  .workspace-profile-graph {
-    position: sticky;
-    top: calc(var(--app-shell-header-offset) + 12px);
   }
 }
 
@@ -732,11 +654,6 @@ body {
 }
 
 @media (max-width: 47.99em) {
-  .workspace-profile-tools {
-    flex: 1 1 100%;
-    justify-content: space-between;
-  }
-
   .workspace-report-label {
     display: none;
   }
@@ -758,11 +675,6 @@ body {
 
 .workspace-row-link:hover {
   color: var(--workspace-accent);
-}
-
-.workspace-flag-trigger:focus-visible {
-  outline: 2px solid var(--workspace-accent);
-  outline-offset: 2px;
 }
 
 .workspace-organ-stat {

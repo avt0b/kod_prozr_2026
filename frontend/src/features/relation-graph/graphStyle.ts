@@ -14,7 +14,8 @@ export function buildStylesheet(dark: boolean): StylesheetJson {
   const text = dark ? '#F0F5FB' : '#172636';
   const edge = dark ? '#627D99' : '#93A6BA';
   const textBg = dark ? '#192636' : '#FFFFFF';
-  const selection = dark ? '#87B6F5' : '#2D65A8';
+  const selection = dark ? '#8FB8F2' : '#3266AC';
+  const selectedSurface = dark ? '#20334A' : '#F5F9FF';
 
   return [
     {
@@ -77,47 +78,49 @@ export function buildStylesheet(dark: boolean): StylesheetJson {
     {
       selector: 'node.faded',
       style: {
-        opacity: 1,
-        'background-opacity': 0.3,
-        'border-opacity': 0.35,
-        'text-opacity': 1,
-        color: dark ? '#B5C5DE' : '#465773',
-        'text-background-opacity': 0.96,
+        label: '',
+        'background-opacity': 0.2,
+        'border-opacity': 0.25,
       },
     },
     {
       selector: 'edge.faded',
       style: {
-        opacity: 1,
-        'line-opacity': 0.14,
-        'target-arrow-color': dark ? '#455369' : '#CCD3DF',
-        'text-opacity': 1,
-        color: dark ? '#AFB4BF' : '#62656C',
-        'text-background-opacity': 0.96,
+        label: '',
+        opacity: 0.22,
       },
     },
     {
       selector: 'node.hl',
       style: {
         shape: 'round-rectangle',
-        width: 130,
+        width: 136,
         height: 54,
         label: 'data(cardLabel)',
-        'background-color': textBg,
+        'background-color': selectedSurface,
         'border-width': 1.5,
         'border-color': selection,
         'text-valign': 'center',
         'text-margin-y': 0,
-        'text-max-width': '118px',
+        'text-max-width': '124px',
         'text-wrap': 'wrap',
         'text-background-opacity': 0,
-        'font-size': 12,
+        'font-size': 13,
         'z-index': 2,
       },
     },
     {
       selector: 'edge.hl',
-      style: { width: 3, 'line-color': selection, 'target-arrow-color': selection, opacity: 1 },
+      style: {
+        width: 2,
+        'line-color': selection,
+        'target-arrow-color': selection,
+        color: selection,
+        'font-size': 9,
+        'text-wrap': 'ellipsis',
+        'text-max-width': '48px',
+        opacity: 1,
+      },
     },
   ];
 }

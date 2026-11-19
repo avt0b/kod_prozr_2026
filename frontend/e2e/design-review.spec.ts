@@ -62,10 +62,23 @@ for (const theme of ['light', 'dark']) {
         .locator('.workspace-flag')
         .filter({ hasText: 'Родственник — поставщик органа' })
         .first();
-      await flag.getByRole('button').click();
+      await flag.getByRole('button', { name: /Родственник — поставщик органа/ }).click();
       await expect(flag.getByText('Факт и пояснение', { exact: true })).toBeVisible();
       await expect(flag.getByText('Записи-источники', { exact: true })).toBeVisible();
       await expect(flag.getByText('Правовое основание', { exact: true })).toBeVisible();
+      const readMore = flag.getByRole('button', { name: 'Читать полностью' });
+      await expect(readMore).toHaveAttribute('aria-expanded', 'false');
+      await readMore.click();
+      await expect(flag.getByRole('button', { name: 'Свернуть пояснение' })).toHaveAttribute(
+        'aria-expanded',
+        'true',
+      );
+      await flag.getByRole('button', { name: 'Свернуть пояснение' }).click();
+      const sources = flag.getByText('Записи-источники', { exact: true });
+      await expect(flag.locator('ol')).toBeHidden();
+      await sources.click();
+      await expect(flag.locator('li').first()).toBeVisible();
+      await sources.click();
       const graph = page.getByTestId('relation-graph');
       await expect(graph.locator('canvas').first()).toBeVisible();
       await graph.scrollIntoViewIfNeeded();
