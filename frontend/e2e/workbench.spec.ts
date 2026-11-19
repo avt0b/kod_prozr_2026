@@ -48,6 +48,7 @@ test('из панели можно добавить первого, второг
     .getByRole('button', { name: `Добавить в сравнение: ${items[0].full_name}`, exact: true })
     .click();
   await expect(panel.locator('.comparison-case')).toHaveCount(1);
+  await expect(search).toHaveValue('');
   await expect(add).toBeEnabled();
   await panel.getByRole('button', { name: 'Закрыть выбор служащего', exact: true }).click();
   await panel.getByRole('button', { name: 'Выбрать ещё одного служащего', exact: true }).click();

@@ -22,6 +22,7 @@ export function ComparisonPicker({ onClose }: { onClose: () => void }) {
   const full = state.comparison.length >= COMPARISON_LIMIT;
   useEffect(() => inputRef.current?.focus(), []);
   const selected = new Set(state.comparison.map((item) => item.id));
+  const searching = officials.isFetching || search.trim() !== debounced.trim();
   return (
     <section className="comparison-picker" aria-label="Выбор служащего для сравнения">
       <Group justify="space-between" mb="md">
@@ -53,7 +54,7 @@ export function ComparisonPicker({ onClose }: { onClose: () => void }) {
             value={search}
             onChange={(event) => setSearch(event.currentTarget.value)}
           />
-          {officials.isFetching && (
+          {searching && (
             <Text role="status" size="xs" c="dimmed" mt="xs">
               Ищу служащих…
             </Text>
@@ -61,7 +62,7 @@ export function ComparisonPicker({ onClose }: { onClose: () => void }) {
           <div className="comparison-picker-results">
             <QueryState
               query={officials}
-              isEmpty={(data) => data.items.every((item) => selected.has(item.id))}
+              isEmpty={(data) => !searching && data.items.every((item) => selected.has(item.id))}
               empty="Доступных служащих по этому запросу нет. Измените запрос; выбранные кейсы не повторяются."
             >
               {(data) => (
@@ -90,6 +91,7 @@ export function ComparisonPicker({ onClose }: { onClose: () => void }) {
                             aria-label={`Добавить в сравнение: ${item.full_name}`}
                             onClick={() => {
                               toggleComparison({ id: item.id, name: item.full_name });
+                              setSearch('');
                               requestAnimationFrame(() => {
                                 if (state.comparison.length + 1 >= COMPARISON_LIMIT)
                                   closeRef.current?.focus();
