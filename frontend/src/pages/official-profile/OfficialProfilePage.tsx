@@ -30,6 +30,7 @@ import { RISK_LEVEL_COLORS, riskLevel } from '@/shared/lib/format';
 import { RULE_TITLES, SEVERITY_COLORS } from '@/shared/lib/labels';
 import { QueryState } from '@/shared/ui';
 import { useLiquidGlass } from '@/shared/ui/useLiquidGlass';
+import { AnimatedNumber } from '@/shared/ui/AnimatedNumber';
 
 // Cytoscape тяжёлый (~400 КБ) — грузим отдельным чанком только на странице профиля
 const RelationGraph = lazy(() =>
@@ -55,7 +56,7 @@ function ProfileHeader({ profile }: { profile: OfficialProfile }) {
             }
           >
             <Text fz={30} fw={700} lh={1}>
-              {profile.risk.score}
+              <AnimatedNumber value={profile.risk.score} />
             </Text>
             <Text size="xs" c="dimmed">
               из 100

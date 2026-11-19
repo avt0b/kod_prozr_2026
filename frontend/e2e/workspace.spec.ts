@@ -2,6 +2,65 @@ import { expect, test } from '@playwright/test';
 
 const API = process.env.API_URL ?? 'http://localhost:8000/api/v1';
 
+test('отложенный поиск сохраняет быстро изменённый минимальный балл', async ({ page }) => {
+  await page.goto('/officials?query=%D0%A1%D0%BE%D0%BA%D0%BE%D0%BB%D0%BE%D0%B2');
+  await page.getByRole('textbox', { name: 'Поиск', exact: true }).fill('');
+  await page.getByRole('textbox', { name: 'Мин. балл', exact: true }).fill('50');
+  await expect.poll(() => new URL(page.url()).searchParams.get('query')).toBeNull();
+  await expect(page).toHaveURL(/min_score=50/);
+  await expect(page.getByRole('textbox', { name: 'Мин. балл', exact: true })).toHaveValue('50');
+});
+
+test('анимации повторяются, счётчики завершаются, reduced motion показывает итог сразу', async ({
+  page,
+  request,
+}) => {
+  const stats = await (await request.get(`${API}/stats/overview`)).json();
+  await page.goto('/');
+  const counter = page
+    .locator('.stat-panel')
+    .first()
+    .locator('.animated-number [aria-hidden="true"]');
+  await counter.scrollIntoViewIfNeeded();
+  await expect(counter).toHaveText(stats.officials_total.toLocaleString('ru-RU'));
+  await page.getByRole('button', { name: 'Повторить анимации', exact: true }).click();
+  await expect
+    .poll(() => counter.textContent())
+    .not.toBe(stats.officials_total.toLocaleString('ru-RU'));
+  await expect(counter).toHaveText(stats.officials_total.toLocaleString('ru-RU'));
+  await page.getByRole('button', { name: 'Повторить анимации', exact: true }).click();
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await expect(
+    page.getByRole('button', { name: 'Повторить анимации', exact: true }),
+  ).toBeDisabled();
+  await expect(counter).toHaveText(stats.officials_total.toLocaleString('ru-RU'));
+  expect(
+    await page
+      .locator('.network-edge')
+      .first()
+      .evaluate((element) => getComputedStyle(element).animationName),
+  ).toBe('none');
+});
+
+test('повтор анимаций сохраняет вопрос и выбранный флаг', async ({ page, request }) => {
+  await page.goto('/assistant');
+  await page.getByRole('textbox', { name: 'Вопрос ассистенту' }).fill('Мой вопрос для проверки');
+  await page.getByRole('button', { name: 'Повторить анимации', exact: true }).click();
+  await expect(page.getByRole('textbox', { name: 'Вопрос ассистенту' })).toHaveValue(
+    'Мой вопрос для проверки',
+  );
+  const top = await (
+    await request.get(`${API}/officials?sort=-risk_score&limit=1&offset=0`)
+  ).json();
+  await page.goto(`/officials/${top.items[0].id}`);
+  const flag = page.locator('.workspace-flag').first();
+  await flag.click();
+  await expect(flag).toHaveAttribute('aria-pressed', 'true');
+  await page.getByRole('button', { name: 'Повторить анимации', exact: true }).click();
+  await expect(flag).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.locator('[data-testid="relation-graph"]')).toBeVisible();
+});
+
 test('обзор связывает сводку, реальный граф и профиль первого в рейтинге', async ({
   page,
   request,

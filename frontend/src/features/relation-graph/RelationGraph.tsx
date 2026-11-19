@@ -143,12 +143,34 @@ export function RelationGraph({ graph, rootId, highlight, onNodeClick, height = 
         .addClass('hl');
     });
     fitGraph(cy);
-    if (!highlight?.length || reducedMotion) return;
-    const animation = containerRef.current?.animate([{ opacity: 0.65 }, { opacity: 1 }], {
-      duration: 270,
-      easing: 'cubic-bezier(0.2, 0.8, 0.2, 1)',
-    });
-    return () => animation?.cancel();
+    if (reducedMotion) return;
+    let animation: Animation | undefined;
+    const reveal = () => {
+      animation?.cancel();
+      animation = containerRef.current?.animate(
+        [
+          { opacity: 0.4, filter: 'blur(3px)', clipPath: 'inset(4% 0 4% 0 round 16px)' },
+          { opacity: 1, filter: 'blur(0px)', clipPath: 'inset(0% 0 0% 0 round 16px)' },
+        ],
+        {
+          duration: highlight?.length ? 420 : 650,
+          easing: 'cubic-bezier(0.16, 1, 0.3, 1)',
+        },
+      );
+    };
+    const syncVisibility = () => {
+      if (document.hidden && animation?.playState === 'running') animation.pause();
+      else if (!document.hidden && animation?.playState === 'paused') animation.play();
+    };
+    reveal();
+    syncVisibility();
+    document.addEventListener('workspace:replay-motion', reveal);
+    document.addEventListener('visibilitychange', syncVisibility);
+    return () => {
+      animation?.cancel();
+      document.removeEventListener('workspace:replay-motion', reveal);
+      document.removeEventListener('visibilitychange', syncVisibility);
+    };
   }, [highlight, elements, dark, prepared, layout, reducedMotion]);
 
   return (

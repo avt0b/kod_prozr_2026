@@ -467,7 +467,7 @@ test('состояния экранов: пусто, ошибка API с пов�
   await expect(page.getByText('База данных недоступна')).toBeVisible();
   await shot(page, '90-state-error');
   failing = false;
-  await page.getByRole('button', { name: 'Повторить' }).click();
+  await page.getByRole('button', { name: 'Повторить', exact: true }).click();
   await expect(tableRows(page)).toHaveCount(20);
   await page.unroute(`${API}/officials?*`);
 

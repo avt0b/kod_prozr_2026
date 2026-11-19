@@ -139,9 +139,8 @@ export function AssistantChat() {
               </div>
               <span className="editorial-eyebrow">Ассистент аналитика</span>
               <h1>
-                Ваш вопрос.
-                <br />
-                <span>Проверяемые источники.</span>
+                <span className="motion-headline-line">Ваш вопрос.</span>
+                <span className="motion-headline-line">Проверяемые источники.</span>
               </h1>
               <p>
                 Находите связи и задавайте вопросы к данным.

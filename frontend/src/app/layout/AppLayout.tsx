@@ -10,7 +10,7 @@ import {
   useMantineColorScheme,
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { useLayoutEffect, type CSSProperties } from 'react';
+import { useEffect, useLayoutEffect, type CSSProperties } from 'react';
 import {
   IconChartBar,
   IconListNumbers,
@@ -25,6 +25,7 @@ import { Link, NavLink as RouterNavLink, Outlet, useLocation } from 'react-route
 import { env } from '@/shared/config/env';
 import { routes } from '@/shared/config/routes';
 import { WorkspaceSearch } from './WorkspaceSearch';
+import { MotionReplay } from './MotionReplay';
 
 const NAV = [
   { to: routes.overview(), label: 'Обзор', icon: IconChartBar, end: true },
@@ -54,6 +55,16 @@ function ColorSchemeToggle() {
 export function AppLayout() {
   const [opened, { toggle, close }] = useDisclosure();
   const { pathname } = useLocation();
+  useEffect(() => {
+    const syncVisibility = () =>
+      document.documentElement.toggleAttribute('data-motion-paused', document.hidden);
+    syncVisibility();
+    document.addEventListener('visibilitychange', syncVisibility);
+    return () => {
+      document.removeEventListener('visibilitychange', syncVisibility);
+      document.documentElement.removeAttribute('data-motion-paused');
+    };
+  }, []);
   useLayoutEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
   }, [pathname]);
@@ -101,6 +112,7 @@ export function AppLayout() {
           </Group>
           <Group gap="sm" wrap="nowrap">
             <WorkspaceSearch />
+            <MotionReplay />
             <ColorSchemeToggle />
           </Group>
         </Group>

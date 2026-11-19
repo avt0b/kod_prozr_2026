@@ -5,6 +5,8 @@ import { useOfficial, useOfficialGraph } from '@/features/officials/api';
 import type { OfficialGraph, OfficialListItem } from '@/shared/api';
 import { routes } from '@/shared/config/routes';
 import { riskLevel } from '@/shared/lib/format';
+import { AnimatedNumber } from '@/shared/ui/AnimatedNumber';
+import type { CSSProperties } from 'react';
 
 /** A compact view of actual graph edges, never an invented relationship illustration. */
 function NetworkPreview({ graph, personId }: { graph: OfficialGraph; personId: string }) {
@@ -49,46 +51,62 @@ function NetworkPreview({ graph, personId }: { graph: OfficialGraph; personId: s
       </defs>
       <circle cx="240" cy="154" r="150" fill="url(#network-glow)" />
       <ellipse cx="240" cy="154" rx="174" ry="112" className="network-orbit" />
+      <circle cx="240" cy="154" r="75" className="network-scan" />
       {graph.edges
         .filter((edge) => positions.has(edge.source) && positions.has(edge.target))
         .map((edge, index) => {
           const source = positions.get(edge.source)!;
           const target = positions.get(edge.target)!;
           return (
-            <line
-              key={index}
-              x1={source.x}
-              y1={source.y}
-              x2={target.x}
-              y2={target.y}
-              className="network-edge"
-            />
+            <g key={index} style={{ '--motion-index': index } as CSSProperties}>
+              <line
+                x1={source.x}
+                y1={source.y}
+                x2={target.x}
+                y2={target.y}
+                className="network-edge"
+                pathLength={1}
+              />
+              <line
+                x1={source.x}
+                y1={source.y}
+                x2={target.x}
+                y2={target.y}
+                pathLength={1}
+                className="network-flow"
+                aria-hidden="true"
+              />
+            </g>
           );
         })}
       {nodes.map((node, index) => {
         const position = positions.get(node.id)!;
         return (
           <g key={node.id} transform={`translate(${position.x} ${position.y})`}>
-            <title>{node.label}</title>
-            <circle
-              r={index === 0 ? 25 : 8}
-              className={index === 0 ? 'network-center' : `network-node network-node-${node.type}`}
-            />
-            {index === 0 && (
-              <path
-                d="M-6-7a6 6 0 1 0 12 0a6 6 0 1 0-12 0M-11 12c0-12 22-12 22 0"
-                fill="none"
-                stroke="white"
-                strokeWidth="1.8"
+            <g className="network-node-stage" style={{ '--motion-index': index } as CSSProperties}>
+              <title>{node.label}</title>
+              <circle
+                r={index === 0 ? 25 : 8}
+                className={
+                  index === 0 ? 'network-center' : `network-node network-node-${node.type}`
+                }
               />
-            )}
-            <text y={index === 0 ? 49 : 25} textAnchor="middle">
-              {index === 0
-                ? 'Служащий'
-                : node.label.length > 22
-                  ? `${node.label.slice(0, 21)}…`
-                  : node.label}
-            </text>
+              {index === 0 && (
+                <path
+                  d="M-6-7a6 6 0 1 0 12 0a6 6 0 1 0-12 0M-11 12c0-12 22-12 22 0"
+                  fill="none"
+                  stroke="white"
+                  strokeWidth="1.8"
+                />
+              )}
+              <text y={index === 0 ? 49 : 25} textAnchor="middle">
+                {index === 0
+                  ? 'Служащий'
+                  : node.label.length > 22
+                    ? `${node.label.slice(0, 21)}…`
+                    : node.label}
+              </text>
+            </g>
           </g>
         );
       })}
@@ -105,7 +123,7 @@ export function FocusCase({ official }: { official: OfficialListItem }) {
       <div className="focus-case-top">
         <span className="editorial-eyebrow">В фокусе проверки</span>
         <span className="focus-case-score" data-risk-level={riskLevel(official.risk_score)}>
-          {official.risk_score}
+          <AnimatedNumber value={official.risk_score} />
           <small> / 100</small>
         </span>
       </div>

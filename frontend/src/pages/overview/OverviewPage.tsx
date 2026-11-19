@@ -46,9 +46,8 @@ export function OverviewPage() {
         <div className="overview-intro-copy">
           <span className="editorial-eyebrow">Код прозрачности / аналитика</span>
           <h1>
-            Видеть связи.
-            <br />
-            <span>Понимать риски.</span>
+            <span className="motion-headline-line">Видеть связи.</span>
+            <span className="motion-headline-line">Понимать риски.</span>
           </h1>
           <p>
             От первого сигнала до доказательной цепочки. Служащие, закупки и обращения — в едином

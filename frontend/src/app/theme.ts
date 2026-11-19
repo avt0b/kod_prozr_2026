@@ -102,7 +102,13 @@ export const theme = createTheme({
     Textarea: Textarea.extend(field),
     Select: Select.extend({
       classNames: { ...field.classNames, dropdown: 'workspace-popover workspace-dropdown' },
-      defaultProps: { comboboxProps: { transitionProps: anchoredTransition } },
+      defaultProps: {
+        comboboxProps: {
+          // Keep popup coordinates independent of document scrolling during route transitions.
+          floatingStrategy: 'fixed',
+          transitionProps: { ...anchoredTransition, transition: 'fade', duration: 180 },
+        },
+      },
     }),
     Alert: Alert.extend({ defaultProps: { radius: 'lg' } }),
     Table: Table.extend({

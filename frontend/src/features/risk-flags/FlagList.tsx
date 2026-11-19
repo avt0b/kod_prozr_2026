@@ -1,6 +1,6 @@
 import { Badge, Card, Group, Stack, Text, ThemeIcon } from '@mantine/core';
 import { IconChevronRight, IconScale } from '@tabler/icons-react';
-import { Fragment } from 'react';
+import { Fragment, type CSSProperties } from 'react';
 import type { RiskFlag } from '@/shared/api';
 import {
   NODE_TYPE_LABELS,
@@ -26,13 +26,14 @@ export function FlagList({ flags, selectedId, onSelect }: Props) {
   }
   return (
     <Stack gap="sm">
-      {flags.map((f) => {
+      {flags.map((f, index) => {
         const selected = f.id === selectedId;
         return (
           <Card
             key={f.id}
             padding="md"
             className="workspace-flag"
+            style={{ '--motion-index': Math.min(index, 5) } as CSSProperties}
             data-selectable={onSelect ? '' : undefined}
             data-selected={selected ? '' : undefined}
             data-severity={f.severity}
