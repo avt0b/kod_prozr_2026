@@ -1,108 +1,20 @@
-import { Anchor, Button, Card, Divider, Group, Stack, Text, Title } from '@mantine/core';
+import { Anchor, Button, Card, Group, Stack, Text, Title } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
-import {
-  IconArrowUpRight,
-  IconBuilding,
-  IconFiles,
-  IconInbox,
-  IconRefresh,
-  IconUser,
-  IconBuildingBank,
-} from '@tabler/icons-react';
+import { IconRefresh, IconNetwork, IconMessageChatbot } from '@tabler/icons-react';
 import { Link } from 'react-router';
-import { useOfficialFlags, useOfficials } from '@/features/officials/api';
+import { useOfficials } from '@/features/officials/api';
 import { OfficialsTable } from '@/features/officials/OfficialsTable';
 import { StatCards } from '@/features/stats/StatCards';
+import { FocusCase } from '@/features/stats/FocusCase';
 import { useOverview, useRecomputeRisk } from '@/features/stats/api';
-import type { OfficialListItem, RiskFlag } from '@/shared/api';
 import { routes } from '@/shared/config/routes';
 import { formatDateTime } from '@/shared/lib/format';
-import { NODE_TYPE_LABELS, RULE_TITLES } from '@/shared/lib/labels';
-import { FlagBadge, PageHeader, QueryState } from '@/shared/ui';
-
-const EVIDENCE_ICONS = {
-  person: IconUser,
-  company: IconBuilding,
-  organ: IconBuildingBank,
-  contract: IconFiles,
-  appeal: IconInbox,
-};
-
-function RiskPriority({ official }: { official: OfficialListItem }) {
-  const flags = useOfficialFlags(official.id);
-  const flag = flags.data?.items.reduce<RiskFlag | null>(
-    (strongest, item) => (!strongest || item.weight > strongest.weight ? item : strongest),
-    null,
-  );
-  const evidence = flag && [...new Map(flag.evidence.map((node) => [node.node_id, node])).values()];
-  return (
-    <Card className="workspace-priority">
-      <Group justify="space-between" align="flex-start" mb="sm">
-        <Stack gap={8}>
-          <Title order={3}>Приоритет проверки</Title>
-          <Text size="sm" fw={650}>
-            {official.full_name}
-          </Text>
-        </Stack>
-        <Button
-          component={Link}
-          to={routes.official(official.id)}
-          rightSection={<IconArrowUpRight size={16} />}
-        >
-          Открыть профиль
-        </Button>
-      </Group>
-      {flag && (
-        <Stack gap={10}>
-          <Group gap={8}>
-            <FlagBadge ruleCode={flag.rule_code} severity={flag.severity} />
-            <Text fw={650} size="sm">
-              {RULE_TITLES[flag.rule_code]}
-            </Text>
-          </Group>
-          <Text c="dimmed" size="sm" lineClamp={2}>
-            {flag.explanation}
-          </Text>
-          {!!evidence?.length && (
-            <>
-              <Divider my={3} />
-              <Group gap={8} align="stretch" component="ol" className="workspace-evidence-list">
-                {evidence.map((node) => {
-                  const NodeIcon = EVIDENCE_ICONS[node.type];
-                  return (
-                    <Group
-                      className="workspace-evidence-node"
-                      key={node.node_id}
-                      component="li"
-                      gap={9}
-                      wrap="nowrap"
-                    >
-                      <NodeIcon size={19} aria-hidden />
-                      <Stack gap={2}>
-                        <Text size="xs" fw={650} lineClamp={2}>
-                          {node.label}
-                        </Text>
-                        <Text size="xs" c="dimmed">
-                          {NODE_TYPE_LABELS[node.type]}
-                        </Text>
-                      </Stack>
-                    </Group>
-                  );
-                })}
-              </Group>
-            </>
-          )}
-        </Stack>
-      )}
-    </Card>
-  );
-}
+import { PageHeader, QueryState } from '@/shared/ui';
 
 export function OverviewPage() {
   const overview = useOverview();
   const top = useOfficials({ sort: '-risk_score', limit: 10, offset: 0 });
   const recompute = useRecomputeRisk();
-  const leading = top.data?.items[0];
 
   return (
     <>
@@ -130,17 +42,59 @@ export function OverviewPage() {
           </Button>
         }
       />
-      <Stack gap="lg">
-        <QueryState query={overview}>
-          {(stats) => <StatCards stats={stats} leading={leading} />}
+      <section className="overview-intro" aria-label="Рабочее место аналитика">
+        <div className="overview-intro-copy">
+          <span className="editorial-eyebrow">Код прозрачности / аналитика</span>
+          <h1>
+            <span className="motion-headline-line">Видеть связи.</span>
+            <span className="motion-headline-line">Понимать риски.</span>
+          </h1>
+          <p>
+            От первого сигнала до доказательной цепочки. Служащие, закупки и обращения — в едином
+            поле зрения.
+          </p>
+          <Group gap="sm" mt="xl">
+            <Button
+              component={Link}
+              to={routes.riskMap()}
+              leftSection={<IconNetwork size={18} />}
+              size="md"
+            >
+              Исследовать риски
+            </Button>
+            <Button
+              component={Link}
+              to={routes.assistant()}
+              variant="subtle"
+              leftSection={<IconMessageChatbot size={18} />}
+              size="md"
+            >
+              Задать вопрос
+            </Button>
+          </Group>
+          <div className="overview-principle">
+            <span aria-hidden="true">01 — 08</span> Восемь правил. Объяснимые сигналы.
+            <br />
+            Окончательное решение — за аналитиком.
+          </div>
+        </div>
+        <QueryState query={top} isEmpty={(data) => data.items.length === 0}>
+          {(data) => <FocusCase official={data.items[0]} />}
         </QueryState>
-        {leading && leading.risk_score > 0 && <RiskPriority official={leading} />}
+      </section>
+      <Stack gap="xl">
+        <QueryState query={overview}>{(stats) => <StatCards stats={stats} />}</QueryState>
 
-        <Card>
-          <Group justify="space-between" mb="sm">
-            <Title order={4}>Топ-10 по риску</Title>
+        <Card className="overview-ranking">
+          <Group justify="space-between" mb="lg">
+            <div>
+              <Text className="editorial-eyebrow" mb={6}>
+                Приоритет проверки
+              </Text>
+              <Title order={3}>Топ-10 по риску</Title>
+            </div>
             <Anchor component={Link} to={routes.officials()} size="sm">
-              Весь рейтинг →
+              Весь рейтинг
             </Anchor>
           </Group>
           <QueryState query={top} isEmpty={(d) => d.items.length === 0}>

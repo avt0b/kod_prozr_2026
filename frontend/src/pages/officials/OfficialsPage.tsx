@@ -51,15 +51,15 @@ export function OfficialsPage() {
       <Stack>
         <OfficialsFilters
           value={filters}
-          onChange={(v) =>
-            update({
-              query: v.query,
-              organ_id: v.organId,
-              min_score: v.minScore,
-              rule_code: v.ruleCode,
-              page: null,
-            })
-          }
+          onChange={(patch) => {
+            const next: Record<string, string | number | null> = { page: null };
+            // A delayed search must not overwrite a newer selection in another filter.
+            if ('query' in patch) next.query = patch.query ?? null;
+            if ('organId' in patch) next.organ_id = patch.organId ?? null;
+            if ('minScore' in patch) next.min_score = patch.minScore ?? null;
+            if ('ruleCode' in patch) next.rule_code = patch.ruleCode ?? null;
+            update(next);
+          }}
         />
         <Card p={0}>
           <QueryState

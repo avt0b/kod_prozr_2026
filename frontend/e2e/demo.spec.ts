@@ -100,7 +100,9 @@ async function graphState(graph: Locator) {
 }
 
 async function clickGraphNode(page: Page, graph: Locator, nodeId: string) {
-  const pos = await graph.evaluate((el, id) => {
+  const pos = await graph.evaluate(async (el, id) => {
+    el.scrollIntoView({ block: 'center', behavior: 'instant' });
+    await Promise.allSettled(el.getAnimations().map((animation) => animation.finished));
     const cy = (el as unknown as { _cyreg: { cy: CyLike } })._cyreg.cy;
     const node = cy.getElementById(id);
     return node.renderedPosition();
@@ -169,12 +171,14 @@ test('сценарий демо docs/demo.md проходит на реальн�
     await page.goto('/');
     await expect(page.getByRole('heading', { name: 'Обзор', level: 2 })).toBeVisible();
     await expect(page.getByText('Баллы риска рассчитаны:')).toBeVisible();
-    const officialsCard = page.locator('.mantine-Card-root', { hasText: 'Служащие' }).first();
+    const officialsCard = page.getByRole('link', { name: /Служащие в системе/ });
     await expect(officialsCard).toContainText(String(stats.officials_total));
-    await expect(page.getByText(`высокий: ${stats.flags_by_severity.high}`)).toBeVisible();
-    await expect(
-      page.locator('.mantine-Card-root', { hasText: 'Обращения граждан' }).first(),
-    ).toContainText(String(stats.appeals_total));
+    await expect(page.getByRole('link', { name: /Флаги риска/ })).toContainText(
+      `высокий ${stats.flags_by_severity.high}`,
+    );
+    await expect(page.getByRole('link', { name: /Обращения граждан/ })).toContainText(
+      String(stats.appeals_total),
+    );
     const top = page.locator('.mantine-Card-root', { hasText: 'Топ-10 по риску' });
     await expect(tableRows(top)).toHaveCount(10);
     await expect(tableRows(top).filter({ hasText: SOKOLOV })).toBeVisible();
@@ -465,7 +469,7 @@ test('состояния экранов: пусто, ошибка API с пов�
   await expect(page.getByText('База данных недоступна')).toBeVisible();
   await shot(page, '90-state-error');
   failing = false;
-  await page.getByRole('button', { name: 'Повторить' }).click();
+  await page.getByRole('button', { name: 'Повторить', exact: true }).click();
   await expect(tableRows(page)).toHaveCount(20);
   await page.unroute(`${API}/officials?*`);
 

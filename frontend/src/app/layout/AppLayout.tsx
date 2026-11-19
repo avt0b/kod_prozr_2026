@@ -18,12 +18,14 @@ import {
   IconShieldSearch,
   IconSun,
 } from '@tabler/icons-react';
-import type { CSSProperties } from 'react';
+import { useEffect, useLayoutEffect, type CSSProperties } from 'react';
 import { Link, NavLink as RouterNavLink, Outlet, useLocation } from 'react-router';
 import { env } from '@/shared/config/env';
 import { routes } from '@/shared/config/routes';
 import { useLiquidGlass } from '@/shared/ui/useLiquidGlass';
 import { useControlGlint } from './useControlGlint';
+import { MotionReplay } from './MotionReplay';
+import { WorkspaceSearch } from './WorkspaceSearch';
 
 const NAV = [
   { to: routes.overview(), label: 'Обзор', compact: 'Обзор', icon: IconChartBar, end: true },
@@ -87,6 +89,19 @@ export function AppLayout() {
   const sectionLabel =
     section?.label ?? (pathname.startsWith(routes.report('')) ? 'Докладная' : 'Код прозрачности');
   useControlGlint();
+  useEffect(() => {
+    const syncVisibility = () =>
+      document.documentElement.toggleAttribute('data-motion-paused', document.hidden);
+    syncVisibility();
+    document.addEventListener('visibilitychange', syncVisibility);
+    return () => {
+      document.removeEventListener('visibilitychange', syncVisibility);
+      document.documentElement.removeAttribute('data-motion-paused');
+    };
+  }, []);
+  useLayoutEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+  }, [pathname]);
 
   return (
     <AppShell
@@ -95,6 +110,9 @@ export function AppLayout() {
       navbar={{ width: 240, breakpoint: 'sm', collapsed: { mobile: true } }}
       padding={{ base: 14, sm: 24 }}
     >
+      <a className="workspace-skip-link" href="#workspace-content">
+        К содержимому
+      </a>
       <AppShell.Header className="workspace-header workspace-glass" {...headerGlass.props}>
         {headerGlass.lens}
         <Group justify="space-between" h="100%" px="sm" wrap="nowrap" gap="xs">
@@ -107,7 +125,11 @@ export function AppLayout() {
               </Badge>
             )}
           </Group>
-          <ColorSchemeToggle />
+          <Group gap="xs" wrap="nowrap">
+            <WorkspaceSearch />
+            <MotionReplay />
+            <ColorSchemeToggle />
+          </Group>
         </Group>
       </AppShell.Header>
 
@@ -158,8 +180,8 @@ export function AppLayout() {
         )}
       </AppShell.Navbar>
 
-      <AppShell.Main className="workspace-main">
-        <div className="workspace-page">
+      <AppShell.Main className="workspace-main" id="workspace-content" tabIndex={-1}>
+        <div className="workspace-page" key={pathname}>
           <Outlet />
         </div>
       </AppShell.Main>

@@ -79,7 +79,7 @@ export const theme = createTheme({
   radius: { xs: '6px', sm: '9px', md: '13px', lg: '16px', xl: '28px' },
   fontFamily: 'Inter, system-ui, -apple-system, "Segoe UI", sans-serif',
   fontFamilyMonospace: 'ui-monospace, SFMono-Regular, Consolas, monospace',
-  headings: { fontWeight: '735' },
+  headings: { fontWeight: '650' },
   components: {
     Card: Card.extend({ ...surface, defaultProps: { ...surface.defaultProps, padding: 'lg' } }),
     Paper: Paper.extend(surface),
@@ -105,7 +105,13 @@ export const theme = createTheme({
     Textarea: Textarea.extend(field),
     Select: Select.extend({
       classNames: { ...field.classNames, dropdown: 'workspace-popover workspace-dropdown' },
-      defaultProps: { comboboxProps: { transitionProps: anchoredTransition } },
+      defaultProps: {
+        comboboxProps: {
+          // Keep popup coordinates independent of document scrolling during route transitions.
+          floatingStrategy: 'fixed',
+          transitionProps: { ...anchoredTransition, transition: 'fade', duration: 180 },
+        },
+      },
     }),
     Alert: Alert.extend({ defaultProps: { radius: 'lg' } }),
     Table: Table.extend({

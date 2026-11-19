@@ -12,7 +12,7 @@ import {
   Text,
   Title,
 } from '@mantine/core';
-import { lazy, Suspense, useState } from 'react';
+import { lazy, Suspense, useState, type CSSProperties } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
 import {
   AppointmentsSection,
@@ -29,6 +29,7 @@ import { routes } from '@/shared/config/routes';
 import { RISK_LEVEL_COLORS, riskLevel } from '@/shared/lib/format';
 import { QueryState } from '@/shared/ui';
 import { useLiquidGlass } from '@/shared/ui/useLiquidGlass';
+import { AnimatedNumber } from '@/shared/ui/AnimatedNumber';
 
 // Cytoscape тяжёлый (~400 КБ) — грузим отдельным чанком только на странице профиля
 const RelationGraph = lazy(() =>
@@ -47,7 +48,7 @@ function ProfileHeader({ profile }: { profile: OfficialProfile }) {
   const level = riskLevel(profile.risk.score);
   return (
     <Group justify="space-between" align="center" gap="md" mb="xl">
-      <Stack className="workspace-profile-name" gap={5}>
+      <Stack className="workspace-profile-name workspace-profile-identity" gap={5}>
         <Title className="workspace-profile-title" order={2}>
           {profile.person.full_name}
         </Title>
@@ -68,9 +69,15 @@ function ProfileHeader({ profile }: { profile: OfficialProfile }) {
           <Badge color={RISK_LEVEL_COLORS[level]} variant="light">
             {RISK_LABELS[level]}
           </Badge>
-          <Group gap={5} align="baseline" className="workspace-profile-score" data-level={level}>
+          <Group
+            gap={5}
+            align="baseline"
+            className="workspace-profile-score"
+            data-level={level}
+            style={{ '--score-ink': 'currentColor' } as CSSProperties}
+          >
             <Text fz={26} fw={730} lh={1}>
-              {profile.risk.score}
+              <AnimatedNumber value={profile.risk.score} />
             </Text>
             <Text size="xs" c="dimmed">
               из 100

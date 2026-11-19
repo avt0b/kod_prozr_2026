@@ -28,7 +28,7 @@ export function Providers({ children }: { children: ReactNode }) {
       <Notifications position="top-right" />
       <QueryClientProvider client={queryClient}>
         {children}
-        {import.meta.env.DEV && (
+        {import.meta.env.DEV && import.meta.env.VITE_QUERY_DEVTOOLS === 'true' && (
           <ReactQueryDevtools initialIsOpen={false} buttonPosition="bottom-left" />
         )}
       </QueryClientProvider>

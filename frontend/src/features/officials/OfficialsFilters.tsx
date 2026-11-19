@@ -20,13 +20,13 @@ export interface OfficialsFilterValues {
 
 interface Props {
   value: OfficialsFilterValues;
-  onChange: (value: OfficialsFilterValues) => void;
+  onChange: (patch: Partial<OfficialsFilterValues>) => void;
 }
 
 export function OfficialsFilters({ value, onChange }: Props) {
   // Поиск печатаем локально и отправляем с задержкой, чтобы не дёргать API на каждую букву
   const [query, setQuery] = useState(value.query);
-  const pushQuery = useDebouncedCallback((q: string) => onChange({ ...value, query: q }), 300);
+  const pushQuery = useDebouncedCallback((q: string) => onChange({ query: q }), 300);
 
   return (
     <Group align="flex-end" gap="md" wrap="wrap">
@@ -41,11 +41,7 @@ export function OfficialsFilters({ value, onChange }: Props) {
         }}
         w={280}
       />
-      <OrganSelect
-        value={value.organId}
-        onChange={(organId) => onChange({ ...value, organId })}
-        w={360}
-      />
+      <OrganSelect value={value.organId} onChange={(organId) => onChange({ organId })} w={360} />
       <NumberInput
         label="Мин. балл"
         placeholder="0"
@@ -53,7 +49,7 @@ export function OfficialsFilters({ value, onChange }: Props) {
         max={100}
         step={10}
         value={value.minScore ?? ''}
-        onChange={(v) => onChange({ ...value, minScore: v === '' ? null : Number(v) })}
+        onChange={(v) => onChange({ minScore: v === '' ? null : Number(v) })}
         w={120}
       />
       <Select
@@ -61,7 +57,7 @@ export function OfficialsFilters({ value, onChange }: Props) {
         placeholder="Любое"
         data={RULE_OPTIONS}
         value={value.ruleCode}
-        onChange={(v) => onChange({ ...value, ruleCode: (v as RuleCode | null) ?? null })}
+        onChange={(v) => onChange({ ruleCode: (v as RuleCode | null) ?? null })}
         clearable
         w={340}
       />

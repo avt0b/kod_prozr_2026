@@ -67,6 +67,8 @@ body {
     radial-gradient(ellipse at 95% 5%, var(--workspace-halo-alt), transparent 55%),
     var(--workspace-sky);
   background-attachment: fixed;
+  -webkit-font-smoothing: antialiased;
+  font-variant-numeric: tabular-nums;
 }
 
 ::selection {
