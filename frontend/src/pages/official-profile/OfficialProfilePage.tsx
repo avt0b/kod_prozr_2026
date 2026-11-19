@@ -31,6 +31,7 @@ import { RULE_TITLES, SEVERITY_COLORS } from '@/shared/lib/labels';
 import { QueryState } from '@/shared/ui';
 import { useLiquidGlass } from '@/shared/ui/useLiquidGlass';
 import { AnimatedNumber } from '@/shared/ui/AnimatedNumber';
+import { CaseActions } from '@/features/workbench/CaseActions';
 
 // Cytoscape тяжёлый (~400 КБ) — грузим отдельным чанком только на странице профиля
 const RelationGraph = lazy(() =>
@@ -80,7 +81,10 @@ function ProfileHeader({ profile }: { profile: OfficialProfile }) {
             </Group>
           </Stack>
         </Group>
-        <CreateReportButton personId={profile.person.id} />
+        <Group gap="sm">
+          <CaseActions person={{ id: profile.person.id, name: profile.person.full_name }} />
+          <CreateReportButton personId={profile.person.id} />
+        </Group>
       </Group>
     </Card>
   );

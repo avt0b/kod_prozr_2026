@@ -2,6 +2,7 @@ import {
   ActionIcon,
   AppShell,
   Badge,
+  Box,
   Burger,
   Group,
   NavLink,
@@ -10,7 +11,7 @@ import {
   useMantineColorScheme,
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { useEffect, useLayoutEffect, type CSSProperties } from 'react';
+import { useEffect, useLayoutEffect, useState, type CSSProperties } from 'react';
 import {
   IconChartBar,
   IconListNumbers,
@@ -26,6 +27,8 @@ import { env } from '@/shared/config/env';
 import { routes } from '@/shared/config/routes';
 import { WorkspaceSearch } from './WorkspaceSearch';
 import { MotionReplay } from './MotionReplay';
+import { WorkbenchPanels } from '@/features/workbench/WorkbenchPanels';
+import { WorkbenchTools } from '@/features/workbench/WorkbenchTools';
 
 const NAV = [
   { to: routes.overview(), label: 'Обзор', icon: IconChartBar, end: true },
@@ -54,6 +57,17 @@ function ColorSchemeToggle() {
 
 export function AppLayout() {
   const [opened, { toggle, close }] = useDisclosure();
+  const [presentation, setPresentation] = useState(false);
+  useEffect(() => {
+    if (!presentation) return;
+    const exit = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && !document.querySelector('[role="dialog"]'))
+        setPresentation(false);
+    };
+    // Capture Escape before a focused tooltip consumes it; open dialogs retain priority.
+    window.addEventListener('keydown', exit, true);
+    return () => window.removeEventListener('keydown', exit, true);
+  }, [presentation]);
   const { pathname } = useLocation();
   useEffect(() => {
     const syncVisibility = () =>
@@ -75,8 +89,13 @@ export function AppLayout() {
   return (
     <AppShell
       className="workspace-shell"
+      data-presentation={presentation || undefined}
       header={{ height: 76 }}
-      navbar={{ width: 250, breakpoint: 'sm', collapsed: { mobile: !opened } }}
+      navbar={{
+        width: 250,
+        breakpoint: 'sm',
+        collapsed: { mobile: !opened, desktop: presentation },
+      }}
       padding="lg"
     >
       <a className="workspace-skip-link" href="#workspace-content">
@@ -87,7 +106,10 @@ export function AppLayout() {
           <Group gap="xs" wrap="nowrap">
             <Burger
               opened={opened}
-              onClick={toggle}
+              onClick={() => {
+                setPresentation(false);
+                toggle();
+              }}
               hiddenFrom="sm"
               size="sm"
               aria-label="Меню разделов"
@@ -112,8 +134,14 @@ export function AppLayout() {
           </Group>
           <Group gap="sm" wrap="nowrap">
             <WorkspaceSearch />
+            <WorkbenchTools
+              presentation={presentation}
+              onPresentation={() => setPresentation((value) => !value)}
+            />
             <MotionReplay />
-            <ColorSchemeToggle />
+            <Box visibleFrom="sm">
+              <ColorSchemeToggle />
+            </Box>
           </Group>
         </Group>
       </AppShell.Header>
@@ -161,6 +189,7 @@ export function AppLayout() {
           <Outlet />
         </div>
       </AppShell.Main>
+      <WorkbenchPanels />
     </AppShell>
   );
 }

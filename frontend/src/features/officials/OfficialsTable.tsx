@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router';
 import type { OfficialListItem, OfficialsSort } from '@/shared/api';
 import { routes } from '@/shared/config/routes';
 import { FlagBadge, RiskScoreBadge } from '@/shared/ui';
+import { CaseActions } from '@/features/workbench/CaseActions';
 
 interface Props {
   items: OfficialListItem[];
@@ -57,6 +58,7 @@ export function OfficialsTable({ items, sort, onSortChange, startIndex = 0 }: Pr
             </Table.Th>
             <Table.Th>Должность и орган</Table.Th>
             <Table.Th>Флаги</Table.Th>
+            <Table.Th w={90}>Кейс</Table.Th>
           </Table.Tr>
         </Table.Thead>
         <Table.Tbody>
@@ -97,6 +99,9 @@ export function OfficialsTable({ items, sort, onSortChange, startIndex = 0 }: Pr
                     <FlagBadge key={f.rule_code} ruleCode={f.rule_code} severity={f.severity} />
                   ))}
                 </Group>
+              </Table.Td>
+              <Table.Td>
+                <CaseActions person={{ id: o.id, name: o.full_name }} />
               </Table.Td>
             </Table.Tr>
           ))}
