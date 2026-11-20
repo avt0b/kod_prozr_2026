@@ -192,20 +192,21 @@ export function RelationGraph({
     >
       <Group className="profile-graph-toolbar" gap="xs">
         {signalPicker}
-        {!highlight?.length && (
-          <Select
-            aria-label="Раскладка графа"
-            value={layout}
-            onChange={(value) => value && setLayout(value)}
-            allowDeselect={false}
-            data={[
-              { value: 'breadthfirst', label: 'По уровням' },
-              { value: 'cose', label: 'Силовая' },
-            ]}
-            className="profile-graph-layout"
-            size="xs"
-          />
-        )}
+        <Select
+          aria-label="Раскладка графа"
+          value={highlight?.length ? 'evidence' : layout}
+          disabled={Boolean(highlight?.length)}
+          title={highlight?.length ? 'При выбранном флаге показана его цепочка связей' : undefined}
+          onChange={(value) => value && value !== 'evidence' && setLayout(value)}
+          allowDeselect={false}
+          data={[
+            ...(highlight?.length ? [{ value: 'evidence', label: 'По цепочке' }] : []),
+            { value: 'breadthfirst', label: 'По уровням' },
+            { value: 'cose', label: 'Силовая' },
+          ]}
+          className="profile-graph-layout"
+          size="xs"
+        />
       </Group>
       {graph.nodes.length === 0 && <Alert>Связи не найдены</Alert>}
       {graph.truncated && (

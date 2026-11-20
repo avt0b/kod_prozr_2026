@@ -3,6 +3,38 @@ import type { Core } from 'cytoscape';
 
 const API = process.env.API_URL ?? 'http://localhost:8000/api/v1';
 
+for (const theme of ['light', 'dark'])
+  for (const width of [1440, 390]) {
+    test(`панель графа не сдвигается при выборе флага: ${width}, ${theme}`, async ({
+      page,
+      request,
+    }) => {
+      await page.setViewportSize({ width, height: 950 });
+      await page.emulateMedia({ reducedMotion: 'reduce' });
+      await page.addInitScript(
+        (scheme) => localStorage.setItem('mantine-color-scheme-value', scheme),
+        theme,
+      );
+      const { items } = await (await request.get(`${API}/officials?limit=1`)).json();
+      await page.goto(`/officials/${items[0].id}`);
+      const picker = page.getByRole('group', { name: 'Сигнал на графе', exact: true });
+      await expect(picker.getByText('R01', { exact: true })).toBeVisible();
+      const before = await picker.boundingBox();
+      await picker.getByText('R01', { exact: true }).click();
+      const layout = page.getByRole('textbox', { name: 'Раскладка графа', exact: true });
+      await expect(layout).toBeDisabled();
+      await expect(layout).toHaveValue('По цепочке');
+      const selected = await picker.boundingBox();
+      expect(Math.abs(selected!.x - before!.x)).toBeLessThanOrEqual(1);
+      expect(Math.abs(selected!.y - before!.y)).toBeLessThanOrEqual(1);
+      await picker.getByText('Все связи', { exact: true }).click();
+      await expect(layout).toBeEnabled();
+      const restored = await picker.boundingBox();
+      expect(Math.abs(restored!.x - before!.x)).toBeLessThanOrEqual(1);
+      expect(Math.abs(restored!.y - before!.y)).toBeLessThanOrEqual(1);
+    });
+  }
+
 for (const width of [1440, 390]) {
   test(`холст профиля и читаемые подписи связей, ${width}px`, async ({ page, request }) => {
     await page.setViewportSize({ width, height: 900 });
