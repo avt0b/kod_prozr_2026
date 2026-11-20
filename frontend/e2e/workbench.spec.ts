@@ -32,6 +32,37 @@ test('запрос старой сессии не повторяется под 
 
 const API = process.env.API_URL ?? 'http://localhost:8000/api/v1';
 
+test('смена сессии загружает новые данные вместо кеша предыдущего аккаунта', async ({
+  page,
+  request,
+}) => {
+  const data = await (await request.get(`${API}/officials?limit=20`)).json();
+  let switched = false;
+  await page.route('**/api/v1/officials?*', (route) =>
+    route.fulfill({
+      json: switched ? { items: [{ ...data.items[0], full_name: 'Сессия Б' }], total: 1 } : data,
+    }),
+  );
+  await page.goto('/officials');
+  await expect(page.locator('tbody tr').first()).toBeVisible();
+  await page.route('**/api/v1/__switch', (route) => route.fulfill({ status: 401, json: {} }));
+  await page.route('**/api/v1/auth/refresh', (route) => {
+    switched = true;
+    return route.fulfill({
+      json: {
+        access_token: 'mock-new-token',
+        session_id: 'new-session',
+        user: { id: 'new-user', username: 'new' },
+      },
+    });
+  });
+  await page.evaluate(async (path) => {
+    const { request } = await import(path);
+    await request('POST', '/__switch', {}).catch(() => undefined);
+  }, '/src/shared/api/client.ts');
+  await expect(page.getByRole('link', { name: 'Сессия Б', exact: true })).toBeVisible();
+});
+
 test('запоздалый ответ старой сессии не возвращается после смены аккаунта', async ({ page }) => {
   await page.goto('/officials');
   await expect(page.locator('tbody tr').first()).toBeVisible();
