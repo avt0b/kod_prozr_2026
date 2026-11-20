@@ -17,6 +17,7 @@ import type { AssistantSource } from '@/shared/api';
 import { routes } from '@/shared/config/routes';
 import { useAskAssistant } from './api';
 import { AlexeyMascot } from './AlexeyMascot';
+import { hasProfanity } from './mascotMood';
 import { useAnswerReveal } from './useAnswerReveal';
 
 interface Message {
@@ -165,6 +166,7 @@ export function AssistantChat() {
         <AlexeyMascot
           seat={seat}
           reducedMotion={reducedMotion}
+          annoyed={hasProfanity(draft)}
           gaze={
             playback
               ? { kind: 'speaking', answer: answerText, glyph: playback.glyph }

@@ -96,3 +96,35 @@ test('Алексей сохраняет ошибки и полный ответ 
   await expect(avatar).toHaveAttribute('data-state', 'idle');
   await expect(avatar.locator('.assistant-alexey-mouth')).toHaveAttribute('height', '3.5');
 });
+
+test('Алексей краснеет при наборе мата и успокаивается после правки', async ({ page }) => {
+  const question = 'Пиздец, проверь связи!';
+  let sent: unknown;
+  await page.route(endpoint, (route) => {
+    sent = route.request().postDataJSON();
+    return route.fulfill({ json: { answer, sources: [source] } });
+  });
+  await page.goto('/assistant');
+  const avatar = page.locator('.assistant-alexey[data-placed]');
+  const field = page.getByRole('textbox', { name: 'Вопрос ассистенту' });
+  const cheeks = avatar.locator('.assistant-alexey-skin').last();
+
+  await field.fill('Проверь требования к учебнику и договор страховки');
+  await expect(avatar).not.toHaveAttribute('data-mood', 'annoyed');
+
+  await field.fill('Проверь, ЁБАНЫЙ!');
+  await expect(avatar).toHaveAttribute('data-state', 'typing');
+  await expect(avatar).toHaveAttribute('data-mood', 'annoyed');
+  await expect(cheeks).toHaveCSS('fill', 'rgb(244, 162, 156)');
+
+  await field.fill('Проверь связи!');
+  await expect(avatar).not.toHaveAttribute('data-mood', 'annoyed');
+  await expect(cheeks).toHaveCSS('fill', 'rgb(167, 215, 238)');
+
+  await field.fill(question);
+  await expect(avatar).toHaveAttribute('data-mood', 'annoyed');
+  await field.press('Enter');
+  await expect.poll(() => sent).toEqual({ question });
+  await expect(avatar).not.toHaveAttribute('data-mood', 'annoyed');
+  await expect(page.getByText(answer, { exact: true })).toBeVisible();
+});

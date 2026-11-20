@@ -23,10 +23,12 @@ export function AlexeyMascot({
   seat,
   gaze,
   reducedMotion,
+  annoyed,
 }: {
   seat: HTMLElement | null;
   gaze: Gaze;
   reducedMotion: boolean;
+  annoyed: boolean;
 }) {
   const holder = useRef<HTMLDivElement>(null);
   const artwork = useRef<SVGSVGElement>(null);
@@ -133,7 +135,13 @@ export function AlexeyMascot({
   const [width, height] = mouth(gaze, reducedMotion);
   return (
     <>
-      <div className="assistant-alexey" ref={holder} data-state={gaze.kind} aria-hidden="true">
+      <div
+        className="assistant-alexey"
+        ref={holder}
+        data-state={gaze.kind}
+        data-mood={annoyed ? 'annoyed' : undefined}
+        aria-hidden="true"
+      >
         <svg
           ref={artwork}
           className="assistant-alexey-art"
@@ -173,6 +181,7 @@ export function AlexeyMascot({
               d="M44 96 H156 Q171 96 171 112 V118 Q171 132 157 132 H43 Q29 132 29 118 V112 Q29 96 44 96 Z"
             />
             <path
+              className="assistant-alexey-skin"
               fill="#a7d7ee"
               d="M45 102 H155 Q165 102 165 112 V118 Q165 126 155 126 H45 Q35 126 35 118 V111 Q35 102 45 102 Z"
             />
@@ -181,11 +190,20 @@ export function AlexeyMascot({
               d="M40 76 Q42 69 54 69 H145 Q156 69 157 80 V145 Q157 170 132 172 H67 Q40 171 40 146 Z"
             />
             <path
+              className="assistant-alexey-skin"
               fill="#a7d7ee"
               d="M46 94 Q46 84 51 77 H148 Q151 85 151 96 V147 Q151 165 132 166 H67 Q46 165 46 147 Z"
             />
-            <path fill="#101b29" d="M61 96 H92 V102 H61 Z" />
-            <path fill="#101b29" d="M107 96 L136 91 L137 97 L108 102 Z" />
+            <g className="assistant-alexey-blush" fill="#de4657">
+              <ellipse cx="64" cy="131" rx="10" ry="5" />
+              <ellipse cx="134" cy="131" rx="10" ry="5" />
+            </g>
+            <path className="assistant-alexey-brow-left" fill="#101b29" d="M61 96 H92 V102 H61 Z" />
+            <path
+              className="assistant-alexey-brow-right"
+              fill="#101b29"
+              d="M107 96 L136 91 L137 97 L108 102 Z"
+            />
             <path fill="#101b29" d="M100 119 L107 132 H93 Z" />
             <g className="assistant-alexey-pupils" ref={eyes}>
               <g className="assistant-alexey-blink" fill="#101b29">
@@ -193,15 +211,25 @@ export function AlexeyMascot({
                 <circle cx="121.5" cy="112" r="5.7" />
               </g>
             </g>
-            <rect
-              className="assistant-alexey-mouth"
-              x={100 - width / 2}
-              y={147 - height / 2}
-              width={width}
-              height={height}
-              rx={height / 2}
-              fill="#101b29"
-            />
+            {annoyed && gaze.kind !== 'speaking' ? (
+              <path
+                d="M83 149 Q100 139 117 149"
+                fill="none"
+                stroke="#101b29"
+                strokeWidth="3.5"
+                strokeLinecap="round"
+              />
+            ) : (
+              <rect
+                className="assistant-alexey-mouth"
+                x={100 - width / 2}
+                y={147 - height / 2}
+                width={width}
+                height={height}
+                rx={height / 2}
+                fill="#101b29"
+              />
+            )}
           </g>
           <g data-part="cap">
             <path
