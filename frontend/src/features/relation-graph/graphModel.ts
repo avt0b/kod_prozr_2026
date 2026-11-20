@@ -211,6 +211,7 @@ function levelPositions(
 
 /** Evidence describes a subgraph; the employment shortcut is outside an R01 chain. */
 export function evidenceEdge(edge: GraphEdge, ids: Set<string>, graph: OfficialGraph): boolean {
+  if (edge.manual || edge.type === 'manual') return false;
   if (!ids.has(edge.source) || !ids.has(edge.target)) return false;
   const hasContracts = graph.nodes.some((n) => n.type === 'contract' && ids.has(n.id));
   return !(hasContracts && ['works_in', 'appointment'].includes(edge.type));

@@ -27,6 +27,9 @@ import { Link, useLocation, useParams } from 'react-router';
 import { useOfficial, useOfficialGraph } from '@/features/officials/api';
 import { ProfileSections } from '@/features/officials/ProfileSections';
 import { CanvasMesh } from '@/features/relation-graph/CanvasMesh';
+import { useGraphWorkspace } from '@/features/manual-graph/api';
+import { withManualGraph } from '@/features/manual-graph/overlay';
+import { ManualGraphEditor } from '@/features/manual-graph/ManualGraphEditor';
 import { GraphEntityIcon } from '@/features/relation-graph/GraphLegend';
 import { groupContracts } from '@/features/relation-graph/contractGroups';
 import { CreateReportButton } from '@/features/reports/CreateReportButton';
@@ -166,6 +169,23 @@ function ProfileDetails({
 }
 
 function EntityDetails({ node, profile }: { node: GraphNode; profile: OfficialProfile }) {
+  if (node.manual)
+    return (
+      <section className="profile-inspector-section">
+        <Badge variant="light">Внесено аналитиком</Badge>
+        <Text size="sm" mt="sm">
+          Ручные сведения не проверены системой и не влияют на балл риска.
+        </Text>
+        {node.notes && (
+          <Text size="sm" mt="sm">
+            {node.notes}
+          </Text>
+        )}
+        <Text size="sm" c="dimmed" mt="sm">
+          Источник: {node.source || 'Не указан'}
+        </Text>
+      </section>
+    );
   const relative = profile.relatives.find((item) => item.person.id === node.id);
   const company = profile.companies.find((link) => link.company.id === node.id);
   return (
@@ -259,7 +279,10 @@ function GraphEntities({
             <GraphEntityIcon type={node.type} />
             <span>
               <strong>{node.label}</strong>
-              <small>{edge.label}</small>
+              <small>
+                {edge.label}
+                {edge.manual ? ' · внесено аналитиком' : ''}
+              </small>
             </span>
             <IconChevronRight size={15} aria-hidden />
           </UnstyledButton>
@@ -282,7 +305,7 @@ function ProfileCanvas({
 }) {
   const rootId = profile.person.id;
   const [flag, setFlag] = useState<RiskFlag | null>(null);
-  const [entity, setEntity] = useState<GraphNode | null>(null);
+  const [selectedEntity, setEntity] = useState<GraphNode | null>(null);
   const [inspectorOpen, setInspectorOpen] = useState(true);
   const [grouped, setGrouped] = useState(true);
   const inspectorRef = useRef<HTMLElement>(null);
@@ -291,12 +314,20 @@ function ProfileCanvas({
   const reducedMotion = useReducedMotion();
   const stacked = useMediaQuery('(max-width: 55.99em)');
   const rawGraph = graphQuery.data;
+  const workspace = useGraphWorkspace(rootId);
+  const combinedGraph = useMemo(
+    () => rawGraph && withManualGraph(rawGraph, workspace.workspace),
+    [rawGraph, workspace.workspace],
+  );
   const flagNodes = useMemo(() => flag?.evidence.map((item) => item.node_id), [flag]);
   const prepared = useMemo(
-    () => (rawGraph && grouped ? groupContracts(rawGraph, flagNodes) : undefined),
-    [rawGraph, grouped, flagNodes],
+    () => (combinedGraph && grouped ? groupContracts(combinedGraph, flagNodes) : undefined),
+    [combinedGraph, grouped, flagNodes],
   );
-  const graph = prepared?.graph ?? rawGraph;
+  const graph = prepared?.graph ?? combinedGraph;
+  const entity = selectedEntity?.manual
+    ? (graph?.nodes.find((node) => node.id === selectedEntity.id) ?? null)
+    : selectedEntity;
   const flagHighlight = useMemo(
     () => flagNodes?.map((id) => prepared?.aliases.get(id) ?? id),
     [flagNodes, prepared],
@@ -386,6 +417,7 @@ function ProfileCanvas({
                 rootSubtitle={profile.appointments[0]?.position.title}
                 selectedId={entity?.id ?? rootId}
                 onNodeClick={selectEntity}
+                extraControls={<ManualGraphEditor controller={workspace} baseGraph={rawGraph} />}
                 highlight={flagHighlight}
                 signalPicker={
                   <>

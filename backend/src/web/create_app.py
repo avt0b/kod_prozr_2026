@@ -24,6 +24,7 @@ from src.modules.assistant.presentation.api.assistant_router import router as as
 from src.modules.counterparties.infrastructure.exception_handler import (
     register_counterparties_handlers,
 )
+from src.modules.manual_graph.presentation.router import router as manual_graph_router
 from src.modules.officials.infrastructure.exception_handler import register_officials_handlers
 from src.modules.officials.presentation.api.officials_router import router as officials_router
 from src.modules.officials.presentation.api.organs_router import router as organs_router
@@ -104,6 +105,7 @@ def create_app(settings: Settings) -> FastAPI:
     app.include_router(auth_router, prefix=API_PREFIX)
     api = APIRouter(prefix=API_PREFIX, dependencies=[Depends(current_user)])
     api.include_router(audit_router)
+    api.include_router(manual_graph_router)
     api.include_router(stats_router)
     api.include_router(organs_router)
     api.include_router(officials_router)

@@ -40,6 +40,7 @@ interface Props {
   onNodeClick?: (node: GraphNode) => void;
   selectedId?: string;
   signalPicker?: ReactNode;
+  extraControls?: ReactNode;
 }
 
 /** Тонкая обёртка над Cytoscape.js: создаёт инстанс на смену данных/темы, подсветку меняет классами. */
@@ -51,6 +52,7 @@ export function RelationGraph({
   onNodeClick,
   selectedId,
   signalPicker,
+  extraControls,
 }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const cyRef = useRef<Core | null>(null);
@@ -235,6 +237,7 @@ export function RelationGraph({
         )}
       </div>
       <Group className="profile-graph-dock" justify="space-between" gap="xs">
+        {extraControls}
         <div className="profile-graph-key profile-glass">
           <GraphLegend />
         </div>
