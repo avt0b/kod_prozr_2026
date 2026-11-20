@@ -17,15 +17,6 @@
   max-width: min(100%, 810px);
 }
 
-.assistant-animated-turn[data-side='right'] {
-  grid-template-columns: minmax(0, 1fr) var(--alexey-seat-size);
-  margin-inline-start: auto;
-}
-
-.assistant-animated-turn[data-side='right'] .assistant-alexey-reply-seat {
-  grid-area: 1 / 2;
-}
-
 .assistant-animated-turn .assistant-message {
   min-width: 0;
   max-width: 100%;

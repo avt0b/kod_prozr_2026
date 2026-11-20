@@ -28,10 +28,6 @@ interface Message {
   error?: boolean;
 }
 
-function chooseReplySide() {
-  return Math.random() < 0.5 ? 'left' : 'right';
-}
-
 const SUGGESTIONS = [
   {
     icon: IconNetwork,
@@ -103,7 +99,6 @@ export function AssistantChat() {
   const reducedMotion = useReducedMotion();
   const { playback, reveal } = useAnswerReveal(reducedMotion);
   const busy = ask.isPending || Boolean(playback);
-  const [side, setSide] = useState<'left' | 'right'>('left');
   const [seat, setSeat] = useState<HTMLDivElement | null>(null);
   const [caret, setCaret] = useState<number>();
   const composer = useRef<HTMLTextAreaElement>(null);
@@ -127,7 +122,6 @@ export function AssistantChat() {
     const q = question.trim();
     if (!q || busy) return;
     const user: Message = { id: nextId.current++, role: 'user', text: q };
-    setSide(chooseReplySide());
     setMessages((previous) => [...previous, user]);
     setDraft('');
     stopTyping();
@@ -236,7 +230,7 @@ export function AssistantChat() {
               </Paper>
             );
             return current ? (
-              <div key={m.id} className="assistant-animated-turn" data-side={side}>
+              <div key={m.id} className="assistant-animated-turn">
                 <div className="assistant-alexey-reply-seat" ref={setSeat} aria-hidden="true" />
                 {bubble}
               </div>
@@ -245,7 +239,7 @@ export function AssistantChat() {
             );
           })}
           {ask.isPending && (
-            <div className="assistant-animated-turn" data-side={side}>
+            <div className="assistant-animated-turn">
               <div className="assistant-alexey-reply-seat" ref={setSeat} aria-hidden="true" />
               <Group role="status" className="assistant-alexey-wait" gap="xs">
                 <Loader size="sm" type="dots" />

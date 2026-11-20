@@ -4,11 +4,8 @@ const endpoint = '**/api/v1/assistant/ask';
 const answer = 'Откройте цифровой профиль и сверьте цепочку поставщиков с первоисточниками.';
 const source = { type: 'person', id: 'example', label: 'Профиль для проверки' };
 
-for (const [side, random, width] of [
-  ['left', 0.1, 1440],
-  ['right', 0.9, 390],
-] as const) {
-  test(`Алексей следит за вводом и ответом со стороны ${side}`, async ({ page }) => {
+for (const width of [1440, 390]) {
+  test(`Алексей следит за вводом и остаётся слева от ответа, ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 930 });
     let finish!: () => void;
     const release = new Promise<void>((resolve) => {
@@ -21,9 +18,6 @@ for (const [side, random, width] of [
     });
 
     await page.goto('/assistant');
-    await page.evaluate((value) => {
-      Math.random = () => value;
-    }, random);
     const avatar = page.locator('.assistant-alexey[data-placed]');
     const pupils = avatar.locator('.assistant-alexey-pupils');
     await expect(avatar).toHaveAttribute('data-state', 'idle');
@@ -50,7 +44,15 @@ for (const [side, random, width] of [
     await field.press('Enter');
     try {
       await expect(avatar).toHaveAttribute('data-state', 'waiting');
-      await expect(page.locator(`.assistant-animated-turn[data-side="${side}"]`)).toBeVisible();
+      const waiting = page.locator('.assistant-alexey-wait');
+      await expect(waiting).toBeVisible();
+      await expect
+        .poll(async () => {
+          const mascot = await avatar.boundingBox();
+          const text = await waiting.boundingBox();
+          return Boolean(mascot && text && mascot.x + mascot.width < text.x);
+        })
+        .toBe(true);
       await expect(page.getByRole('button', { name: 'Отправить' })).toBeDisabled();
     } finally {
       finish();
@@ -62,6 +64,13 @@ for (const [side, random, width] of [
     await expect.poll(async () => (await written.textContent())?.length ?? 0).toBeGreaterThan(0);
     expect(answer.startsWith((await written.textContent()) ?? '')).toBe(true);
     await expect(avatar.locator('.assistant-alexey-mouth')).not.toHaveAttribute('height', '3.5');
+    await expect
+      .poll(async () => {
+        const mascot = await avatar.boundingBox();
+        const text = await written.boundingBox();
+        return Boolean(mascot && text && mascot.x + mascot.width < text.x);
+      })
+      .toBe(true);
     await expect(written).toHaveText(answer);
     await expect(avatar).toHaveAttribute('data-state', 'idle');
     await expect(page.getByRole('link', { name: source.label })).toHaveAttribute(
