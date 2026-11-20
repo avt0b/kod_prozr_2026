@@ -1,13 +1,13 @@
 import type { GraphEdge, GraphNode, OfficialGraph } from '@/shared/api';
-import { GRAPH_LABEL_WIDTH, GRAPH_ROOT_WIDTH } from './graphAppearance.ts';
+import { GRAPH_CARD_WIDTH, GRAPH_LABEL_WIDTH, GRAPH_ROOT_WIDTH } from './graphAppearance.ts';
 
 /** Шаг раскладки «по уровням», px: между уровнями, между колонками одного уровня, между строками. */
 const LEVEL_GAP = 278;
-const SUB_COL_GAP = 228;
+const SUB_COL_GAP = GRAPH_CARD_WIDTH + 28;
 const ROW_GAP = 112;
 // Leave room for the entire horizontal label between the two widest cards.
 const CHAIN_GAP = GRAPH_ROOT_WIDTH + GRAPH_LABEL_WIDTH + 32;
-const CHAIN_ROW_GAP = 137;
+const CHAIN_ROW_GAP = 144;
 const MAX_ROWS = 5;
 
 /** Раскладывает простую цепочку строками и оставляет прежнюю раскладку для ветвлений. */
@@ -75,26 +75,26 @@ export function orbitPositions(graph: OfficialGraph, rootId: string) {
   const appeal = graph.edges.find(
     (edge) => edge.type === 'mentions' && edge.target === rootId,
   )?.source;
-  place(organ, 32, -263);
-  place(linkedRelative, -226, -149);
-  place(spouse, 290, -146);
-  place(supplier, -412, 7);
-  place(former, 323, 129);
-  place(supplier && outgoing(supplier).find((edge) => edge.type === 'supplier')?.target, -244, 183);
-  place(former && outgoing(former).find((edge) => edge.type === 'supplier')?.target, 299, 281);
-  place(appeal, 10, 274);
+  place(organ, 62, -255);
+  place(linkedRelative, -303, -262);
+  place(spouse, 407, -207);
+  place(supplier, -557, -28);
+  place(former, 441, 58);
+  place(supplier && outgoing(supplier).find((edge) => edge.type === 'supplier')?.target, -503, 206);
+  place(former && outgoing(former).find((edge) => edge.type === 'supplier')?.target, 514, 254);
+  place(appeal, -79, 291);
   const vacant = [
-    [305, -292],
-    [-440, -263],
-    [-459, 261],
-    [-358, 350],
-    [0, 420],
-    [520, -30],
-    [-625, -112],
-    [523, 215],
-    [490, -302],
-    [-637, 280],
-    [485, 410],
+    [388, -333],
+    [-598, -178],
+    [-344, 325],
+    [242, 297],
+    [0, 426],
+    [686, -52],
+    [-810, -99],
+    [722, 372],
+    [710, -304],
+    [-775, 315],
+    [443, 476],
   ];
   graph.nodes
     .filter((node) => !result[node.id])
@@ -196,14 +196,13 @@ export function evidenceEdge(edge: GraphEdge, ids: Set<string>, graph: OfficialG
   return !(hasContracts && ['works_in', 'appointment'].includes(edge.type));
 }
 
-function cardLabel(node: GraphNode): string {
+export function cardLabel(node: GraphNode): string {
   if (node.type === 'person') {
     const [surname, ...names] = node.label.trim().split(/\s+/);
     return [surname, ...names.map((name) => `${name[0]}.`)].join(' ');
   }
-  const label =
-    node.type === 'company' ? node.label.replace(/^(?:ООО|АО|ПАО)\s+«(.+)»$/, '$1') : node.label;
-  const limit = node.type === 'organ' ? 27 : 42;
+  const label = node.label;
+  const limit = node.type === 'organ' ? 41 : 51;
   const characters = Array.from(label);
   return characters.length > limit
     ? `${characters

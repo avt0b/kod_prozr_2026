@@ -57,8 +57,10 @@ function ProfileDetails({
   profile,
   selectedFlag,
   onSelectFlag,
+  showSummary = true,
 }: {
   profile: OfficialProfile;
+  showSummary?: boolean;
   selectedFlag: RiskFlag | null;
   onSelectFlag: (flag: RiskFlag | null) => void;
 }) {
@@ -74,34 +76,39 @@ function ProfileDetails({
 
   return (
     <>
-      <section className="profile-inspector-section profile-risk-summary" aria-label="Оценка риска">
-        <Group justify="space-between" gap={8}>
-          <Text size="xs" c="dimmed">
-            Индекс риска конфликта
-          </Text>
-          <Badge
-            className="profile-risk-label"
-            data-level={level}
+      {showSummary && (
+        <section
+          className="profile-inspector-section profile-risk-summary"
+          aria-label="Оценка риска"
+        >
+          <Group justify="space-between" gap={8}>
+            <Text size="xs" c="dimmed">
+              Индекс риска конфликта
+            </Text>
+            <Badge
+              className="profile-risk-label"
+              data-level={level}
+              color={RISK_LEVEL_COLORS[level]}
+              variant="light"
+            >
+              <AnimatedNumber value={score} /> / 100 · {RISK_LABELS[level]}
+            </Badge>
+          </Group>
+          <Progress
+            className="profile-risk-bar"
+            value={score}
             color={RISK_LEVEL_COLORS[level]}
-            variant="light"
-          >
-            <AnimatedNumber value={score} /> / 100 · {RISK_LABELS[level]}
-          </Badge>
-        </Group>
-        <Progress
-          className="profile-risk-bar"
-          value={score}
-          color={RISK_LEVEL_COLORS[level]}
-          aria-label="Балл риска из 100"
-          radius="xl"
-        />
-        <Text size="sm" className="profile-risk-lead" lineClamp={4}>
-          {signal?.explanation ?? 'В профиле нет выявленных флагов риска.'}
-        </Text>
-        <Text size="xs" c="dimmed">
-          Балл задаёт приоритет проверки и не подтверждает нарушение.
-        </Text>
-      </section>
+            aria-label="Балл риска из 100"
+            radius="xl"
+          />
+          <Text size="sm" className="profile-risk-lead" lineClamp={4}>
+            {signal?.explanation ?? 'В профиле нет выявленных флагов риска.'}
+          </Text>
+          <Text size="xs" c="dimmed">
+            Балл задаёт приоритет проверки и не подтверждает нарушение.
+          </Text>
+        </section>
+      )}
       <div className="profile-actions">
         <div className="profile-primary-actions">
           <CreateReportButton personId={profile.person.id} compact />
@@ -315,14 +322,6 @@ function ProfileCanvas({
       setInspectorOpen(true);
     }
   };
-  const highlight = useMemo(() => {
-    if (flagHighlight) return flagHighlight;
-    if (!entity || !graph) return undefined;
-    const neighbors = graph.edges.flatMap((edge) =>
-      edge.source === entity.id ? [edge.target] : edge.target === entity.id ? [edge.source] : [],
-    );
-    return [...new Set([entity.id, ...neighbors])];
-  }, [flagHighlight, entity, graph]);
   const signalPicker = profile.risk.flags.length > 0 && (
     <div
       className="workspace-signal-picker profile-glass"
@@ -381,9 +380,10 @@ function ProfileCanvas({
               <RelationGraph
                 graph={graph ?? data}
                 rootId={rootId}
+                rootSubtitle={profile.appointments[0]?.position.title}
                 selectedId={entity?.id ?? rootId}
                 onNodeClick={selectEntity}
-                highlight={highlight}
+                highlight={flagHighlight}
                 signalPicker={
                   <>
                     {signalPicker}
@@ -452,6 +452,12 @@ function ProfileCanvas({
                   >
                     К данным служащего
                   </Button>
+                  <ProfileDetails
+                    profile={profile}
+                    selectedFlag={flag}
+                    onSelectFlag={selectFlag}
+                    showSummary={false}
+                  />
                 </>
               ) : (
                 <ProfileDetails profile={profile} selectedFlag={flag} onSelectFlag={selectFlag} />

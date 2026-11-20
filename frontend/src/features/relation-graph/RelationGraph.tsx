@@ -1,18 +1,11 @@
-import {
-  ActionIcon,
-  Alert,
-  Button,
-  Group,
-  Select,
-  Stack,
-  useComputedColorScheme,
-} from '@mantine/core';
+import { ActionIcon, Alert, Button, Group, Select, Stack } from '@mantine/core';
 import { IconMaximize, IconMinus, IconPlus } from '@tabler/icons-react';
-import { useMediaQuery, useReducedMotion } from '@mantine/hooks';
-import cytoscape, { type Core, type ElementDefinition } from 'cytoscape';
+import { useMediaQuery } from '@mantine/hooks';
+import cytoscape, { type Core, type ElementDefinition, type EventObject } from 'cytoscape';
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import type { GraphNode, OfficialGraph } from '@/shared/api';
-import { buildStylesheet } from './graphStyle';
+import { graphHitAreas } from './graphStyle';
+import { GraphVisual, type GraphView } from './GraphVisual';
 import { compactPositions, evidenceEdge, graphElements, orbitPositions } from './graphModel';
 import { GraphLegend } from './GraphLegend';
 
@@ -29,74 +22,13 @@ function fitGraph(cy: Core) {
     cy.zoom(MAX_FIT_ZOOM);
     cy.center(target);
   }
-  if (!focused.length && cy.nodes().length <= 14 && cy.width() >= 650) {
-    cy.panBy({ x: 0, y: -Math.min(50, cy.height() * 0.065) });
-  }
-}
-
-// Canvas labels stay pinned to their edge's midpoint, with a small offset when cards
-// or another label occupy that spot. Two edges between the same nodes get separate slots.
-function placeEdgeLabels(cy: Core) {
-  const highlighted = cy.elements('.hl');
-  const edges = highlighted.length ? highlighted.edges() : cy.edges();
-  if (edges.length > 60) return;
-  const nodes = highlighted.length ? highlighted.nodes() : cy.nodes();
-  const occupied = nodes.map((node) => node.boundingBox({ includeLabels: false }));
-  const parallel = new Map<string, string[]>();
-  const groupKey = (source: string, target: string) => JSON.stringify([source, target].sort());
-  edges.forEach((edge) => {
-    const key = groupKey(edge.source().id(), edge.target().id());
-    parallel.set(key, [...(parallel.get(key) ?? []), edge.id()]);
-  });
-  edges.removeStyle('label text-margin-x text-margin-y');
-  edges.forEach((edge) => {
-    const box = edge.boundingBox({
-      includeNodes: false,
-      includeEdges: false,
-      includeOverlays: false,
-      includeLabels: true,
-    });
-    if (!box.w || !box.h) return;
-    const pair = parallel.get(groupKey(edge.source().id(), edge.target().id())) ?? [];
-    const offset = (pair.indexOf(edge.id()) - (pair.length - 1) / 2) * 42;
-    const candidates = [
-      [0, offset],
-      [0, 0],
-      [0, 20],
-      [0, -20],
-      [24, 0],
-      [-24, 0],
-      [0, 36],
-      [0, -36],
-      [36, 18],
-      [-36, 18],
-      [36, -18],
-      [-36, -18],
-    ];
-    for (const [x, y] of candidates) {
-      const label = { x1: box.x1 + x, x2: box.x2 + x, y1: box.y1 + y, y2: box.y2 + y };
-      if (
-        occupied.some(
-          (b) =>
-            b.x1 < label.x2 + 2 &&
-            label.x1 - 2 < b.x2 &&
-            b.y1 < label.y2 + 2 &&
-            label.y1 - 2 < b.y2,
-        )
-      )
-        continue;
-      edge.style({ 'text-margin-x': `${x}px`, 'text-margin-y': `${y}px` });
-      occupied.push({ ...label, w: box.w, h: box.h });
-      return;
-    }
-    if (!highlighted.length) edge.style('label', '');
-  });
 }
 
 interface Props {
   graph: OfficialGraph;
   /** Узел, вокруг которого построен граф (крупнее остальных). */
   rootId?: string;
+  rootSubtitle?: string;
   /** id узлов, которые надо подсветить (например, evidence выбранного флага). */
   highlight?: string[];
   onNodeClick?: (node: GraphNode) => void;
@@ -108,6 +40,7 @@ interface Props {
 export function RelationGraph({
   graph,
   rootId,
+  rootSubtitle,
   highlight,
   onNodeClick,
   selectedId,
@@ -116,13 +49,12 @@ export function RelationGraph({
   const containerRef = useRef<HTMLDivElement>(null);
   const cyRef = useRef<Core | null>(null);
   const clickRef = useRef(onNodeClick);
-  const dark = useComputedColorScheme('light') === 'dark';
-  const reducedMotion = useReducedMotion();
   const wide = useMediaQuery('(min-width: 84em)');
   const narrow = useMediaQuery('(max-width: 37.99em)');
   const columns = narrow ? 1 : wide ? 3 : 2;
   const [layout, setLayout] = useState('breadthfirst');
-  const [zoomPercent, setZoomPercent] = useState(100);
+  const [view, setView] = useState<GraphView>();
+  const [hoveredId, setHoveredId] = useState<string>();
   useEffect(() => {
     clickRef.current = onNodeClick;
   }, [onNodeClick]);
@@ -137,7 +69,7 @@ export function RelationGraph({
     const cy = cytoscape({
       container: containerRef.current,
       elements,
-      style: buildStylesheet(dark),
+      style: graphHitAreas,
       layout:
         highlight?.length || (layout === 'breadthfirst' && graph.nodes.length <= 30)
           ? {
@@ -174,20 +106,45 @@ export function RelationGraph({
       const node = evt.target.data() as GraphNode;
       clickRef.current?.(node);
     });
-    cy.on('zoom', () => setZoomPercent(Math.round(cy.zoom() * 100)));
-    cy.on('dragfree', 'node', () => placeEdgeLabels(cy));
+    cy.on('mouseover', 'node', (event) => setHoveredId(event.target.id()));
+    cy.on('mouseout', 'node', () => setHoveredId(undefined));
     cyRef.current = cy;
+    let frame = 0;
+    let positionsDirty = true;
+    let positions: GraphView['positions'] = {};
+    const sync = (event?: EventObject) => {
+      if (event?.type === 'position') positionsDirty = true;
+      if (frame) return;
+      frame = requestAnimationFrame(() => {
+        frame = 0;
+        if (positionsDirty) {
+          positions = Object.fromEntries(cy.nodes().map((node) => [node.id(), node.position()]));
+          positionsDirty = false;
+        }
+        setView({
+          positions,
+          pan: cy.pan(),
+          zoom: cy.zoom(),
+          width: cy.width(),
+          height: cy.height(),
+        });
+      });
+    };
+    cy.on('position pan zoom', sync);
     const observer = new ResizeObserver(() => {
       cy.resize();
       fitGraph(cy);
+      sync();
     });
     observer.observe(containerRef.current);
+    sync();
     return () => {
+      cancelAnimationFrame(frame);
       observer.disconnect();
       cy.destroy();
       cyRef.current = null;
     };
-  }, [elements, dark, layout, rootId, graph, highlight, columns, narrow]);
+  }, [elements, layout, rootId, graph, highlight, columns, narrow]);
 
   useEffect(() => {
     const cy = cyRef.current;
@@ -206,46 +163,8 @@ export function RelationGraph({
         .removeClass('faded')
         .addClass('hl');
     });
-    placeEdgeLabels(cy);
     fitGraph(cy);
-    if (reducedMotion) return;
-    let animation: Animation | undefined;
-    const reveal = () => {
-      animation?.cancel();
-      animation = containerRef.current?.animate(
-        [
-          { opacity: 0.35, transform: 'translateY(5px)' },
-          { opacity: 1, transform: 'translateY(0)' },
-        ],
-        {
-          duration: highlight?.length ? 260 : 380,
-          easing: 'cubic-bezier(0.16, 1, 0.3, 1)',
-        },
-      );
-    };
-    const syncVisibility = () => {
-      if (document.hidden && animation?.playState === 'running') animation.pause();
-      else if (!document.hidden && animation?.playState === 'paused') animation.play();
-    };
-    reveal();
-    syncVisibility();
-    document.addEventListener('workspace:replay-motion', reveal);
-    document.addEventListener('visibilitychange', syncVisibility);
-    return () => {
-      animation?.cancel();
-      document.removeEventListener('workspace:replay-motion', reveal);
-      document.removeEventListener('visibilitychange', syncVisibility);
-    };
-  }, [highlight, elements, dark, graph, layout, reducedMotion, rootId, columns]);
-
-  useEffect(() => {
-    const cy = cyRef.current;
-    if (!cy) return;
-    cy.batch(() => {
-      cy.nodes('.active-node').removeClass('active-node');
-      if (selectedId) cy.getElementById(selectedId).addClass('active-node');
-    });
-  }, [selectedId, elements, dark, layout, graph, highlight, rootId, columns]);
+  }, [highlight, elements, graph, layout, rootId, columns, narrow]);
 
   const changeZoom = (factor: number) => {
     const cy = cyRef.current;
@@ -284,13 +203,28 @@ export function RelationGraph({
       {graph.truncated && (
         <Alert color="orange">Показана часть связей: сервер ограничил размер графа.</Alert>
       )}
-      <div
-        ref={containerRef}
-        role="img"
-        aria-label={`Граф связей: ${graph.nodes.length} узлов, ${graph.edges.length} связей`}
-        data-testid="relation-graph"
-        className="workspace-graph"
-      />
+      <div className="profile-graph-viewport">
+        <div
+          ref={containerRef}
+          role="img"
+          aria-label={`Граф связей: ${graph.nodes.length} узлов, ${graph.edges.length} связей`}
+          data-testid="relation-graph"
+          className="workspace-graph"
+        />
+        {view && (
+          <GraphVisual
+            key={highlight?.join('|') || 'all'}
+            graph={graph}
+            view={view}
+            rootId={rootId}
+            rootSubtitle={rootSubtitle}
+            selectedId={selectedId}
+            hoveredId={hoveredId}
+            highlight={highlight}
+            onNodeClick={onNodeClick}
+          />
+        )}
+      </div>
       <Group className="profile-graph-dock" justify="space-between" gap="xs">
         <div className="profile-graph-key profile-glass">
           <GraphLegend />
@@ -325,7 +259,7 @@ export function RelationGraph({
               if (cyRef.current) fitGraph(cyRef.current);
             }}
           >
-            {zoomPercent}% · Центрировать
+            {view ? Math.round(view.zoom * 100) : 100}% · Центрировать
           </Button>
         </Group>
       </Group>

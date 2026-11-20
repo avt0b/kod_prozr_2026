@@ -91,7 +91,7 @@ function MobileNavigation() {
 
 function ProfileNavigation() {
   const id = useId();
-  const [open, setOpen] = useState(() => window.matchMedia('(min-width: 65em)').matches);
+  const [open, setOpen] = useState(false);
   return (
     <div className="profile-navigation" data-open={open || undefined}>
       <button

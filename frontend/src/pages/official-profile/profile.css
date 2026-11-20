@@ -142,13 +142,13 @@
   --profile-card: #fff;
   --profile-glass: rgb(255 255 255 / 84%);
   --profile-grid: #d4d5da;
-  --profile-atmosphere: #fbecee;
+  --profile-atmosphere: #fff0f1;
   --profile-shadow: 0 16px 38px -6px rgb(0 0 0 / 9%), 0 3px 10px rgb(0 0 0 / 4%);
   --profile-easing: cubic-bezier(0.2, 0.75, 0.25, 1);
   min-height: 100dvh;
   background:
     radial-gradient(ellipse at 39% 41%, var(--profile-atmosphere), transparent 49%),
-    radial-gradient(ellipse at 52% 20%, light-dark(#eff5ff, #142136), transparent 38%),
+    radial-gradient(ellipse at 58% 26%, light-dark(#eaf7fd, #142136), transparent 42%),
     var(--profile-base);
 }
 
@@ -538,7 +538,7 @@
   border-radius: 27px;
   outline: none;
   overflow: hidden;
-  animation: profile-inspector-in 240ms var(--profile-easing) both;
+  animation: profile-inspector-in 330ms var(--profile-easing) both;
 }
 
 .profile-inspector-header {
@@ -566,7 +566,7 @@
   gap: 11px;
   min-width: 0;
   overflow-wrap: anywhere;
-  animation: profile-entity-in 240ms var(--profile-easing) both;
+  animation: profile-entity-in 310ms var(--profile-easing) both;
 }
 
 .profile-inspector-section {
@@ -656,7 +656,7 @@
 @keyframes profile-inspector-in {
   from {
     opacity: 0;
-    transform: translateX(12px);
+    transform: translateX(25px);
   }
   to {
     opacity: 1;
@@ -667,11 +667,11 @@
 @keyframes profile-entity-in {
   from {
     opacity: 0;
-    transform: translateY(5px);
+    transform: translateX(13px);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateX(0);
   }
 }
 
@@ -856,7 +856,7 @@
     z-index: 2;
     position: absolute;
     inset-block-start: 0;
-    inset-inline-start: 485px;
+    inset-inline-start: clamp(485px, 30vw, 660px);
     margin: 0;
     justify-content: flex-start;
   }

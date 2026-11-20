@@ -28,6 +28,8 @@ export const GRAPH_APPEARANCE = {
   },
 } satisfies Record<GraphNodeType, { color: string; dark: string; path: string }>;
 
-export const GRAPH_CARD_WIDTH = 209;
-export const GRAPH_ROOT_WIDTH = 245;
-export const GRAPH_LABEL_WIDTH = 152;
+export const GRAPH_CARD_WIDTH = 221;
+export const GRAPH_ROOT_WIDTH = 253;
+export const GRAPH_LABEL_WIDTH = 174;
+export const GRAPH_CARD_HEIGHT = 62;
+export const GRAPH_ROOT_HEIGHT = 76;
