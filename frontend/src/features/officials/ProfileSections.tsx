@@ -1,4 +1,4 @@
-import { Badge, Card, Group, Stack, Table, Text, Title } from '@mantine/core';
+import { Badge, Card, Group, SimpleGrid, Stack, Table, Text, Title } from '@mantine/core';
 import type { ReactNode } from 'react';
 import type { OfficialProfile } from '@/shared/api';
 import { formatDate, formatMoneyShort, formatPeriod } from '@/shared/lib/format';
@@ -6,12 +6,12 @@ import { AUTHORITY_LABELS, COMPANY_ROLE_LABELS, KINSHIP_LABELS } from '@/shared/
 
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
-    <Card>
-      <Title order={4} mb="sm">
+    <section>
+      <Title order={4} size="h5" mb="xs">
         {title}
       </Title>
       {children}
-    </Card>
+    </section>
   );
 }
 
@@ -21,7 +21,7 @@ const Empty = () => (
   </Text>
 );
 
-export function AppointmentsSection({ profile }: { profile: OfficialProfile }) {
+function AppointmentsSection({ profile }: { profile: OfficialProfile }) {
   return (
     <Section title="Должности">
       {profile.appointments.length === 0 && <Empty />}
@@ -53,7 +53,7 @@ export function AppointmentsSection({ profile }: { profile: OfficialProfile }) {
   );
 }
 
-export function AuthoritiesSection({ profile }: { profile: OfficialProfile }) {
+function AuthoritiesSection({ profile }: { profile: OfficialProfile }) {
   const positionTitle = (positionId: string) =>
     profile.appointments.find((a) => a.position_id === positionId)?.position.title ?? '';
   return (
@@ -85,7 +85,7 @@ export function AuthoritiesSection({ profile }: { profile: OfficialProfile }) {
   );
 }
 
-export function RelativesSection({ profile }: { profile: OfficialProfile }) {
+function RelativesSection({ profile }: { profile: OfficialProfile }) {
   return (
     <Section title="Родственники">
       {profile.relatives.length === 0 && <Empty />}
@@ -111,13 +111,13 @@ export function RelativesSection({ profile }: { profile: OfficialProfile }) {
   );
 }
 
-export function CompaniesSection({ profile }: { profile: OfficialProfile }) {
+function CompaniesSection({ profile }: { profile: OfficialProfile }) {
   return (
     <Section title="Связанные компании">
       {profile.companies.length === 0 ? (
         <Empty />
       ) : (
-        <Table.ScrollContainer minWidth={560}>
+        <Table.ScrollContainer minWidth={440}>
           <Table highlightOnHover={false}>
             <Table.Thead>
               <Table.Tr>
@@ -167,5 +167,30 @@ export function CompaniesSection({ profile }: { profile: OfficialProfile }) {
         </Table.ScrollContainer>
       )}
     </Section>
+  );
+}
+
+export function ProfileSections({ profile }: { profile: OfficialProfile }) {
+  return (
+    <SimpleGrid cols={{ base: 1, lg: 2 }} mt="lg">
+      <Card>
+        <Title order={3} size="h4" mb="md">
+          Должности и полномочия
+        </Title>
+        <Stack gap="md">
+          <AppointmentsSection profile={profile} />
+          <AuthoritiesSection profile={profile} />
+        </Stack>
+      </Card>
+      <Card>
+        <Title order={3} size="h4" mb="md">
+          Родственники и организации
+        </Title>
+        <Stack gap="md">
+          <RelativesSection profile={profile} />
+          <CompaniesSection profile={profile} />
+        </Stack>
+      </Card>
+    </SimpleGrid>
   );
 }

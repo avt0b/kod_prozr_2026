@@ -285,15 +285,16 @@ test('сценарий демо docs/demo.md проходит на реальн�
     await expect(page).toHaveURL(new RegExp(`/officials/${before.id}$`));
     await expect(page.getByRole('heading', { name: SOKOLOV, level: 2 })).toBeVisible();
     await expect(page.getByText(/ОКПД2: .*42\.11/)).toBeVisible();
-    await expect(page.getByText(/Соколова Марина Олеговна/).first()).toBeVisible();
+    const relatives = page.locator('section').filter({
+      has: page.getByRole('heading', { name: 'Родственники', exact: true }),
+    });
+    await expect(relatives.getByText(/Соколова Марина Олеговна/)).toBeVisible();
     for (const code of ['R01', 'R05', 'R06', 'R07', 'R08']) {
       await expect(
         page.locator('.mantine-Badge-label', { hasText: new RegExp(`^${code}$`) }),
       ).toBeVisible();
     }
     await expect(page.getByText(/ДорСтройРесурс/).first()).toBeVisible();
-    await expect(page.getByText(/273-ФЗ ст\. 10/).first()).toBeVisible();
-    await expect(page.getByText('Записи-источники').first()).toBeVisible();
     await expectNoHorizontalScroll(page);
     await shot(page, '07-profile');
     await shot(page, '07-profile-full', true);
@@ -312,6 +313,8 @@ test('сценарий демо docs/demo.md проходит на реальн�
 
     await page.getByText('Родственник — поставщик органа', { exact: true }).click();
     await expect(page.getByText('подсвечена цепочка R01')).toBeVisible();
+    await expect(page.getByText(/273-ФЗ ст\. 10/).first()).toBeVisible();
+    await expect(page.getByText('Записи-источники').first()).toBeVisible();
     await expect
       .poll(async () => (await graphState(graph)).highlighted.length)
       .toBeGreaterThanOrEqual(4);
@@ -324,15 +327,15 @@ test('сценарий демо docs/demo.md проходит на реальн�
     expect(state.highlightedLabels.join(' | ')).toMatch(/контракт/);
     await shot(page, '08-graph');
 
-    // Клик по узлу компании: подпись в строке статуса
+    // Клик по узлу компании открывает инспектор сущности.
     const company = state.nodes.find(
       (n) => n.type === 'company' && state.highlighted.includes(n.id),
     );
     expect(company).toBeTruthy();
     await clickGraphNode(page, graph, company!.id);
-    await expect(
-      page.getByRole('status').filter({ hasText: /Компания: .*ДорСтройРесурс/ }),
-    ).toBeVisible();
+    const inspector = page.getByRole('complementary', { name: 'Инспектор графа' });
+    await expect(inspector.getByRole('heading', { name: /ДорСтройРесурс/ })).toBeVisible();
+    await inspector.getByRole('button', { name: 'К данным служащего' }).click();
 
     // Общий телефон с братом супруги — R05
     await page.getByText('Общие контакты с подрядчиком', { exact: true }).click();
@@ -352,6 +355,7 @@ test('сценарий демо docs/demo.md проходит на реальн�
     await expect.poll(async () => (await graphState(graph)).highlighted).toContain(appealId);
     await shot(page, '09-graph-r07');
     await clickGraphNode(page, graph, appealId);
+    await page.getByRole('link', { name: 'Открыть обращение' }).click();
     await expect(page).toHaveURL(new RegExp(`/appeals/${appealId}$`));
     await page
       .locator('.mantine-Card-root', { hasText: 'Связанные служащие' })

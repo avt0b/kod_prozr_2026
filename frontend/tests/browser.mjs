@@ -108,6 +108,7 @@ try {
   });
   const bounds = await container.boundingBox();
   await page.mouse.click(bounds.x + position.x, bounds.y + position.y);
+  await page.getByRole('link', { name: 'Открыть обращение' }).click();
   await page.waitForURL(new RegExp(`/appeals/${position.id}$`));
   await page.getByRole('link', { name: 'Соколов Андрей Викторович' }).click();
   await page.getByRole('button', { name: 'Сформировать докладную' }).click();

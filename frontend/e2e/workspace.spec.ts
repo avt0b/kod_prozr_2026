@@ -53,7 +53,7 @@ test('повтор анимаций сохраняет вопрос и выбр�
     await request.get(`${API}/officials?sort=-risk_score&limit=1&offset=0`)
   ).json();
   await page.goto(`/officials/${top.items[0].id}`);
-  const flag = page.locator('.workspace-flag').first().getByRole('button');
+  const flag = page.locator('.workspace-flag-trigger').first();
   await flag.click();
   await expect(flag).toHaveAttribute('aria-pressed', 'true');
   await page.getByRole('button', { name: 'Повторить анимации', exact: true }).click();

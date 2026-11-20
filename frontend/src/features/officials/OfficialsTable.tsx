@@ -1,6 +1,6 @@
 import { Anchor, Group, Table, Text, UnstyledButton } from '@mantine/core';
 import { IconArrowDown, IconArrowUp, IconSelector } from '@tabler/icons-react';
-import { Link, useNavigate } from 'react-router';
+import { Link, useLocation, useNavigate } from 'react-router';
 import type { OfficialListItem, OfficialsSort } from '@/shared/api';
 import { routes } from '@/shared/config/routes';
 import { FlagBadge, RiskScoreBadge } from '@/shared/ui';
@@ -51,6 +51,9 @@ function SortHeader({
 
 export function OfficialsTable({ items, sort, onSortChange, startIndex = 0 }: Props) {
   const navigate = useNavigate();
+  const location = useLocation();
+  const profileState =
+    location.pathname === routes.officials() ? { ratingSearch: location.search } : undefined;
   const { state } = useWorkbench();
   return (
     <Table.ScrollContainer minWidth={760}>
@@ -95,7 +98,7 @@ export function OfficialsTable({ items, sort, onSortChange, startIndex = 0 }: Pr
               key={o.id}
               data-compared={state.comparison.some((item) => item.id === o.id) || undefined}
               style={{ cursor: 'pointer' }}
-              onClick={() => navigate(routes.official(o.id))}
+              onClick={() => navigate(routes.official(o.id), { state: profileState })}
             >
               <Table.Td c="dimmed" ta="right">
                 {startIndex + i + 1}
@@ -108,6 +111,7 @@ export function OfficialsTable({ items, sort, onSortChange, startIndex = 0 }: Pr
                   className="official-name-link workspace-row-link"
                   component={Link}
                   to={routes.official(o.id)}
+                  state={profileState}
                   onClick={(event) => event.stopPropagation()}
                 >
                   {o.full_name}

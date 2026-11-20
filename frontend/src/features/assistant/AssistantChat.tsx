@@ -94,9 +94,9 @@ function SourceList({ sources }: { sources: AssistantSource[] }) {
   );
 }
 
-export function AssistantChat() {
+export function AssistantChat({ initialDraft = '' }: { initialDraft?: string }) {
   const [messages, setMessages] = useState<Message[]>([]);
-  const [draft, setDraft] = useState('');
+  const [draft, setDraft] = useState(initialDraft);
   const ask = useAskAssistant();
   const endRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
