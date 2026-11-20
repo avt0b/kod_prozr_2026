@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './fixtures';
 
 const endpoint = '**/api/v1/assistant/ask';
 const answer = 'Откройте цифровой профиль и сверьте цепочку поставщиков с первоисточниками.';

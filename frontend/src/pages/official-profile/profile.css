@@ -927,3 +927,84 @@
     max-width: 195px;
   }
 }
+
+/* Global navigation stays in one header; the canvas owns only graph controls. */
+.profile-canvas-shell .profile-canvas-header {
+  position: relative;
+  inset: auto;
+  height: auto;
+  min-height: 76px;
+  padding: 12px 24px;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  pointer-events: auto;
+}
+.profile-canvas-shell .profile-navigation {
+  position: relative;
+  top: auto;
+  inset-inline-start: auto;
+  flex: 0 0 258px;
+}
+.profile-canvas-shell .profile-canvas-header > .mantine-Group-root,
+.profile-canvas-shell:has(.profile-canvas-grid[data-inspector])
+  .profile-canvas-header
+  > .mantine-Group-root {
+  position: static;
+}
+.profile-navigation-reveal {
+  position: absolute;
+  top: 100%;
+  width: 100%;
+}
+@media (min-width: 65em) {
+  .official-profile {
+    height: calc(100dvh - 76px);
+    min-height: 600px;
+  }
+  .profile-back {
+    top: 20px;
+    inset-inline-start: 24px;
+  }
+  .profile-canvas-context {
+    inset-inline-start: 220px;
+  }
+  .profile-graph-shell {
+    padding-block-start: 95px;
+  }
+}
+@media (max-width: 35.99em) {
+  .profile-canvas-shell .profile-canvas-header {
+    padding: 12px;
+    gap: 12px;
+  }
+  .profile-canvas-shell .profile-navigation {
+    flex-basis: 100%;
+    width: 100%;
+  }
+  .profile-navigation-toggle {
+    min-height: 44px;
+  }
+  .profile-brand-label strong {
+    white-space: nowrap;
+  }
+  .profile-canvas-header > .mantine-Group-root {
+    width: 100%;
+    justify-content: flex-end;
+  }
+  .profile-graph-shell .workspace-graph,
+  .profile-graph-content[data-focused] .workspace-graph {
+    height: 440px;
+    min-height: 0;
+  }
+  .profile-graph-shell {
+    min-height: 0;
+    height: auto;
+  }
+  .profile-canvas-grid {
+    min-height: 0;
+  }
+  .profile-graph-viewport {
+    flex: none;
+    height: 440px;
+  }
+}

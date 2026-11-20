@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './fixtures';
 import type { Core } from 'cytoscape';
 
 const API = process.env.API_URL ?? 'http://localhost:8000/api/v1';
@@ -30,6 +30,19 @@ for (const width of [1440, 390]) {
 
     const graph = page.getByTestId('relation-graph');
     await expect(graph.locator('canvas').first()).toBeVisible();
+    const headerBottom = await page
+      .locator('.profile-canvas-header')
+      .evaluate((el) => el.getBoundingClientRect().bottom);
+    const backTop = await page
+      .getByRole('link', { name: 'К рейтингу служащих' })
+      .evaluate((el) => el.getBoundingClientRect().top);
+    expect(backTop).toBeGreaterThanOrEqual(headerBottom);
+    if (width === 390) {
+      const height = await page
+        .locator('.profile-graph-viewport')
+        .evaluate((el) => el.getBoundingClientRect().height);
+      expect(height).toBeLessThanOrEqual(450);
+    }
     if (width === 1440) {
       await graph.hover();
       await expect(page.locator('.profile-mesh')).toHaveAttribute('data-active', '');

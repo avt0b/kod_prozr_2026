@@ -1,4 +1,5 @@
 import { env } from '@/shared/config/env';
+import { accessToken, refreshSession, getSnapshot } from '@/shared/lib/authSession';
 
 export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 export type QueryParams = Record<string, string | number | boolean | null | undefined>;
@@ -43,7 +44,13 @@ function extractMessage(payload: unknown, fallback: string): string {
   return fallback;
 }
 
-async function httpRequest<T>(method: HttpMethod, path: string, opts: RequestOptions): Promise<T> {
+async function httpRequest<T>(
+  method: HttpMethod,
+  path: string,
+  opts: RequestOptions,
+  retried = false,
+): Promise<T> {
+  const principal = getSnapshot().principal;
   const params = new URLSearchParams(cleanQuery(opts.query));
   const qs = params.toString();
   const url = `${env.apiUrl}${path}${qs ? `?${qs}` : ''}`;
@@ -58,12 +65,24 @@ async function httpRequest<T>(method: HttpMethod, path: string, opts: RequestOpt
       : opts.signal,
     headers: {
       Accept: 'application/json',
+      ...(accessToken() ? { Authorization: `Bearer ${accessToken()}` } : {}),
       ...(opts.body !== undefined ? { 'Content-Type': 'application/json' } : {}),
     },
     body: opts.body !== undefined ? JSON.stringify(opts.body) : undefined,
   });
 
+  if (principal !== getSnapshot().principal)
+    throw new ApiError(401, 'Сессия изменилась. Повторите действие.');
+  if (res.status === 401 && !retried && (await refreshSession())) {
+    if (principal !== getSnapshot().principal)
+      throw new ApiError(401, 'Сессия изменилась. Повторите действие.');
+    return httpRequest<T>(method, path, opts, true);
+  }
+
   const text = await res.text();
+  if (principal !== getSnapshot().principal) {
+    throw new ApiError(401, 'Сессия изменилась. Повторите действие.');
+  }
   let payload: unknown = undefined;
   if (text) {
     try {

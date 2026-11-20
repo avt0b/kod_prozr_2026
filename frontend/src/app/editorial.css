@@ -635,6 +635,30 @@
 }
 
 /* Analyst review: state hierarchy and evidence readability, retaining existing tokens. */
+.officials-filter-grid {
+  display: grid;
+  grid-template-columns: minmax(180px, 1fr) minmax(210px, 1.3fr) 120px minmax(210px, 1.3fr);
+  align-items: end;
+  gap: 16px;
+}
+.officials-filter-grid > * {
+  min-width: 0;
+}
+@media (max-width: 74em) {
+  .officials-filter-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 35.99em) {
+  .officials-filter-grid {
+    grid-template-columns: minmax(0, 1fr) 100px;
+    gap: 12px;
+  }
+  .officials-filter-grid > :first-child,
+  .officials-filter-grid > :last-child {
+    grid-column: 1 / -1;
+  }
+}
 .officials-filter[data-active] .workspace-field,
 .officials-filter .workspace-field[data-active] {
   background: var(--workspace-tint);

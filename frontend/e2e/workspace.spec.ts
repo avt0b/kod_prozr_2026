@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './fixtures';
 
 const API = process.env.API_URL ?? 'http://localhost:8000/api/v1';
 
@@ -23,15 +23,18 @@ test('анимации повторяются, счётчики завершаю
     .locator('.animated-number [aria-hidden="true"]');
   await counter.scrollIntoViewIfNeeded();
   await expect(counter).toHaveText(stats.officials_total.toLocaleString('ru-RU'));
-  await page.getByRole('button', { name: 'Повторить анимации', exact: true }).click();
+  await page.getByRole('button', { name: 'Учётная запись', exact: true }).click();
+  await page.getByRole('menuitem', { name: 'Повторить анимации', exact: true }).click();
   await expect
     .poll(() => counter.textContent())
     .not.toBe(stats.officials_total.toLocaleString('ru-RU'));
   await expect(counter).toHaveText(stats.officials_total.toLocaleString('ru-RU'));
-  await page.getByRole('button', { name: 'Повторить анимации', exact: true }).click();
+  await page.getByRole('button', { name: 'Учётная запись', exact: true }).click();
+  await page.getByRole('menuitem', { name: 'Повторить анимации', exact: true }).click();
   await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.getByRole('button', { name: 'Учётная запись', exact: true }).click();
   await expect(
-    page.getByRole('button', { name: 'Повторить анимации', exact: true }),
+    page.getByRole('menuitem', { name: 'Повторить анимации', exact: true }),
   ).toBeDisabled();
   await expect(counter).toHaveText(stats.officials_total.toLocaleString('ru-RU'));
   expect(
@@ -45,7 +48,8 @@ test('анимации повторяются, счётчики завершаю
 test('повтор анимаций сохраняет вопрос и выбранный флаг', async ({ page, request }) => {
   await page.goto('/assistant');
   await page.getByRole('textbox', { name: 'Вопрос ассистенту' }).fill('Мой вопрос для проверки');
-  await page.getByRole('button', { name: 'Повторить анимации', exact: true }).click();
+  await page.getByRole('button', { name: 'Учётная запись', exact: true }).click();
+  await page.getByRole('menuitem', { name: 'Повторить анимации', exact: true }).click();
   await expect(page.getByRole('textbox', { name: 'Вопрос ассистенту' })).toHaveValue(
     'Мой вопрос для проверки',
   );
@@ -56,7 +60,8 @@ test('повтор анимаций сохраняет вопрос и выбр�
   const flag = page.locator('.workspace-flag-trigger').first();
   await flag.click();
   await expect(flag).toHaveAttribute('aria-pressed', 'true');
-  await page.getByRole('button', { name: 'Повторить анимации', exact: true }).click();
+  await page.getByRole('button', { name: 'Учётная запись', exact: true }).click();
+  await page.getByRole('menuitem', { name: 'Повторить анимации', exact: true }).click();
   await expect(flag).toHaveAttribute('aria-pressed', 'true');
   await expect(page.locator('[data-testid="relation-graph"]')).toBeVisible();
 });

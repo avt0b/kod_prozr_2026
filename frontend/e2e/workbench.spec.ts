@@ -1,6 +1,91 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './fixtures';
+
+test('запрос старой сессии не повторяется под другой учётной записью', async ({ page }) => {
+  await page.goto('/officials');
+  await expect(page.locator('tbody tr').first()).toBeVisible();
+  let writes = 0;
+  await page.route('**/api/v1/appeals', async (route) => {
+    writes += 1;
+    await route.fulfill({ status: 401, json: { detail: 'Expired' } });
+  });
+  await page.route('**/api/v1/auth/refresh', (route) =>
+    route.fulfill({
+      json: {
+        access_token: 'not-a-real-token',
+        session_id: 'different-session',
+        user: { id: 'another-user', username: 'other' },
+      },
+    }),
+  );
+  const result = await page.evaluate(async (modulePath) => {
+    const { request } = await import(modulePath);
+    try {
+      await request('POST', '/appeals', { body: { text: 'Must never be replayed' } });
+      return 'unexpected success';
+    } catch (error) {
+      return error instanceof Error ? error.message : String(error);
+    }
+  }, '/src/shared/api/client.ts');
+  expect(result).toContain('Сессия изменилась');
+  expect(writes).toBe(1);
+});
 
 const API = process.env.API_URL ?? 'http://localhost:8000/api/v1';
+
+test('запоздалый ответ старой сессии не возвращается после смены аккаунта', async ({ page }) => {
+  await page.goto('/officials');
+  await expect(page.locator('tbody tr').first()).toBeVisible();
+  const message = await page.evaluate(
+    async (paths) => {
+      const client = await import(paths.client);
+      const original = window.fetch;
+      let release!: () => void;
+      let started!: () => void;
+      const bodyGate = new Promise<void>((resolve) => {
+        release = resolve;
+      });
+      const bodyStarted = new Promise<void>((resolve) => {
+        started = resolve;
+      });
+      window.fetch = async (...args) => {
+        const path = String(args[0]);
+        if (path.endsWith('/reports/__delayed')) {
+          const response = new Response('{}');
+          response.text = async () => {
+            started();
+            await bodyGate;
+            return '{"id":"old-user-report"}';
+          };
+          return response;
+        }
+        if (path.endsWith('/switch-session')) return new Response('{}', { status: 401 });
+        if (path.endsWith('/auth/refresh'))
+          return new Response(
+            JSON.stringify({
+              access_token: 'mock-token',
+              session_id: 'different-session',
+              user: { id: 'different-user', username: 'other' },
+            }),
+          );
+        return original(...args);
+      };
+      try {
+        const pending = client.request('POST', '/reports/__delayed', {}).then(
+          () => 'unexpected success',
+          (error: Error) => error.message,
+        );
+        await bodyStarted;
+        await client.request('GET', '/switch-session', {}).catch(() => undefined);
+        release();
+        return await pending;
+      } finally {
+        window.fetch = original;
+      }
+    },
+    { client: '/src/shared/api/client.ts', session: '/src/shared/lib/authSession.ts' },
+  );
+  expect(message).toContain('Сессия изменилась');
+});
 
 test('на телефоне второй кейс добавляется в панели и все отметки видны без боковой прокрутки', async ({
   page,
@@ -165,17 +250,6 @@ test('ошибка загрузки сравниваемого профиля н
     .getByRole('button', { name: `Убрать из сравнения: ${items[0].full_name}`, exact: true })
     .click();
   await expect(panel.getByRole('heading', { name: 'Служащие не выбраны' })).toBeVisible();
-});
-
-test('презентация расширяет экран, сохраняет фильтр и закрывается по Escape', async ({ page }) => {
-  await page.goto('/officials?min_score=40');
-  await page.getByRole('button', { name: 'Режим презентации', exact: true }).click();
-  await expect(page.locator('.workspace-shell')).toHaveAttribute('data-presentation', 'true');
-  await expect(page.getByRole('navigation', { name: 'Разделы приложения' })).toBeHidden();
-  await expect(page).toHaveURL(/min_score=40/);
-  await page.keyboard.press('Escape');
-  await expect(page.getByRole('navigation', { name: 'Разделы приложения' })).toBeVisible();
-  await expect(page).toHaveURL(/min_score=40/);
 });
 
 test('мобильные инструменты доступны из меню и панели не переполняют экран', async ({

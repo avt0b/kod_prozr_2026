@@ -8,27 +8,13 @@ import {
   useComputedColorScheme,
   useMantineColorScheme,
 } from '@mantine/core';
-import {
-  IconBookmark,
-  IconColumns3,
-  IconDots,
-  IconLayoutSidebarLeftCollapse,
-  IconLayoutSidebarLeftExpand,
-  IconMoon,
-} from '@tabler/icons-react';
+import { IconBookmark, IconColumns3, IconDots, IconMoon } from '@tabler/icons-react';
 import { useWorkbench } from './context';
 
-export function WorkbenchTools({
-  presentation,
-  onPresentation,
-}: {
-  presentation: boolean;
-  onPresentation: () => void;
-}) {
+export function WorkbenchTools() {
   const { state, openPanel } = useWorkbench();
   const { setColorScheme } = useMantineColorScheme();
   const scheme = useComputedColorScheme('light');
-  const FocusIcon = presentation ? IconLayoutSidebarLeftExpand : IconLayoutSidebarLeftCollapse;
   return (
     <>
       <Group gap="xs" visibleFrom="sm" className="workbench-toolbar">
@@ -56,24 +42,15 @@ export function WorkbenchTools({
             </ActionIcon>
           </Indicator>
         </Tooltip>
-        <Tooltip
-          label={
-            presentation ? 'Выйти из режима презентации' : 'Режим презентации · Escape — выход'
-          }
-        >
-          <ActionIcon
-            variant={presentation ? 'light' : 'default'}
-            size="lg"
-            aria-label={presentation ? 'Выйти из режима презентации' : 'Режим презентации'}
-            aria-pressed={presentation}
-            onClick={onPresentation}
-          >
-            <FocusIcon size={19} />
-          </ActionIcon>
-        </Tooltip>
       </Group>
       <Box hiddenFrom="sm">
-        <Menu position="bottom-end" shadow="md" width={260}>
+        <Menu
+          position="bottom-end"
+          floatingStrategy="fixed"
+          transitionProps={{ transition: 'fade', duration: 120 }}
+          shadow="md"
+          width={260}
+        >
           <Menu.Target>
             <ActionIcon variant="default" size="lg" aria-label="Инструменты аналитика">
               <IconDots size={20} />
@@ -89,9 +66,6 @@ export function WorkbenchTools({
               onClick={() => openPanel('comparison')}
             >
               Сравнение ({state.comparison.length}/3)
-            </Menu.Item>
-            <Menu.Item leftSection={<FocusIcon size={17} />} onClick={onPresentation}>
-              {presentation ? 'Выйти из презентации' : 'Режим презентации'}
             </Menu.Item>
             <Menu.Divider />
             <Menu.Item

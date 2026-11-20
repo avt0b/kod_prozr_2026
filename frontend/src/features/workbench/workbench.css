@@ -89,15 +89,6 @@
 .rule-mobile-matrix {
   display: none;
 }
-.workspace-shell[data-presentation] .workspace-navbar {
-  display: none;
-}
-.workspace-shell[data-presentation] .workspace-main {
-  padding-inline: 32px;
-}
-.workspace-shell[data-presentation] .workspace-page {
-  max-width: 1600px;
-}
 
 @media (max-width: 75em) {
   .workspace-search-trigger span,
@@ -109,9 +100,6 @@
   }
 }
 @media (max-width: 47.99em) {
-  .workspace-shell[data-presentation] .workspace-main {
-    padding-inline: 18px;
-  }
   .comparison-case {
     padding: 16px 0;
     border: 0;

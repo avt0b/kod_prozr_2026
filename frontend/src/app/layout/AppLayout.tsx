@@ -28,7 +28,7 @@ import { env } from '@/shared/config/env';
 import { routes } from '@/shared/config/routes';
 import { useLiquidGlass } from '@/shared/ui/useLiquidGlass';
 import { useControlGlint } from './useControlGlint';
-import { MotionReplay } from './MotionReplay';
+import { AccountMenu } from '@/features/auth/AccountMenu';
 import { WorkspaceSearch } from './WorkspaceSearch';
 
 const PROFILE_NAV_CAPTIONS = [
@@ -138,17 +138,6 @@ function ProfileNavigation() {
 }
 
 export function AppLayout() {
-  const [presentation, setPresentation] = useState(false);
-  useEffect(() => {
-    if (!presentation) return;
-    const exit = (event: KeyboardEvent) => {
-      if (event.key === 'Escape' && !document.querySelector('[role="dialog"]'))
-        setPresentation(false);
-    };
-    // Capture Escape before a focused tooltip consumes it; open dialogs retain priority.
-    window.addEventListener('keydown', exit, true);
-    return () => window.removeEventListener('keydown', exit, true);
-  }, [presentation]);
   const { pathname } = useLocation();
   const profileCanvas = useMatch(routes.official(':id'));
   const headerGlass = useLiquidGlass<HTMLElement>();
@@ -178,11 +167,8 @@ export function AppLayout() {
   const tools = (
     <Group gap="xs" wrap="nowrap">
       <WorkspaceSearch />
-      <WorkbenchTools
-        presentation={presentation}
-        onPresentation={() => setPresentation((value) => !value)}
-      />
-      <MotionReplay />
+      <WorkbenchTools />
+      <AccountMenu />
       <Box visibleFrom="sm">
         <ColorSchemeToggle />
       </Box>
@@ -190,10 +176,7 @@ export function AppLayout() {
   );
   if (profileCanvas) {
     return (
-      <div
-        className="workspace-shell profile-canvas-shell"
-        data-presentation={presentation || undefined}
-      >
+      <div className="workspace-shell profile-canvas-shell">
         <a className="workspace-skip-link" href="#workspace-content">
           К содержимому
         </a>
@@ -217,9 +200,8 @@ export function AppLayout() {
   return (
     <AppShell
       className="workspace-shell"
-      data-presentation={presentation || undefined}
       header={{ height: { base: 82, sm: 94 } }}
-      navbar={{ width: 240, breakpoint: 'sm', collapsed: { mobile: true, desktop: presentation } }}
+      navbar={{ width: 240, breakpoint: 'sm', collapsed: { mobile: true, desktop: false } }}
       padding={{ base: 14, sm: 24 }}
     >
       <a className="workspace-skip-link" href="#workspace-content">
@@ -293,7 +275,7 @@ export function AppLayout() {
           <Outlet />
         </div>
       </AppShell.Main>
-      {!presentation && <MobileNavigation />}
+      <MobileNavigation />
       <WorkbenchPanels />
     </AppShell>
   );

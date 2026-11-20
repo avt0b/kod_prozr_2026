@@ -6,7 +6,13 @@ import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import type { GraphNode, OfficialGraph } from '@/shared/api';
 import { graphHitAreas } from './graphStyle';
 import { GraphVisual, type GraphView } from './GraphVisual';
-import { compactPositions, evidenceEdge, graphElements, orbitPositions } from './graphModel';
+import {
+  compactPositions,
+  evidenceEdge,
+  graphElements,
+  orbitPositions,
+  mobilePositions,
+} from './graphModel';
 import { GraphLegend } from './GraphLegend';
 
 /** Самый крупный масштаб при вписывании: короткая цепочка (R07 из 3 узлов) не раздувается на весь экран. */
@@ -75,9 +81,11 @@ export function RelationGraph({
           ? {
               name: 'preset',
               positions:
-                !highlight?.length && !narrow && rootId && graph.nodes.length <= 14
-                  ? orbitPositions(graph, rootId)
-                  : compactPositions(graph, rootId, highlight, columns),
+                !highlight?.length && narrow
+                  ? mobilePositions(graph, rootId)
+                  : !highlight?.length && rootId && graph.nodes.length <= 14
+                    ? orbitPositions(graph, rootId)
+                    : compactPositions(graph, rootId, highlight, columns),
               fit: false,
             }
           : layout === 'breadthfirst'
