@@ -1,0 +1,130 @@
+.assistant-conversation {
+  position: relative;
+}
+
+.assistant-alexey-welcome-seat {
+  width: clamp(92px, 11vw, 120px);
+  aspect-ratio: 1;
+  margin: 0 auto 22px;
+}
+
+.assistant-animated-turn {
+  --alexey-seat-size: clamp(46px, 7vw, 74px);
+  display: grid;
+  grid-template-columns: var(--alexey-seat-size) minmax(0, 1fr);
+  align-items: start;
+  gap: clamp(7px, 1.5vw, 16px);
+  max-width: min(100%, 810px);
+}
+
+.assistant-animated-turn[data-side='right'] {
+  grid-template-columns: minmax(0, 1fr) var(--alexey-seat-size);
+  margin-inline-start: auto;
+}
+
+.assistant-animated-turn[data-side='right'] .assistant-alexey-reply-seat {
+  grid-area: 1 / 2;
+}
+
+.assistant-animated-turn .assistant-message {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.assistant-alexey-reply-seat {
+  width: var(--alexey-seat-size);
+  aspect-ratio: 1;
+}
+
+.assistant-alexey-wait {
+  align-self: center;
+}
+
+.assistant-alexey {
+  position: absolute;
+  inset: 0 auto auto 0;
+  z-index: 1;
+  visibility: hidden;
+  width: 120px;
+  height: 120px;
+  pointer-events: none;
+  transform-origin: 0 0;
+}
+
+.assistant-alexey[data-placed] {
+  visibility: visible;
+  transition: transform 610ms cubic-bezier(0.18, 0.78, 0.24, 1);
+}
+
+.assistant-alexey-art {
+  display: block;
+  overflow: visible;
+  filter: drop-shadow(0 5px 7px var(--workspace-shadow));
+}
+
+.assistant-alexey-pupils {
+  transition: transform 130ms cubic-bezier(0.22, 0.7, 0.28, 1);
+}
+
+.assistant-alexey-blink {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.assistant-alexey[data-state='idle'] .assistant-alexey-art {
+  animation: alexey-float 4.8s ease-in-out infinite;
+}
+
+.assistant-alexey[data-state='idle'] .assistant-alexey-blink {
+  animation: alexey-blink 5.7s ease-in-out infinite;
+}
+
+.assistant-alexey-mirror {
+  position: absolute;
+  inset: 0 auto auto 0;
+  box-sizing: border-box;
+  visibility: hidden;
+  pointer-events: none;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+}
+
+.assistant-alexey-copy {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+@keyframes alexey-float {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  50% {
+    translate: 0 -5px;
+  }
+}
+
+@keyframes alexey-blink {
+  0%,
+  16%,
+  20%,
+  70%,
+  74%,
+  100% {
+    scale: 1 1;
+  }
+  18%,
+  72% {
+    scale: 1 0.12;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .assistant-alexey[data-placed],
+  .assistant-alexey-pupils {
+    transition: none;
+  }
+  .assistant-alexey[data-state='idle'] :is(.assistant-alexey-art, .assistant-alexey-blink) {
+    animation: none;
+  }
+}

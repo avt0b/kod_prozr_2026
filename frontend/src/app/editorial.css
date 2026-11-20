@@ -316,23 +316,6 @@
   text-align: center;
   padding: 16px 0 24px;
 }
-.assistant-emblem {
-  display: grid;
-  place-items: center;
-  margin: 0 auto 25px;
-  width: 84px;
-  height: 84px;
-  border-radius: 26px;
-  background: var(--workspace-raised);
-  color: #4273bf;
-  box-shadow:
-    0 12px 36px #2456ba12,
-    inset 0 0 0 1px var(--workspace-edge);
-  transform: rotate(-7deg);
-}
-.assistant-emblem svg {
-  transform: rotate(7deg);
-}
 .assistant-welcome h1 {
   font-size: clamp(34px, 4vw, 57px);
   line-height: 1.1;
@@ -594,15 +577,6 @@
   }
   .assistant-welcome {
     padding-top: 8px;
-  }
-  .assistant-emblem {
-    width: 64px;
-    height: 64px;
-    border-radius: 20px;
-    margin-bottom: 22px;
-  }
-  .assistant-emblem svg {
-    width: 38px;
   }
   .assistant-welcome h1 {
     font-size: 34px;
