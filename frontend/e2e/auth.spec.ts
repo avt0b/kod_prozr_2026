@@ -1,5 +1,16 @@
 import { expect, test } from '@playwright/test';
 import { credentials } from './fixtures';
+import { DEMO_ACCOUNT } from '../src/shared/config/demoAccount';
+
+test('быстрый вход подставляет публичную демо-учётку', async ({ page }) => {
+  await page.goto('/login');
+  await page.getByRole('button', { name: 'Быстрый вход', exact: true }).click();
+  await expect(page.getByLabel(/^Логин/)).toHaveValue(DEMO_ACCOUNT.username);
+  await expect(page.getByLabel(/^Пароль/)).toHaveValue(DEMO_ACCOUNT.password);
+  await expect(page).toHaveURL(/\/login$/);
+  await page.getByRole('button', { name: 'Войти', exact: true }).click();
+  await expect(page.getByRole('heading', { name: 'Обзор', exact: true })).toBeVisible();
+});
 
 for (const width of [1440, 390]) {
   test(`вход, reload и выход, ${width}px`, async ({ page }) => {

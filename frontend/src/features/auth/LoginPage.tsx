@@ -3,6 +3,7 @@ import { Alert, Button, Paper, PasswordInput, Stack, Text, TextInput, Title } fr
 import { Navigate, useLocation } from 'react-router';
 import { getSnapshot, login, refreshSession, subscribe } from '@/shared/lib/authSession';
 import './auth.css';
+import { DEMO_ACCOUNT } from '@/shared/config/demoAccount';
 
 export function LoginPage() {
   const { user, ready } = useSyncExternalStore(subscribe, getSnapshot);
@@ -76,6 +77,19 @@ export function LoginPage() {
             />
             <Button type="submit" loading={busy} disabled={!ready} fullWidth>
               Войти
+            </Button>
+            <Button
+              type="button"
+              variant="light"
+              disabled={busy}
+              fullWidth
+              onClick={() => {
+                setUsername(DEMO_ACCOUNT.username);
+                setPassword(DEMO_ACCOUNT.password);
+                setError('');
+              }}
+            >
+              Быстрый вход
             </Button>
           </Stack>
         </Paper>
