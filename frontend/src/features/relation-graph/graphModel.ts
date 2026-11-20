@@ -7,7 +7,7 @@ const SUB_COL_GAP = 228;
 const ROW_GAP = 112;
 // Leave room for the entire horizontal label between the two widest cards.
 const CHAIN_GAP = GRAPH_ROOT_WIDTH + GRAPH_LABEL_WIDTH + 32;
-const CHAIN_ROW_GAP = 124;
+const CHAIN_ROW_GAP = 137;
 const MAX_ROWS = 5;
 
 /** Раскладывает простую цепочку строками и оставляет прежнюю раскладку для ветвлений. */
@@ -51,6 +51,58 @@ function chainPositions(graph: OfficialGraph, rootId: string | undefined, column
       ];
     }),
   );
+}
+
+/** A small case spreads around the selected official like the reference canvas. */
+export function orbitPositions(graph: OfficialGraph, rootId: string) {
+  const result: Record<string, { x: number; y: number }> = { [rootId]: { x: 0, y: 0 } };
+  const outgoing = (id: string) => graph.edges.filter((edge) => edge.source === id);
+  const rootEdges = outgoing(rootId);
+  const place = (id: string | undefined, x: number, y: number) => {
+    if (id && !result[id]) result[id] = { x: x * 0.84, y };
+  };
+  const organ = rootEdges.find((edge) => edge.type === 'works_in')?.target;
+  const former = rootEdges.find((edge) => edge.type === 'employment')?.target;
+  const relatives = rootEdges.filter((edge) => edge.type === 'kinship');
+  const linkedRelative = relatives.find((edge) =>
+    outgoing(edge.target).some((link) => link.type === 'founder' || link.type === 'director'),
+  )?.target;
+  const supplier =
+    linkedRelative &&
+    outgoing(linkedRelative).find((edge) => edge.type === 'founder' || edge.type === 'director')
+      ?.target;
+  const spouse = relatives.find((edge) => edge.label.startsWith('супруг'))?.target;
+  const appeal = graph.edges.find(
+    (edge) => edge.type === 'mentions' && edge.target === rootId,
+  )?.source;
+  place(organ, 32, -263);
+  place(linkedRelative, -226, -149);
+  place(spouse, 290, -146);
+  place(supplier, -412, 7);
+  place(former, 323, 129);
+  place(supplier && outgoing(supplier).find((edge) => edge.type === 'supplier')?.target, -244, 183);
+  place(former && outgoing(former).find((edge) => edge.type === 'supplier')?.target, 299, 281);
+  place(appeal, 10, 274);
+  const vacant = [
+    [305, -292],
+    [-440, -263],
+    [-459, 261],
+    [-358, 350],
+    [0, 420],
+    [520, -30],
+    [-625, -112],
+    [523, 215],
+    [490, -302],
+    [-637, 280],
+    [485, 410],
+  ];
+  graph.nodes
+    .filter((node) => !result[node.id])
+    .forEach((node, index) => {
+      const [x, y] = vacant[index] ?? [650, index * ROW_GAP];
+      place(node.id, x, y);
+    });
+  return result;
 }
 
 /** Horizontal levels keep H1's wide first neighbourhood readable on a laptop. */

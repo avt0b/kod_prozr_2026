@@ -18,17 +18,22 @@ for (const width of [1440, 390]) {
     await expect(page.getByRole('heading', { name: bragina.full_name, exact: true })).toBeVisible();
 
     const menu = page.getByRole('button', { name: 'Код прозрачности', exact: true });
-    await expect(menu).toHaveAttribute('aria-expanded', 'false');
-    await menu.click();
+    await expect(menu).toHaveAttribute('aria-expanded', width === 1440 ? 'true' : 'false');
+    if (width === 390) await menu.click();
     await expect(
       page
         .getByRole('navigation', { name: 'Разделы приложения' })
         .getByRole('link', { name: 'Карта рисков' }),
     ).toBeVisible();
     await menu.click();
+    await expect(menu).toHaveAttribute('aria-expanded', 'false');
 
     const graph = page.getByTestId('relation-graph');
     await expect(graph.locator('canvas').first()).toBeVisible();
+    if (width === 1440) {
+      await graph.hover();
+      await expect(page.locator('.profile-mesh')).toHaveAttribute('data-active', '');
+    }
     const filters = page.getByRole('group', { name: 'Сигнал на графе' });
     await filters.getByText('R01', { exact: true }).click();
     await expect(page.getByText('подсвечена цепочка R01')).toBeVisible();
@@ -82,5 +87,12 @@ for (const width of [1440, 390]) {
     );
     await page.getByRole('link', { name: 'К рейтингу служащих' }).click();
     await expect(page).toHaveURL(new RegExp(`${rating.replace('?', '\\?')}$`));
+    if (width === 1440) {
+      await page.getByRole('link', { name: bragina.full_name, exact: true }).click();
+      await page.getByRole('link', { name: 'AI-анализ' }).click();
+      await expect(page.getByRole('textbox', { name: 'Вопрос ассистенту' })).toHaveValue(
+        `Какие риск-факторы и связи есть у служащего ${bragina.full_name}?`,
+      );
+    }
   });
 }

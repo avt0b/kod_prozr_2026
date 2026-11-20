@@ -19,12 +19,14 @@ import {
   IconArrowUpRight,
   IconChevronRight,
   IconLayoutSidebarRight,
+  IconSparkles,
   IconX,
 } from '@tabler/icons-react';
 import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useLocation, useParams } from 'react-router';
 import { useOfficial, useOfficialGraph } from '@/features/officials/api';
 import { ProfileSections } from '@/features/officials/ProfileSections';
+import { CanvasMesh } from '@/features/relation-graph/CanvasMesh';
 import { GraphEntityIcon } from '@/features/relation-graph/GraphLegend';
 import { groupContracts } from '@/features/relation-graph/contractGroups';
 import { CreateReportButton } from '@/features/reports/CreateReportButton';
@@ -74,8 +76,8 @@ function ProfileDetails({
     <>
       <section className="profile-inspector-section profile-risk-summary" aria-label="Оценка риска">
         <Group justify="space-between" gap={8}>
-          <Text size="xs" fw={650} c="dimmed">
-            Индекс риска
+          <Text size="xs" c="dimmed">
+            Индекс риска конфликта
           </Text>
           <Badge
             className="profile-risk-label"
@@ -83,39 +85,48 @@ function ProfileDetails({
             color={RISK_LEVEL_COLORS[level]}
             variant="light"
           >
-            {RISK_LABELS[level]}
+            <AnimatedNumber value={score} /> / 100 · {RISK_LABELS[level]}
           </Badge>
         </Group>
-        <Text className="workspace-profile-score" data-level={level}>
-          <span className="profile-score-value">
-            <AnimatedNumber value={score} />
-          </span>
-          <Text component="span" size="xs" c="dimmed">
-            {' '}
-            / 100
-          </Text>
-        </Text>
         <Progress
+          className="profile-risk-bar"
           value={score}
           color={RISK_LEVEL_COLORS[level]}
           aria-label="Балл риска из 100"
           radius="xl"
         />
-        <Text size="xs" c="dimmed" mt={8}>
+        <Text size="sm" className="profile-risk-lead" lineClamp={4}>
+          {signal?.explanation ?? 'В профиле нет выявленных флагов риска.'}
+        </Text>
+        <Text size="xs" c="dimmed">
           Балл задаёт приоритет проверки и не подтверждает нарушение.
         </Text>
       </section>
-      <Group gap="xs" wrap="wrap" className="profile-actions">
-        <CreateReportButton personId={profile.person.id} compact />
+      <div className="profile-actions">
+        <div className="profile-primary-actions">
+          <CreateReportButton personId={profile.person.id} compact />
+          <Button
+            className="profile-assistant-action"
+            component={Link}
+            to={routes.assistant()}
+            state={{
+              draft: `Какие риск-факторы и связи есть у служащего ${profile.person.full_name}?`,
+            }}
+            variant="default"
+            leftSection={<IconSparkles size={17} aria-hidden />}
+          >
+            AI-анализ
+          </Button>
+        </div>
         <CaseActions person={{ id: profile.person.id, name: profile.person.full_name }} />
-      </Group>
+      </div>
       <section
         className="profile-inspector-section profile-flags"
         aria-labelledby="profile-risk-flags"
       >
         <Group justify="space-between" mb="xs">
           <Title id="profile-risk-flags" order={3} size="h5">
-            Флаги риска
+            Выявленные риск-факторы
           </Title>
           <Text size="xs" c="dimmed">
             {profile.risk.flags.length}
@@ -124,7 +135,8 @@ function ProfileDetails({
         <FlagList
           flags={profile.risk.flags}
           selectedId={selectedFlag?.id}
-          expandedId={signal?.id}
+          expandedId={selectedFlag?.id}
+          compact
           onSelect={onSelectFlag}
         />
       </section>
@@ -142,7 +154,6 @@ function ProfileDetails({
           </Text>
         </section>
       )}
-      <ProfileSections profile={profile} />
     </>
   );
 }
@@ -336,28 +347,24 @@ function ProfileCanvas({
   return (
     <div className="profile-canvas-grid" data-inspector={inspectorOpen || undefined}>
       <section className="profile-graph-shell" aria-labelledby="profile-canvas-title">
-        <div className="profile-canvas-context">
-          <div>
-            <Title order={2} id="profile-canvas-title" className="profile-title">
-              {profile.person.full_name}
-            </Title>
-            <Group wrap="wrap" gap={7}>
-              <Text size="xs" c="dimmed">
-                Граф связей
-                {graph && ` · узлов: ${graph.nodes.length} · связей: ${graph.edges.length}`}
-              </Text>
-              {flag && (
-                <Badge color="brand" variant="light">
-                  подсвечена цепочка {flag.rule_code}
-                </Badge>
-              )}
-            </Group>
-          </div>
+        <div className="profile-canvas-context profile-glass">
+          <Title order={2} id="profile-canvas-title" className="profile-title">
+            {profile.person.full_name}
+          </Title>
+          <Text size="xs" className="profile-case-count" c="dimmed">
+            Граф связей{graph && ` · ${graph.nodes.length} узлов · ${graph.edges.length} связей`}
+          </Text>
+          {flag && (
+            <Badge color="brand" variant="light">
+              подсвечена цепочка {flag.rule_code}
+            </Badge>
+          )}
           {!inspectorOpen && (
             <Button
               ref={reopenRef}
-              variant="default"
-              leftSection={<IconLayoutSidebarRight size={17} aria-hidden />}
+              variant="subtle"
+              size="compact-xs"
+              leftSection={<IconLayoutSidebarRight size={16} aria-hidden />}
               onClick={() => {
                 setInspectorOpen(true);
                 requestAnimationFrame(() => inspectorRef.current?.focus({ preventScroll: true }));
@@ -404,15 +411,19 @@ function ProfileCanvas({
           tabIndex={-1}
           aria-label="Инспектор графа"
         >
-          <div className="profile-inspector-header">
+          <div className="profile-inspector-header" data-root={!entity || undefined}>
             <GraphEntityIcon type={entity?.type ?? 'person'} size={22} />
             <div role="status">
-              <Text size="xs" c="dimmed">
-                {entity ? NODE_TYPE_LABELS[entity.type] : 'Профиль служащего'}
+              <Text className="profile-inspector-type" size="xs" c="dimmed">
+                {entity ? NODE_TYPE_LABELS[entity.type] : 'Служащий органа власти'}
               </Text>
-              <Title order={3} size="h5">
-                {entity?.label ?? 'Инспектор графа'}
-              </Title>
+              {entity ? (
+                <Title order={3} size="h5">
+                  {entity.label}
+                </Title>
+              ) : (
+                <Text fw={690}>{profile.person.full_name}</Text>
+              )}
             </div>
             <ActionIcon
               size={40}
@@ -429,23 +440,6 @@ function ProfileCanvas({
           </div>
 
           <div className="profile-inspector-scroll" ref={inspectorScrollRef}>
-            {graph && (
-              <Select
-                label="Сущность на графе"
-                placeholder="Выберите сущность"
-                searchable
-                allowDeselect={false}
-                value={entity?.id ?? rootId}
-                data={graph.nodes.map((node) => ({
-                  value: node.id,
-                  label: node.label.replaceAll('\n', ' '),
-                }))}
-                onChange={(id) => {
-                  const node = graph.nodes.find((item) => item.id === id);
-                  if (node) selectEntity(node);
-                }}
-              />
-            )}
             <div className="profile-inspector-content" key={entity?.id ?? rootId}>
               {entity ? (
                 <>
@@ -469,7 +463,25 @@ function ProfileCanvas({
                   onSelect={selectEntity}
                 />
               )}
+              {!entity && <ProfileSections profile={profile} />}
             </div>
+            {graph && (
+              <Select
+                label="Сущность на графе"
+                placeholder="Выберите сущность"
+                searchable
+                allowDeselect={false}
+                value={entity?.id ?? rootId}
+                data={graph.nodes.map((node) => ({
+                  value: node.id,
+                  label: node.label.replaceAll('\n', ' '),
+                }))}
+                onChange={(id) => {
+                  const node = graph.nodes.find((item) => item.id === id);
+                  if (node) selectEntity(node);
+                }}
+              />
+            )}
           </div>
         </aside>
       )}
@@ -489,6 +501,7 @@ export function OfficialProfilePage() {
 
   return (
     <div className="official-profile">
+      <CanvasMesh />
       <Button
         className="profile-back"
         component={Link}

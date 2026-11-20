@@ -31,6 +31,14 @@ import { useControlGlint } from './useControlGlint';
 import { MotionReplay } from './MotionReplay';
 import { WorkspaceSearch } from './WorkspaceSearch';
 
+const PROFILE_NAV_CAPTIONS = [
+  'Сводная аналитика региона',
+  'Граф связей служащего',
+  'Должности и ведомства',
+  'Сигналы граждан',
+  'Вопросы к данным',
+];
+
 const NAV = [
   { to: routes.overview(), label: 'Обзор', compact: 'Обзор', icon: IconChartBar, end: true },
   {
@@ -83,12 +91,13 @@ function MobileNavigation() {
 
 function ProfileNavigation() {
   const id = useId();
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(() => window.matchMedia('(min-width: 65em)').matches);
   return (
-    <div className="profile-navigation profile-glass" data-open={open || undefined}>
+    <div className="profile-navigation" data-open={open || undefined}>
       <button
-        className="profile-navigation-toggle"
+        className="profile-navigation-toggle profile-glass"
         type="button"
+        aria-label="Код прозрачности"
         aria-expanded={open}
         aria-controls={id}
         onClick={() => setOpen((value) => !value)}
@@ -96,23 +105,33 @@ function ProfileNavigation() {
         <span className="workspace-brand-mark">
           <IconShieldSearch size={21} aria-hidden />
         </span>
-        <span>Код прозрачности</span>
+        <span className="profile-brand-label">
+          <strong>Код прозрачности</strong>
+          <small>Кабинет аналитика</small>
+        </span>
         <IconChevronDown className="profile-navigation-chevron" size={16} aria-hidden />
       </button>
       <div className="profile-navigation-reveal" aria-hidden={!open}>
-        <nav id={id} aria-label="Разделы приложения">
-          {NAV.map((item) => (
-            <RouterNavLink
-              key={item.to}
-              to={item.to}
-              end={item.end}
-              tabIndex={open ? undefined : -1}
-            >
-              <item.icon size={18} aria-hidden />
-              {item.label}
-            </RouterNavLink>
-          ))}
-        </nav>
+        <div className="profile-navigation-clip">
+          <nav id={id} className="profile-glass" aria-label="Разделы приложения">
+            {NAV.map((item, index) => (
+              <RouterNavLink
+                key={item.to}
+                to={item.to}
+                end={item.end}
+                tabIndex={open ? undefined : -1}
+              >
+                <span className="profile-nav-glyph" data-section={index}>
+                  <item.icon size={16} aria-hidden />
+                </span>
+                <span>
+                  <strong>{item.label}</strong>
+                  <small>{PROFILE_NAV_CAPTIONS[index]}</small>
+                </span>
+              </RouterNavLink>
+            ))}
+          </nav>
+        </div>
       </div>
     </div>
   );

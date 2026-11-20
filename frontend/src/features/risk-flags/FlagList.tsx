@@ -13,6 +13,7 @@ interface Props {
   flags: RiskFlag[];
   selectedId?: string | null;
   expandedId?: string;
+  compact?: boolean;
   onSelect?: (flag: RiskFlag | null) => void;
 }
 
@@ -80,7 +81,7 @@ function FlagEvidence({ flag }: { flag: RiskFlag }) {
   );
 }
 
-export function FlagList({ flags, selectedId, expandedId, onSelect }: Props) {
+export function FlagList({ flags, selectedId, expandedId, compact = false, onSelect }: Props) {
   if (!flags.length) {
     return (
       <Text c="dimmed" size="sm">
@@ -93,7 +94,7 @@ export function FlagList({ flags, selectedId, expandedId, onSelect }: Props) {
     <Stack gap={4}>
       {flags.map((flag, index) => {
         const selected = flag.id === selectedId;
-        const expanded = !expandedId || flag.id === expandedId;
+        const expanded = expandedId ? flag.id === expandedId : !compact;
         const evidenceId = `flag-details-${flag.id}`;
         const label = (
           <Group gap={8} wrap="nowrap" justify="space-between">
@@ -142,6 +143,11 @@ export function FlagList({ flags, selectedId, expandedId, onSelect }: Props) {
               </UnstyledButton>
             ) : (
               label
+            )}
+            {compact && !expanded && (
+              <Text className="profile-flag-preview" size="xs" lineClamp={2}>
+                {flag.explanation}
+              </Text>
             )}
             <div id={evidenceId} className="flag-details" hidden={!expanded}>
               {expanded && (

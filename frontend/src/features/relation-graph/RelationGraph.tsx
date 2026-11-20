@@ -5,7 +5,6 @@ import {
   Group,
   Select,
   Stack,
-  Text,
   useComputedColorScheme,
 } from '@mantine/core';
 import { IconMaximize, IconMinus, IconPlus } from '@tabler/icons-react';
@@ -14,7 +13,7 @@ import cytoscape, { type Core, type ElementDefinition } from 'cytoscape';
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import type { GraphNode, OfficialGraph } from '@/shared/api';
 import { buildStylesheet } from './graphStyle';
-import { compactPositions, evidenceEdge, graphElements } from './graphModel';
+import { compactPositions, evidenceEdge, graphElements, orbitPositions } from './graphModel';
 import { GraphLegend } from './GraphLegend';
 
 /** Самый крупный масштаб при вписывании: короткая цепочка (R07 из 3 узлов) не раздувается на весь экран. */
@@ -22,12 +21,16 @@ const MAX_FIT_ZOOM = 1.4;
 
 /** Вписывает подсвеченную цепочку, а если её нет — весь граф. */
 function fitGraph(cy: Core) {
-  const target = cy.elements('.hl').length ? cy.elements('.hl') : cy.elements();
+  const focused = cy.elements('.hl');
+  const target = focused.length ? focused : cy.elements();
   if (!target.length) return;
   cy.fit(target, Math.min(cy.width(), cy.height()) < 420 ? 20 : 35);
   if (cy.zoom() > MAX_FIT_ZOOM) {
     cy.zoom(MAX_FIT_ZOOM);
     cy.center(target);
+  }
+  if (!focused.length && cy.nodes().length <= 14 && cy.width() >= 650) {
+    cy.panBy({ x: 0, y: -Math.min(50, cy.height() * 0.065) });
   }
 }
 
@@ -139,7 +142,10 @@ export function RelationGraph({
         highlight?.length || (layout === 'breadthfirst' && graph.nodes.length <= 30)
           ? {
               name: 'preset',
-              positions: compactPositions(graph, rootId, highlight, columns),
+              positions:
+                !highlight?.length && !narrow && rootId && graph.nodes.length <= 14
+                  ? orbitPositions(graph, rootId)
+                  : compactPositions(graph, rootId, highlight, columns),
               fit: false,
             }
           : layout === 'breadthfirst'
@@ -181,7 +187,7 @@ export function RelationGraph({
       cy.destroy();
       cyRef.current = null;
     };
-  }, [elements, dark, layout, rootId, graph, highlight, columns]);
+  }, [elements, dark, layout, rootId, graph, highlight, columns, narrow]);
 
   useEffect(() => {
     const cy = cyRef.current;
@@ -299,9 +305,6 @@ export function RelationGraph({
           >
             <IconMinus size={17} aria-hidden />
           </ActionIcon>
-          <Text size="xs" fw={650} aria-label="Масштаб графа">
-            {zoomPercent}%
-          </Text>
           <ActionIcon
             variant="subtle"
             color="gray"
@@ -316,12 +319,13 @@ export function RelationGraph({
             variant="subtle"
             color="gray"
             size="xs"
+            aria-label="Вписать граф"
             leftSection={<IconMaximize size={15} aria-hidden />}
             onClick={() => {
               if (cyRef.current) fitGraph(cyRef.current);
             }}
           >
-            Вписать граф
+            {zoomPercent}% · Центрировать
           </Button>
         </Group>
       </Group>

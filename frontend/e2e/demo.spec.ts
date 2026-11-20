@@ -295,8 +295,6 @@ test('сценарий демо docs/demo.md проходит на реальн�
       ).toBeVisible();
     }
     await expect(page.getByText(/ДорСтройРесурс/).first()).toBeVisible();
-    await expect(page.getByText(/273-ФЗ ст\. 10/).first()).toBeVisible();
-    await expect(page.getByText('Записи-источники').first()).toBeVisible();
     await expectNoHorizontalScroll(page);
     await shot(page, '07-profile');
     await shot(page, '07-profile-full', true);
@@ -315,6 +313,8 @@ test('сценарий демо docs/demo.md проходит на реальн�
 
     await page.getByText('Родственник — поставщик органа', { exact: true }).click();
     await expect(page.getByText('подсвечена цепочка R01')).toBeVisible();
+    await expect(page.getByText(/273-ФЗ ст\. 10/).first()).toBeVisible();
+    await expect(page.getByText('Записи-источники').first()).toBeVisible();
     await expect
       .poll(async () => (await graphState(graph)).highlighted.length)
       .toBeGreaterThanOrEqual(4);
