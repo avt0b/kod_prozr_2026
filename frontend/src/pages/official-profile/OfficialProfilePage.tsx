@@ -1,36 +1,47 @@
 import {
-  Anchor,
+  ActionIcon,
   Badge,
-  Breadcrumbs,
-  Card,
-  Grid,
+  Button,
   Group,
+  Progress,
   SegmentedControl,
+  Select,
   Skeleton,
   Stack,
+  Switch,
   Text,
   Title,
+  UnstyledButton,
 } from '@mantine/core';
-import { IconChevronRight } from '@tabler/icons-react';
-import { lazy, Suspense, useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router';
-import { ProfileSections } from '@/features/officials/ProfileSections';
+import { useMediaQuery, useReducedMotion } from '@mantine/hooks';
+import {
+  IconArrowLeft,
+  IconArrowUpRight,
+  IconChevronRight,
+  IconLayoutSidebarRight,
+  IconX,
+} from '@tabler/icons-react';
+import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react';
+import { Link, useLocation, useParams } from 'react-router';
 import { useOfficial, useOfficialGraph } from '@/features/officials/api';
-import { GraphLegend } from '@/features/relation-graph/GraphLegend';
+import { ProfileSections } from '@/features/officials/ProfileSections';
+import { GraphEntityIcon } from '@/features/relation-graph/GraphLegend';
+import { groupContracts } from '@/features/relation-graph/contractGroups';
 import { CreateReportButton } from '@/features/reports/CreateReportButton';
-import { CaseActions } from '@/features/workbench/CaseActions';
 import { FlagList } from '@/features/risk-flags/FlagList';
-import type { GraphNode, OfficialProfile, RiskFlag } from '@/shared/api';
+import { CaseActions } from '@/features/workbench/CaseActions';
+import type { GraphNode, OfficialGraph, OfficialProfile, RiskFlag } from '@/shared/api';
 import { routes } from '@/shared/config/routes';
-import { RISK_LEVEL_COLORS, riskLevel } from '@/shared/lib/format';
-import { QueryState } from '@/shared/ui';
-import { useLiquidGlass } from '@/shared/ui/useLiquidGlass';
+import { formatMoney, RISK_LEVEL_COLORS, riskLevel } from '@/shared/lib/format';
+import { KINSHIP_LABELS, NODE_TYPE_LABELS } from '@/shared/lib/labels';
 import { AnimatedNumber } from '@/shared/ui/AnimatedNumber';
+import { QueryState } from '@/shared/ui';
 import './profile.css';
 
-// Cytoscape тяжёлый (~400 КБ) — грузим отдельным чанком только на странице профиля
 const RelationGraph = lazy(() =>
-  import('@/features/relation-graph/RelationGraph').then((m) => ({ default: m.RelationGraph })),
+  import('@/features/relation-graph/RelationGraph').then((module) => ({
+    default: module.RelationGraph,
+  })),
 );
 
 const RISK_LABELS = {
@@ -40,202 +51,455 @@ const RISK_LABELS = {
   none: 'Без флагов',
 };
 
-function ProfileHeader({ profile }: { profile: OfficialProfile }) {
+function ProfileDetails({
+  profile,
+  selectedFlag,
+  onSelectFlag,
+}: {
+  profile: OfficialProfile;
+  selectedFlag: RiskFlag | null;
+  onSelectFlag: (flag: RiskFlag | null) => void;
+}) {
   const current = profile.appointments[0];
-  const level = riskLevel(profile.risk.score);
+  const score = profile.risk.score;
+  const level = riskLevel(score);
+  const signal =
+    selectedFlag ??
+    profile.risk.flags.reduce<RiskFlag | undefined>(
+      (highest, flag) => (!highest || flag.weight > highest.weight ? flag : highest),
+      undefined,
+    );
+
   return (
-    <header className="profile-header">
-      <Stack className="workspace-profile-identity profile-identity" gap={5}>
-        <Title className="profile-title" order={2}>
-          {profile.person.full_name}
-        </Title>
-        {current && (
-          <>
-            <Text size="sm" fw={620}>
-              {current.position.title} · {current.position.department}
-              {current.ended_at && ' (в прошлом)'}
-            </Text>
-            <Text c="dimmed" size="sm">
-              {current.organ.name}
-            </Text>
-          </>
-        )}
-      </Stack>
-      <div className="profile-header-side">
-        <Group align="center" gap="sm" className="profile-header-controls">
-          <Stack gap={4} align="flex-start">
-            <Badge
-              className="profile-risk-label"
-              data-level={level}
-              color={RISK_LEVEL_COLORS[level]}
-              variant="light"
-            >
-              {RISK_LABELS[level]}
-            </Badge>
-            <Group gap={5} align="baseline" className="workspace-profile-score" data-level={level}>
-              <Text className="profile-score-value" lh={1}>
-                <AnimatedNumber value={profile.risk.score} />
-              </Text>
-              <Text size="xs" c="dimmed">
-                из 100
-              </Text>
-            </Group>
-          </Stack>
-          <Group gap="xs" wrap="wrap" className="profile-actions">
-            <CaseActions person={{ id: profile.person.id, name: profile.person.full_name }} />
-            <CreateReportButton personId={profile.person.id} compact />
-          </Group>
+    <>
+      <section className="profile-inspector-section profile-risk-summary" aria-label="Оценка риска">
+        <Group justify="space-between" gap={8}>
+          <Text size="xs" fw={650} c="dimmed">
+            Индекс риска
+          </Text>
+          <Badge
+            className="profile-risk-label"
+            data-level={level}
+            color={RISK_LEVEL_COLORS[level]}
+            variant="light"
+          >
+            {RISK_LABELS[level]}
+          </Badge>
         </Group>
-        <Text size="xs" c="dimmed">
+        <Text className="workspace-profile-score" data-level={level}>
+          <span className="profile-score-value">
+            <AnimatedNumber value={score} />
+          </span>
+          <Text component="span" size="xs" c="dimmed">
+            {' '}
+            / 100
+          </Text>
+        </Text>
+        <Progress
+          value={score}
+          color={RISK_LEVEL_COLORS[level]}
+          aria-label="Балл риска из 100"
+          radius="xl"
+        />
+        <Text size="xs" c="dimmed" mt={8}>
           Балл задаёт приоритет проверки и не подтверждает нарушение.
         </Text>
-      </div>
-    </header>
+      </section>
+      <Group gap="xs" wrap="wrap" className="profile-actions">
+        <CreateReportButton personId={profile.person.id} compact />
+        <CaseActions person={{ id: profile.person.id, name: profile.person.full_name }} />
+      </Group>
+      <section
+        className="profile-inspector-section profile-flags"
+        aria-labelledby="profile-risk-flags"
+      >
+        <Group justify="space-between" mb="xs">
+          <Title id="profile-risk-flags" order={3} size="h5">
+            Флаги риска
+          </Title>
+          <Text size="xs" c="dimmed">
+            {profile.risk.flags.length}
+          </Text>
+        </Group>
+        <FlagList
+          flags={profile.risk.flags}
+          selectedId={selectedFlag?.id}
+          expandedId={signal?.id}
+          onSelect={onSelectFlag}
+        />
+      </section>
+      {current && (
+        <section className="profile-inspector-section">
+          <Title order={3} size="h5" mb={5}>
+            Должность и орган
+          </Title>
+          <Text size="sm" fw={600}>
+            {current.position.title} · {current.position.department}
+            {current.ended_at && ' (в прошлом)'}
+          </Text>
+          <Text size="xs" c="dimmed" mt={4}>
+            {current.organ.name}
+          </Text>
+        </section>
+      )}
+      <ProfileSections profile={profile} />
+    </>
   );
 }
 
-function GraphSignalPicker({
-  flags,
+function EntityDetails({ node, profile }: { node: GraphNode; profile: OfficialProfile }) {
+  const relative = profile.relatives.find((item) => item.person.id === node.id);
+  const company = profile.companies.find((link) => link.company.id === node.id);
+  return (
+    <section className="profile-inspector-section">
+      <Text size="xs" fw={650} c="dimmed">
+        {NODE_TYPE_LABELS[node.type]}
+      </Text>
+      <Text size="sm" fw={650} mt={4} style={{ whiteSpace: 'pre-line' }}>
+        {node.label}
+      </Text>
+      {relative && (
+        <Text size="sm" mt="xs">
+          Связь со служащим: {KINSHIP_LABELS[relative.kind]}
+        </Text>
+      )}
+      {company && (
+        <Stack gap={4} mt="xs">
+          <Text size="sm">ИНН {company.company.inn}</Text>
+          <Text size="sm">Связь через {company.via_person_name}</Text>
+          {company.share != null && <Text size="sm">Доля в компании: {company.share}%</Text>}
+          {company.contracts_count != null && (
+            <Text size="sm">Контрактов с органом: {company.contracts_count}</Text>
+          )}
+          {company.contracts_amount != null && (
+            <Text size="sm">Сумма контрактов: {formatMoney(company.contracts_amount)}</Text>
+          )}
+        </Stack>
+      )}
+      {node.risk != null && (
+        <Text size="sm" mt="xs">
+          Балл риска: {node.risk} / 100
+        </Text>
+      )}
+      {node.type === 'appeal' && (
+        <Button
+          component={Link}
+          to={routes.appeal(node.id)}
+          variant="light"
+          size="xs"
+          mt="sm"
+          rightSection={<IconArrowUpRight size={15} />}
+        >
+          Открыть обращение
+        </Button>
+      )}
+      {node.type === 'person' && node.risk != null && (
+        <Button
+          component={Link}
+          to={routes.official(node.id)}
+          variant="light"
+          size="xs"
+          mt="sm"
+          rightSection={<IconArrowUpRight size={15} />}
+        >
+          Открыть профиль
+        </Button>
+      )}
+    </section>
+  );
+}
+
+function GraphEntities({
+  graph,
   selectedId,
   onSelect,
 }: {
-  flags: RiskFlag[];
-  selectedId: string | undefined;
-  onSelect: (flag: RiskFlag | null) => void;
+  graph: OfficialGraph;
+  selectedId: string;
+  onSelect: (node: GraphNode) => void;
 }) {
-  const glass = useLiquidGlass<HTMLDivElement>();
+  const nodes = new Map(graph.nodes.map((node) => [node.id, node]));
+  const related = graph.edges.flatMap((edge) => {
+    const id =
+      edge.source === selectedId ? edge.target : edge.target === selectedId ? edge.source : null;
+    const node = id ? nodes.get(id) : undefined;
+    return node ? [{ node, edge }] : [];
+  });
 
   return (
+    <section className="profile-inspector-section">
+      <Title order={3} size="h5" mb="xs">
+        Связанные сущности
+      </Title>
+      {related.length ? (
+        related.map(({ node, edge }, index) => (
+          <UnstyledButton
+            className="profile-related-entity"
+            key={`${node.id}:${edge.type}:${index}`}
+            onClick={() => onSelect(node)}
+          >
+            <GraphEntityIcon type={node.type} />
+            <span>
+              <strong>{node.label}</strong>
+              <small>{edge.label}</small>
+            </span>
+            <IconChevronRight size={15} aria-hidden />
+          </UnstyledButton>
+        ))
+      ) : (
+        <Text size="sm" c="dimmed">
+          Прямых связей на холсте нет.
+        </Text>
+      )}
+    </section>
+  );
+}
+
+function ProfileCanvas({
+  profile,
+  graphQuery,
+}: {
+  profile: OfficialProfile;
+  graphQuery: ReturnType<typeof useOfficialGraph>;
+}) {
+  const rootId = profile.person.id;
+  const [flag, setFlag] = useState<RiskFlag | null>(null);
+  const [entity, setEntity] = useState<GraphNode | null>(null);
+  const [inspectorOpen, setInspectorOpen] = useState(true);
+  const [grouped, setGrouped] = useState(true);
+  const inspectorRef = useRef<HTMLElement>(null);
+  const reopenRef = useRef<HTMLButtonElement>(null);
+  const inspectorScrollRef = useRef<HTMLDivElement>(null);
+  const reducedMotion = useReducedMotion();
+  const stacked = useMediaQuery('(max-width: 55.99em)');
+  const rawGraph = graphQuery.data;
+  const flagNodes = useMemo(() => flag?.evidence.map((item) => item.node_id), [flag]);
+  const prepared = useMemo(
+    () => (rawGraph && grouped ? groupContracts(rawGraph, flagNodes) : undefined),
+    [rawGraph, grouped, flagNodes],
+  );
+  const graph = prepared?.graph ?? rawGraph;
+  const flagHighlight = useMemo(
+    () => flagNodes?.map((id) => prepared?.aliases.get(id) ?? id),
+    [flagNodes, prepared],
+  );
+  useEffect(() => {
+    if (inspectorScrollRef.current) inspectorScrollRef.current.scrollTop = 0;
+  }, [entity?.id]);
+
+  const selectEntity = (node: GraphNode) => {
+    if (flagHighlight?.length && !flagHighlight.includes(node.id)) setFlag(null);
+    setEntity(node.id === rootId ? null : node);
+    setInspectorOpen(true);
+    if (stacked) {
+      requestAnimationFrame(() => {
+        inspectorRef.current?.scrollIntoView({ behavior: reducedMotion ? 'instant' : 'smooth' });
+      });
+    }
+  };
+  const selectFlag = (next: RiskFlag | null) => {
+    setFlag(next);
+    if (next) {
+      setEntity(null);
+      setInspectorOpen(true);
+    }
+  };
+  const highlight = useMemo(() => {
+    if (flagHighlight) return flagHighlight;
+    if (!entity || !graph) return undefined;
+    const neighbors = graph.edges.flatMap((edge) =>
+      edge.source === entity.id ? [edge.target] : edge.target === entity.id ? [edge.source] : [],
+    );
+    return [...new Set([entity.id, ...neighbors])];
+  }, [flagHighlight, entity, graph]);
+  const signalPicker = profile.risk.flags.length > 0 && (
     <div
-      className="workspace-signal-picker workspace-glass"
+      className="workspace-signal-picker profile-glass"
       role="group"
       aria-label="Сигнал на графе"
-      {...glass.props}
     >
-      {glass.lens}
       <SegmentedControl
         size="xs"
-        value={selectedId ?? 'all'}
-        onChange={(id) => onSelect(flags.find((flag) => flag.id === id) ?? null)}
+        value={flag?.id ?? 'all'}
+        onChange={(id) => {
+          if (id === 'all') setEntity(null);
+          selectFlag(profile.risk.flags.find((item) => item.id === id) ?? null);
+        }}
         data={[
           { value: 'all', label: 'Все связи' },
-          ...flags.map((flag) => ({ value: flag.id, label: flag.rule_code })),
+          ...profile.risk.flags.map((item) => ({ value: item.id, label: item.rule_code })),
         ]}
       />
+    </div>
+  );
+
+  return (
+    <div className="profile-canvas-grid" data-inspector={inspectorOpen || undefined}>
+      <section className="profile-graph-shell" aria-labelledby="profile-canvas-title">
+        <div className="profile-canvas-context">
+          <div>
+            <Title order={2} id="profile-canvas-title" className="profile-title">
+              {profile.person.full_name}
+            </Title>
+            <Group wrap="wrap" gap={7}>
+              <Text size="xs" c="dimmed">
+                Граф связей
+                {graph && ` · узлов: ${graph.nodes.length} · связей: ${graph.edges.length}`}
+              </Text>
+              {flag && (
+                <Badge color="brand" variant="light">
+                  подсвечена цепочка {flag.rule_code}
+                </Badge>
+              )}
+            </Group>
+          </div>
+          {!inspectorOpen && (
+            <Button
+              ref={reopenRef}
+              variant="default"
+              leftSection={<IconLayoutSidebarRight size={17} aria-hidden />}
+              onClick={() => {
+                setInspectorOpen(true);
+                requestAnimationFrame(() => inspectorRef.current?.focus({ preventScroll: true }));
+              }}
+            >
+              Инспектор
+            </Button>
+          )}
+        </div>
+        {!graph && signalPicker}
+        <QueryState query={graphQuery}>
+          {(data) => (
+            <Suspense fallback={<Skeleton className="profile-graph-skeleton" />}>
+              <RelationGraph
+                graph={graph ?? data}
+                rootId={rootId}
+                selectedId={entity?.id ?? rootId}
+                onNodeClick={selectEntity}
+                highlight={highlight}
+                signalPicker={
+                  <>
+                    {signalPicker}
+                    <Switch
+                      label="Группировать"
+                      aria-label="Группировать контракты одного поставщика и заказчика"
+                      checked={grouped}
+                      size="xs"
+                      onChange={(event) => {
+                        setGrouped(event.currentTarget.checked);
+                        setEntity(null);
+                      }}
+                    />
+                  </>
+                }
+              />
+            </Suspense>
+          )}
+        </QueryState>
+      </section>
+      {inspectorOpen && (
+        <aside
+          className="profile-inspector profile-glass"
+          ref={inspectorRef}
+          tabIndex={-1}
+          aria-label="Инспектор графа"
+        >
+          <div className="profile-inspector-header">
+            <GraphEntityIcon type={entity?.type ?? 'person'} size={22} />
+            <div role="status">
+              <Text size="xs" c="dimmed">
+                {entity ? NODE_TYPE_LABELS[entity.type] : 'Профиль служащего'}
+              </Text>
+              <Title order={3} size="h5">
+                {entity?.label ?? 'Инспектор графа'}
+              </Title>
+            </div>
+            <ActionIcon
+              size={40}
+              variant="subtle"
+              color="gray"
+              aria-label="Свернуть инспектор"
+              onClick={() => {
+                setInspectorOpen(false);
+                requestAnimationFrame(() => reopenRef.current?.focus({ preventScroll: true }));
+              }}
+            >
+              <IconX size={18} aria-hidden />
+            </ActionIcon>
+          </div>
+
+          <div className="profile-inspector-scroll" ref={inspectorScrollRef}>
+            {graph && (
+              <Select
+                label="Сущность на графе"
+                placeholder="Выберите сущность"
+                searchable
+                allowDeselect={false}
+                value={entity?.id ?? rootId}
+                data={graph.nodes.map((node) => ({
+                  value: node.id,
+                  label: node.label.replaceAll('\n', ' '),
+                }))}
+                onChange={(id) => {
+                  const node = graph.nodes.find((item) => item.id === id);
+                  if (node) selectEntity(node);
+                }}
+              />
+            )}
+            <div className="profile-inspector-content" key={entity?.id ?? rootId}>
+              {entity ? (
+                <>
+                  <EntityDetails node={entity} profile={profile} />
+                  <Button
+                    variant="light"
+                    size="xs"
+                    leftSection={<IconArrowLeft size={16} />}
+                    onClick={() => setEntity(null)}
+                  >
+                    К данным служащего
+                  </Button>
+                </>
+              ) : (
+                <ProfileDetails profile={profile} selectedFlag={flag} onSelectFlag={selectFlag} />
+              )}
+              {graph && (
+                <GraphEntities
+                  graph={graph}
+                  selectedId={entity?.id ?? rootId}
+                  onSelect={selectEntity}
+                />
+              )}
+            </div>
+          </div>
+        </aside>
+      )}
     </div>
   );
 }
 
 export function OfficialProfilePage() {
   const { id = '' } = useParams();
-  const navigate = useNavigate();
+  const { state } = useLocation();
+  const search =
+    typeof state?.ratingSearch === 'string' && state.ratingSearch.startsWith('?')
+      ? (state.ratingSearch as string)
+      : '';
   const profile = useOfficial(id);
   const graph = useOfficialGraph(id);
-  // Выбор флага привязан к служащему: при переходе на другой профиль подсветка сбрасывается
-  const [selected, setSelected] = useState<{ personId: string; flag: RiskFlag } | null>(null);
-  const selectedFlag = selected?.personId === id ? selected.flag : null;
-  const setSelectedFlag = (flag: RiskFlag | null) =>
-    setSelected(flag ? { personId: id, flag } : null);
-
-  const onNodeClick = (node: GraphNode) => {
-    if (node.type === 'person' && node.risk != null && node.id !== id)
-      navigate(routes.official(node.id));
-    if (node.type === 'appeal') navigate(routes.appeal(node.id));
-  };
 
   return (
     <div className="official-profile">
-      <Breadcrumbs
-        aria-label="Путь к профилю"
-        className="profile-breadcrumbs"
-        component="nav"
-        separator={<IconChevronRight size={14} aria-hidden />}
+      <Button
+        className="profile-back"
+        component={Link}
+        to={{ pathname: routes.officials(), search }}
+        variant="default"
+        leftSection={<IconArrowLeft size={17} aria-hidden />}
       >
-        <Anchor component={Link} to={routes.officials()} size="xs">
-          К рейтингу служащих
-        </Anchor>
-        <Text size="xs" c="dimmed" aria-current="page">
-          Профиль
-        </Text>
-      </Breadcrumbs>
+        К рейтингу служащих
+      </Button>
       <QueryState query={profile}>
-        {(p) => {
-          const signal =
-            selectedFlag ??
-            p.risk.flags.reduce<RiskFlag | undefined>(
-              (highest, flag) => (!highest || flag.weight > highest.weight ? flag : highest),
-              undefined,
-            );
-          const signalPicker = p.risk.flags.length > 0 && (
-            <GraphSignalPicker
-              flags={p.risk.flags}
-              selectedId={selectedFlag?.id}
-              onSelect={setSelectedFlag}
-            />
-          );
-          return (
-            <>
-              <ProfileHeader profile={p} />
-              <Grid gutter="lg">
-                <Grid.Col span={{ base: 12, lg: 8 }}>
-                  <Card className="workspace-profile-graph">
-                    <Group justify="space-between" gap="xs" mb="sm">
-                      <Title order={3} size="h4">
-                        Граф связей
-                      </Title>
-                      {selectedFlag && (
-                        <Badge color="brand" variant="light">
-                          подсвечена цепочка {selectedFlag.rule_code}
-                        </Badge>
-                      )}
-                    </Group>
-                    {!graph.data && signalPicker}
-                    <QueryState query={graph}>
-                      {(g) => (
-                        <Suspense fallback={<Skeleton className="profile-graph-skeleton" />}>
-                          <RelationGraph
-                            graph={g}
-                            rootId={id}
-                            highlight={selectedFlag?.evidence.map((e) => e.node_id)}
-                            onNodeClick={onNodeClick}
-                            signalPicker={signalPicker}
-                          />
-                        </Suspense>
-                      )}
-                    </QueryState>
-                    <div className="profile-graph-legend">
-                      <GraphLegend />
-                    </div>
-                  </Card>
-                </Grid.Col>
-                <Grid.Col span={{ base: 12, lg: 4 }}>
-                  <Card className="profile-flags">
-                    <Group justify="space-between" mb="sm">
-                      <Title order={3} size="h4">
-                        Флаги риска
-                      </Title>
-                      <Badge
-                        variant="light"
-                        color="gray"
-                        aria-label={`Флагов: ${p.risk.flags.length}`}
-                      >
-                        {p.risk.flags.length}
-                      </Badge>
-                    </Group>
-                    <FlagList
-                      flags={p.risk.flags}
-                      selectedId={selectedFlag?.id}
-                      expandedId={signal?.id}
-                      onSelect={setSelectedFlag}
-                    />
-                  </Card>
-                </Grid.Col>
-              </Grid>
-
-              <ProfileSections profile={p} />
-            </>
-          );
-        }}
+        {(data) => <ProfileCanvas key={id} profile={data} graphQuery={graph} />}
       </QueryState>
     </div>
   );

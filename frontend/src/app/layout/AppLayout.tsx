@@ -11,6 +11,7 @@ import {
 } from '@mantine/core';
 import {
   IconChartBar,
+  IconChevronDown,
   IconListNumbers,
   IconMail,
   IconMap2,
@@ -19,8 +20,8 @@ import {
   IconShieldSearch,
   IconSun,
 } from '@tabler/icons-react';
-import { useEffect, useLayoutEffect, useState, type CSSProperties } from 'react';
-import { Link, NavLink as RouterNavLink, Outlet, useLocation } from 'react-router';
+import { useEffect, useId, useLayoutEffect, useState, type CSSProperties } from 'react';
+import { Link, NavLink as RouterNavLink, Outlet, useLocation, useMatch } from 'react-router';
 import { WorkbenchPanels } from '@/features/workbench/WorkbenchPanels';
 import { WorkbenchTools } from '@/features/workbench/WorkbenchTools';
 import { env } from '@/shared/config/env';
@@ -80,6 +81,43 @@ function MobileNavigation() {
   );
 }
 
+function ProfileNavigation() {
+  const id = useId();
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="profile-navigation profile-glass" data-open={open || undefined}>
+      <button
+        className="profile-navigation-toggle"
+        type="button"
+        aria-expanded={open}
+        aria-controls={id}
+        onClick={() => setOpen((value) => !value)}
+      >
+        <span className="workspace-brand-mark">
+          <IconShieldSearch size={21} aria-hidden />
+        </span>
+        <span>Код прозрачности</span>
+        <IconChevronDown className="profile-navigation-chevron" size={16} aria-hidden />
+      </button>
+      <div className="profile-navigation-reveal" aria-hidden={!open}>
+        <nav id={id} aria-label="Разделы приложения">
+          {NAV.map((item) => (
+            <RouterNavLink
+              key={item.to}
+              to={item.to}
+              end={item.end}
+              tabIndex={open ? undefined : -1}
+            >
+              <item.icon size={18} aria-hidden />
+              {item.label}
+            </RouterNavLink>
+          ))}
+        </nav>
+      </div>
+    </div>
+  );
+}
+
 export function AppLayout() {
   const [presentation, setPresentation] = useState(false);
   useEffect(() => {
@@ -93,6 +131,7 @@ export function AppLayout() {
     return () => window.removeEventListener('keydown', exit, true);
   }, [presentation]);
   const { pathname } = useLocation();
+  const profileCanvas = useMatch(routes.official(':id'));
   const headerGlass = useLiquidGlass<HTMLElement>();
   const navigationGlass = useLiquidGlass<HTMLElement>();
   const activeSection = NAV.findIndex((item) =>
@@ -117,6 +156,45 @@ export function AppLayout() {
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
   }, [pathname]);
 
+  const tools = (
+    <Group gap="xs" wrap="nowrap">
+      <WorkspaceSearch />
+      <WorkbenchTools
+        presentation={presentation}
+        onPresentation={() => setPresentation((value) => !value)}
+      />
+      <MotionReplay />
+      <Box visibleFrom="sm">
+        <ColorSchemeToggle />
+      </Box>
+    </Group>
+  );
+  if (profileCanvas) {
+    return (
+      <div
+        className="workspace-shell profile-canvas-shell"
+        data-presentation={presentation || undefined}
+      >
+        <a className="workspace-skip-link" href="#workspace-content">
+          К содержимому
+        </a>
+        <header className="profile-canvas-header">
+          <ProfileNavigation key={pathname} />
+          {tools}
+        </header>
+        <main
+          className="workspace-page profile-canvas-page"
+          key={pathname}
+          id="workspace-content"
+          tabIndex={-1}
+        >
+          <Outlet />
+        </main>
+        <WorkbenchPanels />
+      </div>
+    );
+  }
+
   return (
     <AppShell
       className="workspace-shell"
@@ -140,17 +218,7 @@ export function AppLayout() {
               </Badge>
             )}
           </Group>
-          <Group gap="xs" wrap="nowrap">
-            <WorkspaceSearch />
-            <WorkbenchTools
-              presentation={presentation}
-              onPresentation={() => setPresentation((value) => !value)}
-            />
-            <MotionReplay />
-            <Box visibleFrom="sm">
-              <ColorSchemeToggle />
-            </Box>
-          </Group>
+          {tools}
         </Group>
       </AppShell.Header>
 

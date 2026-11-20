@@ -1,74 +1,100 @@
 import type { StylesheetJson } from 'cytoscape';
-import type { GraphNodeType } from '@/shared/api';
-
-/** Цвет и форма узла по типу. Используется и в стилях Cytoscape, и в легенде. */
-export const NODE_STYLES: Record<GraphNodeType, { color: string; shape: string }> = {
-  person: { color: '#1D3F9E', shape: 'ellipse' },
-  company: { color: '#E8590C', shape: 'round-rectangle' },
-  organ: { color: '#2B8A3E', shape: 'hexagon' },
-  contract: { color: '#7048E8', shape: 'diamond' },
-  appeal: { color: '#E67700', shape: 'tag' },
-};
+import {
+  GRAPH_APPEARANCE,
+  GRAPH_CARD_WIDTH,
+  GRAPH_LABEL_WIDTH,
+  GRAPH_ROOT_WIDTH,
+} from './graphAppearance';
 
 export function buildStylesheet(dark: boolean): StylesheetJson {
-  const text = dark ? '#F0F5FB' : '#172636';
-  const edge = dark ? '#627D99' : '#93A6BA';
-  const textBg = dark ? '#192636' : '#FFFFFF';
-  const selection = dark ? '#8FB8F2' : '#3266AC';
-  const selectedSurface = dark ? '#20334A' : '#F5F9FF';
+  const ink = dark ? '#e9f1fc' : '#192436';
+  const surface = dark ? '#182639' : '#ffffff';
+  const border = dark ? '#3e536c' : '#cbd7e5';
+  const accent = dark ? '#a0d3ff' : '#245fbb';
+  const edge = dark ? '#69829f' : '#8298b2';
+  const iconRules: StylesheetJson = Object.entries(GRAPH_APPEARANCE).map(
+    ([type, { color, dark: darkColor, path }]) => {
+      const tint = dark ? darkColor : color;
+      const icon =
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">' +
+        `<rect width="32" height="32" rx="9" fill="${tint}" fill-opacity="0.13"/>` +
+        `<path transform="translate(6 6) scale(.83)" d="${path}" fill="none" stroke="${tint}" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+      return {
+        selector: `node[type = "${type}"]`,
+        style: { 'background-image': `data:image/svg+xml,${encodeURIComponent(icon)}` },
+      };
+    },
+  );
 
   return [
     {
       selector: 'node',
       style: {
-        label: 'data(label)',
+        shape: 'round-rectangle',
+        width: GRAPH_CARD_WIDTH,
+        height: 54,
+        label: 'data(cardLabel)',
         'font-size': 13,
-        color: text,
-        'text-valign': 'bottom',
-        'text-margin-y': 4,
+        'font-weight': 600,
+        color: ink,
+        'font-family': 'system-ui, sans-serif',
+        'text-valign': 'center',
+        'text-margin-x': 19,
         'text-wrap': 'wrap',
-        'text-max-width': '140px',
-        'text-background-color': textBg,
-        'text-background-opacity': 0.8,
-        'text-background-padding': '2px',
-        width: 26,
-        height: 26,
-        'border-width': 0,
+        'text-max-width': '111px',
+        'background-color': surface,
+        'background-width': 32,
+        'background-height': 32,
+        'background-position-x': '9px',
+        'border-width': 1,
+        'border-color': border,
+        'overlay-opacity': 0,
+        'z-index': 3,
       },
     },
-    ...(Object.entries(NODE_STYLES).map(([type, s]) => ({
-      selector: `node[type = "${type}"]`,
-      style: { 'background-color': s.color, shape: s.shape },
-    })) as StylesheetJson),
-    { selector: 'node[type = "contract"]', style: { width: 26, height: 26, 'font-size': 12 } },
-    { selector: 'node[risk >= 70]', style: { 'border-width': 4, 'border-color': '#E03131' } },
-    {
-      selector: 'node[risk > 0][risk < 40]',
-      style: { 'border-width': 2, 'border-color': '#2F9E44' },
-    },
-    {
-      selector: 'node[risk >= 40][risk < 70]',
-      style: { 'border-width': 3, 'border-color': '#F76707' },
-    },
+    ...iconRules,
     {
       selector: 'node.root',
-      style: { width: 42, height: 42, 'font-size': 12, 'font-weight': 'bold' },
+      style: {
+        width: GRAPH_ROOT_WIDTH,
+        height: 64,
+        'background-color': dark ? '#213450' : '#eaf3ff',
+        'border-width': 2,
+        'border-color': accent,
+        'text-max-width': '124px',
+        'font-weight': 700,
+        'underlay-color': accent,
+        'underlay-shape': 'round-rectangle',
+        'underlay-opacity': 0.12,
+        'underlay-padding': 7,
+      },
     },
     {
       selector: 'edge',
       style: {
-        width: 1.5,
+        width: 1.3,
         'line-color': edge,
         'target-arrow-color': edge,
         'target-arrow-shape': 'triangle',
-        'arrow-scale': 0.8,
+        'arrow-scale': 0.7,
         'curve-style': 'bezier',
+        'control-point-step-size': 64,
         label: 'data(label)',
-        'font-size': 10,
-        color: dark ? '#94A2BC' : '#5B6A86',
-        'text-rotation': 'autorotate',
-        'text-background-color': textBg,
-        'text-background-opacity': 0.8,
+        color: ink,
+        'font-family': 'system-ui, sans-serif',
+        'font-size': 12,
+        'font-weight': 500,
+        'text-rotation': 'none',
+        'text-wrap': 'wrap',
+        'text-max-width': `${GRAPH_LABEL_WIDTH}px`,
+        'text-background-color': surface,
+        'text-background-opacity': 1,
+        'text-background-padding': '4px',
+        'text-background-shape': 'roundrectangle',
+        'text-border-color': border,
+        'text-border-width': 1,
+        'text-border-opacity': 0.9,
+        'min-zoomed-font-size': 7,
       },
     },
     {
@@ -77,49 +103,29 @@ export function buildStylesheet(dark: boolean): StylesheetJson {
     },
     {
       selector: 'node.faded',
-      style: {
-        label: '',
-        'background-opacity': 0.2,
-        'border-opacity': 0.25,
-      },
+      style: { label: '', opacity: 0.2, 'z-index': 0 },
+    },
+    { selector: 'edge.faded', style: { label: '', opacity: 0.1, 'z-index': 0 } },
+    {
+      selector: 'node.hl, node.active-node',
+      style: { 'border-color': accent, 'border-width': 2, opacity: 1, 'z-index': 5 },
     },
     {
-      selector: 'edge.faded',
-      style: {
-        label: '',
-        opacity: 0.22,
-      },
-    },
-    {
-      selector: 'node.hl',
-      style: {
-        shape: 'round-rectangle',
-        width: 136,
-        height: 54,
-        label: 'data(cardLabel)',
-        'background-color': selectedSurface,
-        'border-width': 1.5,
-        'border-color': selection,
-        'text-valign': 'center',
-        'text-margin-y': 0,
-        'text-max-width': '124px',
-        'text-wrap': 'wrap',
-        'text-background-opacity': 0,
-        'font-size': 13,
-        'z-index': 2,
-      },
+      selector: 'node.active-node',
+      style: { 'background-color': dark ? '#25405c' : '#dfeeff', 'border-width': 3 },
     },
     {
       selector: 'edge.hl',
       style: {
-        width: 2,
-        'line-color': selection,
-        'target-arrow-color': selection,
-        color: selection,
-        'font-size': 9,
-        'text-wrap': 'ellipsis',
-        'text-max-width': '48px',
-        opacity: 1,
+        width: 2.5,
+        color: accent,
+        'font-size': 13,
+        'font-weight': 700,
+        'line-color': accent,
+        'target-arrow-color': accent,
+        'text-border-color': accent,
+        'min-zoomed-font-size': 0,
+        'z-index': 2,
       },
     },
   ];

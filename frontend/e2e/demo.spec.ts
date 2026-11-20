@@ -327,15 +327,15 @@ test('сценарий демо docs/demo.md проходит на реальн�
     expect(state.highlightedLabels.join(' | ')).toMatch(/контракт/);
     await shot(page, '08-graph');
 
-    // Клик по узлу компании: подпись в строке статуса
+    // Клик по узлу компании открывает инспектор сущности.
     const company = state.nodes.find(
       (n) => n.type === 'company' && state.highlighted.includes(n.id),
     );
     expect(company).toBeTruthy();
     await clickGraphNode(page, graph, company!.id);
-    await expect(
-      page.getByRole('status').filter({ hasText: /Компания: .*ДорСтройРесурс/ }),
-    ).toBeVisible();
+    const inspector = page.getByRole('complementary', { name: 'Инспектор графа' });
+    await expect(inspector.getByRole('heading', { name: /ДорСтройРесурс/ })).toBeVisible();
+    await inspector.getByRole('button', { name: 'К данным служащего' }).click();
 
     // Общий телефон с братом супруги — R05
     await page.getByText('Общие контакты с подрядчиком', { exact: true }).click();
@@ -355,6 +355,7 @@ test('сценарий демо docs/demo.md проходит на реальн�
     await expect.poll(async () => (await graphState(graph)).highlighted).toContain(appealId);
     await shot(page, '09-graph-r07');
     await clickGraphNode(page, graph, appealId);
+    await page.getByRole('link', { name: 'Открыть обращение' }).click();
     await expect(page).toHaveURL(new RegExp(`/appeals/${appealId}$`));
     await page
       .locator('.mantine-Card-root', { hasText: 'Связанные служащие' })
