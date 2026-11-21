@@ -72,7 +72,7 @@ export function AppealPage() {
       <QueryState query={appeal}>
         {(a) => (
           <>
-            <Group justify="space-between" mb="lg" wrap="wrap">
+            <Group className="workspace-page-heading" justify="space-between" mb="lg" wrap="wrap">
               <Stack gap={4}>
                 <Title order={2}>Обращение от {formatDateTime(a.received_at)}</Title>
                 <Group gap="xs">

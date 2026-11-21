@@ -1,6 +1,6 @@
-import { Badge, Card, Group, Stack, Text, ThemeIcon } from '@mantine/core';
-import { IconChevronRight, IconScale } from '@tabler/icons-react';
-import { Fragment } from 'react';
+import { Badge, Group, Stack, Text, UnstyledButton } from '@mantine/core';
+import { IconChevronDown, IconScale } from '@tabler/icons-react';
+import { useId, useState, type CSSProperties } from 'react';
 import type { RiskFlag } from '@/shared/api';
 import {
   NODE_TYPE_LABELS,
@@ -12,11 +12,76 @@ import {
 interface Props {
   flags: RiskFlag[];
   selectedId?: string | null;
+  expandedId?: string;
+  compact?: boolean;
   onSelect?: (flag: RiskFlag | null) => void;
 }
 
-/** Список флагов с объяснением, нормой права и цепочкой evidence. Клик выделяет флаг (повторный — снимает). */
-export function FlagList({ flags, selectedId, onSelect }: Props) {
+function FlagEvidence({ flag }: { flag: RiskFlag }) {
+  const explanationId = useId();
+  const [showFullText, setShowFullText] = useState(false);
+  const longExplanation = flag.explanation.length > 160;
+
+  return (
+    <div className="flag-evidence">
+      <dl className="flag-evidence-details">
+        <div>
+          <dt>Факт и пояснение</dt>
+          <dd>
+            <Text
+              id={explanationId}
+              size="sm"
+              lineClamp={longExplanation && !showFullText ? 3 : undefined}
+            >
+              {flag.explanation}
+            </Text>
+            {longExplanation && (
+              <UnstyledButton
+                type="button"
+                className="flag-evidence-action"
+                aria-controls={explanationId}
+                aria-expanded={showFullText}
+                onClick={() => setShowFullText((value) => !value)}
+              >
+                {showFullText ? 'Свернуть пояснение' : 'Читать полностью'}
+              </UnstyledButton>
+            )}
+          </dd>
+        </div>
+        <div className="flag-legal">
+          <dt>
+            <IconScale size={15} aria-hidden />
+            Правовое основание
+          </dt>
+          <dd>{flag.legal_ref || 'В данных не указано'}</dd>
+        </div>
+      </dl>
+      <details className="flag-sources">
+        <summary className="flag-evidence-action">
+          <IconChevronDown size={14} aria-hidden />
+          <span>Записи-источники</span>
+          <span className="flag-source-count">{flag.evidence.length}</span>
+        </summary>
+        {flag.evidence.length ? (
+          <ol>
+            {flag.evidence.map((entry, index) => (
+              <li key={`${entry.node_id}:${index}`}>
+                <span className="flag-source-type">{NODE_TYPE_LABELS[entry.type]}</span>
+                <span>{entry.label}</span>
+              </li>
+            ))}
+          </ol>
+        ) : (
+          <Text size="xs" c="dimmed">
+            В данных не указаны
+          </Text>
+        )}
+      </details>
+    </div>
+  );
+}
+
+export function FlagList({ flags, selectedId, expandedId, compact = false, onSelect }: Props) {
   if (!flags.length) {
     return (
       <Text c="dimmed" size="sm">
@@ -24,84 +89,77 @@ export function FlagList({ flags, selectedId, onSelect }: Props) {
       </Text>
     );
   }
+
   return (
-    <Stack gap="sm">
-      {flags.map((f) => {
-        const selected = f.id === selectedId;
+    <Stack gap={4}>
+      {flags.map((flag, index) => {
+        const selected = flag.id === selectedId;
+        const expanded = expandedId ? flag.id === expandedId : !compact;
+        const evidenceId = `flag-details-${flag.id}`;
+        const label = (
+          <Group gap={8} wrap="nowrap" justify="space-between">
+            <Badge
+              className="flag-rule-code"
+              color={SEVERITY_COLORS[flag.severity]}
+              variant="light"
+            >
+              {flag.rule_code}
+            </Badge>
+            <Text size="sm" fw={650} style={{ flex: 1 }}>
+              {RULE_TITLES[flag.rule_code]}
+            </Text>
+            <Text size="xs" c="dimmed" className="flag-weight">
+              вес {flag.weight}
+            </Text>
+            {onSelect && (
+              <IconChevronDown
+                size={15}
+                aria-hidden
+                style={{ flexShrink: 0, rotate: expanded ? '180deg' : undefined }}
+              />
+            )}
+          </Group>
+        );
         return (
-          <Card
-            key={f.id}
-            padding="md"
+          <div
+            key={flag.id}
             className="workspace-flag"
+            style={{ '--motion-index': Math.min(index, 5) } as CSSProperties}
             data-selectable={onSelect ? '' : undefined}
-            data-selected={selected ? '' : undefined}
-            data-severity={f.severity}
-            role={onSelect ? 'button' : undefined}
-            tabIndex={onSelect ? 0 : undefined}
-            aria-pressed={onSelect ? selected : undefined}
-            onClick={() => onSelect?.(selected ? null : f)}
-            onKeyDown={(event) => {
-              if (onSelect && (event.key === 'Enter' || event.key === ' ')) {
-                event.preventDefault();
-                onSelect(selected ? null : f);
-              }
-            }}
+            data-severity={flag.severity}
+            data-expanded={expanded || undefined}
+            data-selected={selected || undefined}
           >
-            <Group justify="space-between" mb={6} gap="xs" align="flex-start">
-              <Group gap="xs">
-                <Badge color={SEVERITY_COLORS[f.severity]} variant="filled">
-                  {f.rule_code}
-                </Badge>
-                <Text fw={600}>{RULE_TITLES[f.rule_code]}</Text>
-              </Group>
-              <Text size="xs" c="dimmed" style={{ whiteSpace: 'nowrap' }}>
-                риск {SEVERITY_LABELS[f.severity]} · вес {f.weight}
+            {onSelect ? (
+              <UnstyledButton
+                className="workspace-flag-trigger"
+                type="button"
+                aria-pressed={selected}
+                aria-expanded={expanded}
+                aria-controls={evidenceId}
+                onClick={() => onSelect(selected ? null : flag)}
+              >
+                {label}
+              </UnstyledButton>
+            ) : (
+              label
+            )}
+            {compact && !expanded && (
+              <Text className="profile-flag-preview" size="xs" lineClamp={2}>
+                {flag.explanation}
               </Text>
-            </Group>
-
-            <Text size="sm">{f.explanation}</Text>
-
-            {f.legal_ref && (
-              <Group gap={6} mt="xs" wrap="nowrap" align="flex-start">
-                <ThemeIcon size="sm" variant="light" color="gray">
-                  <IconScale size={14} />
-                </ThemeIcon>
-                <Text size="xs" c="dimmed">
-                  {f.legal_ref}
-                </Text>
-              </Group>
             )}
-
-            {f.evidence.length > 0 && (
-              <Group gap={4} mt="xs">
-                <Text size="xs" c="dimmed">
-                  Цепочка:
-                </Text>
-                {f.evidence.map((e, i) => (
-                  <Fragment key={e.node_id}>
-                    {i > 0 && <IconChevronRight size={12} />}
-                    <Badge
-                      size="sm"
-                      variant="outline"
-                      color="gray"
-                      tt="none"
-                      radius="sm"
-                      fw={500}
-                      h="auto"
-                      py={2}
-                      maw="100%"
-                      title={`${NODE_TYPE_LABELS[e.type]}: ${e.label}`}
-                      styles={{
-                        label: { whiteSpace: 'normal', overflow: 'visible', textAlign: 'left' },
-                      }}
-                    >
-                      {e.label}
-                    </Badge>
-                  </Fragment>
-                ))}
-              </Group>
-            )}
-          </Card>
+            <div id={evidenceId} className="flag-details" hidden={!expanded}>
+              {expanded && (
+                <>
+                  <Text size="xs" c="dimmed" mt="xs" mb={5}>
+                    Риск {SEVERITY_LABELS[flag.severity]}
+                  </Text>
+                  <FlagEvidence flag={flag} />
+                </>
+              )}
+            </div>
+          </div>
         );
       })}
     </Stack>

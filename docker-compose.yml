@@ -92,7 +92,7 @@ services:
       args:
         # Vite вшивает адрес API в бандл на этапе сборки — после смены нужен `make build`.
         # В frontend/Dockerfile должен быть `ARG VITE_API_URL`.
-        VITE_API_URL: ${VITE_API_URL:-http://localhost:8000/api/v1}
+        VITE_API_URL: ${VITE_API_URL:-/api/v1}
     image: kodprozr-frontend:local
     container_name: kodprozr_frontend
     ports:

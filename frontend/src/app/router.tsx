@@ -10,10 +10,17 @@ import { OverviewPage } from '@/pages/overview/OverviewPage';
 import { ReportPage } from '@/pages/report/ReportPage';
 import { RiskMapPage } from '@/pages/risk-map/RiskMapPage';
 import { AppLayout } from './layout/AppLayout';
+import { AuthGate } from '@/features/auth/AuthGate';
+import { LoginPage } from '@/features/auth/LoginPage';
 
 export const router = createBrowserRouter([
+  { path: '/login', element: <LoginPage /> },
   {
-    element: <AppLayout />,
+    element: (
+      <AuthGate>
+        <AppLayout />
+      </AuthGate>
+    ),
     children: [
       { index: true, element: <OverviewPage /> },
       { path: 'officials', element: <OfficialsPage /> },

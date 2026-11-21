@@ -1,29 +1,29 @@
-import {
-  Alert,
-  Button,
-  Group,
-  Select,
-  Stack,
-  Switch,
-  Text,
-  useComputedColorScheme,
-} from '@mantine/core';
-import { useReducedMotion } from '@mantine/hooks';
-import cytoscape, { type Core, type ElementDefinition } from 'cytoscape';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { ActionIcon, Alert, Button, Group, Select, Stack } from '@mantine/core';
+import { IconMaximize, IconMinus, IconPlus } from '@tabler/icons-react';
+import { useMediaQuery } from '@mantine/hooks';
+import cytoscape, { type Core, type ElementDefinition, type EventObject } from 'cytoscape';
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import type { GraphNode, OfficialGraph } from '@/shared/api';
-import { buildStylesheet } from './graphStyle';
-import { compactPositions, evidenceEdge, graphElements } from './graphModel';
-import { groupContracts } from './contractGroups';
-import { NODE_TYPE_LABELS } from '@/shared/lib/labels';
+import { graphHitAreas } from './graphStyle';
+import { GraphVisual, type GraphView } from './GraphVisual';
+import {
+  compactPositions,
+  evidenceEdge,
+  graphElements,
+  orbitPositions,
+  mobilePositions,
+} from './graphModel';
+import { GraphLegend } from './GraphLegend';
 
 /** Самый крупный масштаб при вписывании: короткая цепочка (R07 из 3 узлов) не раздувается на весь экран. */
 const MAX_FIT_ZOOM = 1.4;
 
 /** Вписывает подсвеченную цепочку, а если её нет — весь граф. */
 function fitGraph(cy: Core) {
-  const target = cy.elements('.hl').length ? cy.elements('.hl') : cy.elements();
-  cy.fit(target, 45);
+  const focused = cy.elements('.hl');
+  const target = focused.length ? focused : cy.elements();
+  if (!target.length) return;
+  cy.fit(target, Math.min(cy.width(), cy.height()) < 420 ? 20 : 35);
   if (cy.zoom() > MAX_FIT_ZOOM) {
     cy.zoom(MAX_FIT_ZOOM);
     cy.center(target);
@@ -34,35 +34,42 @@ interface Props {
   graph: OfficialGraph;
   /** Узел, вокруг которого построен граф (крупнее остальных). */
   rootId?: string;
+  rootSubtitle?: string;
   /** id узлов, которые надо подсветить (например, evidence выбранного флага). */
   highlight?: string[];
   onNodeClick?: (node: GraphNode) => void;
-  height?: number;
+  selectedId?: string;
+  signalPicker?: ReactNode;
+  extraControls?: ReactNode;
 }
 
 /** Тонкая обёртка над Cytoscape.js: создаёт инстанс на смену данных/темы, подсветку меняет классами. */
-export function RelationGraph({ graph, rootId, highlight, onNodeClick, height = 520 }: Props) {
+export function RelationGraph({
+  graph,
+  rootId,
+  rootSubtitle,
+  highlight,
+  onNodeClick,
+  selectedId,
+  signalPicker,
+  extraControls,
+}: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const cyRef = useRef<Core | null>(null);
   const clickRef = useRef(onNodeClick);
-  const dark = useComputedColorScheme('light') === 'dark';
-  const reducedMotion = useReducedMotion();
+  const wide = useMediaQuery('(min-width: 84em)');
+  const narrow = useMediaQuery('(max-width: 37.99em)');
+  const columns = narrow ? 1 : wide ? 3 : 2;
   const [layout, setLayout] = useState('breadthfirst');
-  const [focused, setFocused] = useState<GraphNode | null>(null);
-  const [grouped, setGrouped] = useState(true);
-  const prepared = useMemo(
-    () =>
-      grouped ? groupContracts(graph, highlight) : { graph, aliases: new Map<string, string>() },
-    [graph, grouped, highlight],
-  );
-
+  const [view, setView] = useState<GraphView>();
+  const [hoveredId, setHoveredId] = useState<string>();
   useEffect(() => {
     clickRef.current = onNodeClick;
   }, [onNodeClick]);
 
   const elements = useMemo<ElementDefinition[]>(
-    () => graphElements(prepared.graph, rootId),
-    [prepared, rootId],
+    () => graphElements(graph, rootId),
+    [graph, rootId],
   );
 
   useEffect(() => {
@@ -70,18 +77,18 @@ export function RelationGraph({ graph, rootId, highlight, onNodeClick, height = 
     const cy = cytoscape({
       container: containerRef.current,
       elements,
-      style: buildStylesheet(dark),
+      style: graphHitAreas,
       layout:
-        layout === 'breadthfirst' && prepared.graph.nodes.length <= 30
+        highlight?.length || (layout === 'breadthfirst' && graph.nodes.length <= 30)
           ? {
               name: 'preset',
-              positions: compactPositions(
-                prepared.graph,
-                rootId,
-                highlight?.map((id) => prepared.aliases.get(id) ?? id),
-              ),
-              fit: true,
-              padding: 35,
+              positions:
+                !highlight?.length && narrow
+                  ? mobilePositions(graph, rootId)
+                  : !highlight?.length && rootId && graph.nodes.length <= 14
+                    ? orbitPositions(graph, rootId)
+                    : compactPositions(graph, rootId, highlight, columns),
+              fit: false,
             }
           : layout === 'breadthfirst'
             ? {
@@ -90,7 +97,7 @@ export function RelationGraph({ graph, rootId, highlight, onNodeClick, height = 
                 padding: 45,
                 roots: rootId ? [rootId] : undefined,
                 directed: false,
-                spacingFactor: 1.3,
+                spacingFactor: 1.45,
                 avoidOverlap: true,
                 nodeDimensionsIncludeLabels: true,
               }
@@ -98,32 +105,56 @@ export function RelationGraph({ graph, rootId, highlight, onNodeClick, height = 
                 name: 'cose',
                 animate: false,
                 padding: 45,
-                nodeRepulsion: () => 9000,
-                idealEdgeLength: () => 110,
+                nodeRepulsion: () => 17000,
+                idealEdgeLength: () => 220,
                 nodeDimensionsIncludeLabels: true,
               },
       minZoom: 0.05,
       maxZoom: 2.5,
-      wheelSensitivity: 0.3,
     });
     cy.on('tap', 'node', (evt) => {
       const node = evt.target.data() as GraphNode;
-      setFocused(node);
       clickRef.current?.(node);
     });
-    cy.on('mouseover', 'node', (evt) => setFocused(evt.target.data() as GraphNode));
+    cy.on('mouseover', 'node', (event) => setHoveredId(event.target.id()));
+    cy.on('mouseout', 'node', () => setHoveredId(undefined));
     cyRef.current = cy;
+    let frame = 0;
+    let positionsDirty = true;
+    let positions: GraphView['positions'] = {};
+    const sync = (event?: EventObject) => {
+      if (event?.type === 'position') positionsDirty = true;
+      if (frame) return;
+      frame = requestAnimationFrame(() => {
+        frame = 0;
+        if (positionsDirty) {
+          positions = Object.fromEntries(cy.nodes().map((node) => [node.id(), node.position()]));
+          positionsDirty = false;
+        }
+        setView({
+          positions,
+          pan: cy.pan(),
+          zoom: cy.zoom(),
+          width: cy.width(),
+          height: cy.height(),
+        });
+      });
+    };
+    cy.on('position pan zoom', sync);
     const observer = new ResizeObserver(() => {
       cy.resize();
       fitGraph(cy);
+      sync();
     });
     observer.observe(containerRef.current);
+    sync();
     return () => {
+      cancelAnimationFrame(frame);
       observer.disconnect();
       cy.destroy();
       cyRef.current = null;
     };
-  }, [elements, dark, layout, rootId, prepared, highlight]);
+  }, [elements, layout, rootId, graph, highlight, columns, narrow]);
 
   useEffect(() => {
     const cy = cyRef.current;
@@ -131,79 +162,119 @@ export function RelationGraph({ graph, rootId, highlight, onNodeClick, height = 
     cy.batch(() => {
       cy.elements().removeClass('faded hl');
       if (!highlight?.length) return;
-      const ids = new Set(highlight.map((id) => prepared.aliases.get(id) ?? id));
+      const ids = new Set(highlight);
       cy.elements().addClass('faded');
       cy.nodes()
         .filter((n) => ids.has(n.id()))
         .removeClass('faded')
         .addClass('hl');
       cy.edges()
-        .filter((e) => evidenceEdge(e.data(), ids, prepared.graph))
+        .filter((e) => evidenceEdge(e.data(), ids, graph))
         .removeClass('faded')
         .addClass('hl');
     });
     fitGraph(cy);
-    if (!highlight?.length || reducedMotion) return;
-    const animation = containerRef.current?.animate([{ opacity: 0.65 }, { opacity: 1 }], {
-      duration: 270,
-      easing: 'cubic-bezier(0.2, 0.8, 0.2, 1)',
-    });
-    return () => animation?.cancel();
-  }, [highlight, elements, dark, prepared, layout, reducedMotion]);
+  }, [highlight, elements, graph, layout, rootId, columns, narrow]);
+
+  const changeZoom = (factor: number) => {
+    const cy = cyRef.current;
+    if (cy) {
+      cy.zoom({
+        level: cy.zoom() * factor,
+        renderedPosition: { x: cy.width() / 2, y: cy.height() / 2 },
+      });
+    }
+  };
 
   return (
-    <Stack gap="xs">
-      <Group justify="space-between">
+    <Stack
+      className="profile-graph-content"
+      gap="xs"
+      data-focused={Boolean(highlight?.length) || undefined}
+    >
+      <Group className="profile-graph-toolbar" gap="xs">
+        {signalPicker}
         <Select
           aria-label="Раскладка графа"
-          value={layout}
-          onChange={(value) => value && setLayout(value)}
+          value={highlight?.length ? 'evidence' : layout}
+          disabled={Boolean(highlight?.length)}
+          title={highlight?.length ? 'При выбранном флаге показана его цепочка связей' : undefined}
+          onChange={(value) => value && value !== 'evidence' && setLayout(value)}
           allowDeselect={false}
           data={[
+            ...(highlight?.length ? [{ value: 'evidence', label: 'По цепочке' }] : []),
             { value: 'breadthfirst', label: 'По уровням' },
             { value: 'cose', label: 'Силовая' },
           ]}
-          w={170}
-        />
-        <Button
-          variant="subtle"
+          className="profile-graph-layout"
           size="xs"
-          onClick={() => {
-            const cy = cyRef.current;
-            if (cy) fitGraph(cy);
-          }}
-        >
-          Вписать граф
-        </Button>
+        />
       </Group>
-      <Switch
-        label="Группировать контракты одного поставщика и заказчика"
-        checked={grouped}
-        onChange={(e) => setGrouped(e.currentTarget.checked)}
-        size="xs"
-      />
       {graph.nodes.length === 0 && <Alert>Связи не найдены</Alert>}
       {graph.truncated && (
         <Alert color="orange">Показана часть связей: сервер ограничил размер графа.</Alert>
       )}
-      <div
-        ref={containerRef}
-        role="img"
-        aria-label={`Граф связей: ${graph.nodes.length} узлов, ${graph.edges.length} связей`}
-        data-testid="relation-graph"
-        className="workspace-graph"
-        style={{
-          height,
-          width: '100%',
-          borderRadius: 'var(--mantine-radius-md)',
-          border: '1px solid var(--mantine-color-default-border)',
-        }}
-      />
-      <Text size="xs" c="dimmed" mih={32} role="status">
-        {focused && prepared.graph.nodes.some((n) => n.id === focused.id)
-          ? `${NODE_TYPE_LABELS[focused.type]}: ${focused.label}${focused.risk != null ? ` · риск ${focused.risk}/100` : ''}`
-          : 'Наведите указатель на узел, чтобы увидеть полную подпись.'}
-      </Text>
+      <div className="profile-graph-viewport">
+        <div
+          ref={containerRef}
+          role="img"
+          aria-label={`Граф связей: ${graph.nodes.length} узлов, ${graph.edges.length} связей`}
+          data-testid="relation-graph"
+          className="workspace-graph"
+        />
+        {view && (
+          <GraphVisual
+            key={highlight?.join('|') || 'all'}
+            graph={graph}
+            view={view}
+            rootId={rootId}
+            rootSubtitle={rootSubtitle}
+            selectedId={selectedId}
+            hoveredId={hoveredId}
+            highlight={highlight}
+            onNodeClick={onNodeClick}
+          />
+        )}
+      </div>
+      <Group className="profile-graph-dock" justify="space-between" gap="xs">
+        {extraControls}
+        <div className="profile-graph-key profile-glass">
+          <GraphLegend />
+        </div>
+        <Group className="profile-graph-zoom profile-glass" gap={4} wrap="nowrap">
+          <ActionIcon
+            variant="subtle"
+            color="gray"
+            size={38}
+            aria-label="Отдалить граф"
+            onClick={() => changeZoom(1 / 1.2)}
+          >
+            <IconMinus size={17} aria-hidden />
+          </ActionIcon>
+          <ActionIcon
+            variant="subtle"
+            color="gray"
+            size={38}
+            aria-label="Приблизить граф"
+            onClick={() => changeZoom(1.2)}
+          >
+            <IconPlus size={17} aria-hidden />
+          </ActionIcon>
+          <Button
+            className="profile-graph-fit"
+            variant="subtle"
+            color="gray"
+            size="xs"
+            aria-label="Вписать граф"
+            leftSection={<IconMaximize size={15} aria-hidden />}
+            onClick={() => {
+              if (cyRef.current) fitGraph(cyRef.current);
+            }}
+          >
+            {view ? Math.round(view.zoom * 100) : 100}% · Центрировать
+          </Button>
+        </Group>
+      </Group>
     </Stack>
   );
 }

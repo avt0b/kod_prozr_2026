@@ -13,8 +13,10 @@ dependencies = [
   "loguru>=0.7.3",
   "nh3>=0.2.20",
   "numpy>=2.5.4",
+  "pwdlib[argon2]>=0.4.2",
   "pydantic>=2.10",
   "pydantic-settings>=2.7",
+  "pyjwt>=2.15.1",
   "pymorphy3>=2.0.6",
   "pymorphy3-dicts-ru>=2.4.417150.4580142",
   "rapidfuzz>=3.14.6",
@@ -53,6 +55,7 @@ containers = [
   "src.modules.reports",
   "src.modules.assistant",
   "src.modules.stats",
+  "src.modules.manual_graph",
 ]
 layers = ["presentation", "application", "(domain)"]
 
@@ -67,6 +70,7 @@ modules = [
   "src.modules.reports",
   "src.modules.assistant",
   "src.modules.stats",
+  "src.modules.manual_graph",
 ]
 
 [[tool.importlinter.contracts]]
@@ -87,6 +91,8 @@ source_modules = [
   "src.modules.assistant.application",
   "src.modules.stats.domain",
   "src.modules.stats.application",
+  "src.modules.manual_graph.domain",
+  "src.modules.manual_graph.application",
 ]
 forbidden_modules = [
   "src.modules.officials.infrastructure",
@@ -96,6 +102,7 @@ forbidden_modules = [
   "src.modules.reports.infrastructure",
   "src.modules.assistant.infrastructure",
   "src.modules.stats.infrastructure",
+  "src.modules.manual_graph.infrastructure",
   "src.core.infrastructure.database",
   "src.core.infrastructure.llm",
   "src.core.infrastructure.dependencies",
@@ -116,6 +123,7 @@ source_modules = [
   "src.modules.reports.domain",
   "src.modules.assistant.domain",
   "src.modules.stats.domain",
+  "src.modules.manual_graph.domain",
 ]
 forbidden_modules = ["pydantic", "pydantic_settings"]
 

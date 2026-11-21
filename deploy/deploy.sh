@@ -12,6 +12,7 @@
 # Состояние хранится в .release/ рядом с docker-compose.yml:
 #   current_tag, previous_tag, image_prefix, history.log; бэкапы БД — в backups/.
 # Переменные: API_URL (http://127.0.0.1:8000), SMOKE_ARGS (--keep-demo),
+#   SMOKE_USERNAME/SMOKE_PASSWORD — учётка аналитика для smoke (по умолчанию из .env хоста),
 #   DEPLOY_SEED=true — залить data/generated после миграций (только первый деплой на пустую БД).
 set -Eeuo pipefail
 
@@ -28,6 +29,20 @@ log() { printf '[deploy] %s\n' "$*"; }
 die() { printf '[deploy] ОШИБКА: %s\n' "$*" >&2; exit 1; }
 
 state() { cat "$STATE_DIR/$1" 2>/dev/null || true; }
+
+# Значение переменной из .env хоста (без source: .env не исполняем).
+env_value() { grep -E "^$1=" .env 2>/dev/null | tail -n1 | cut -d= -f2- || true; }
+
+# Бизнес-API требует входа (#62): smoke логинится учёткой аналитика. Без неё smoke
+# получил бы 401 и откатил релиз — поэтому проверяем до выкладки.
+smoke_credentials() {
+  SMOKE_USERNAME=${SMOKE_USERNAME:-$(env_value SMOKE_USERNAME)}
+  SMOKE_PASSWORD=${SMOKE_PASSWORD:-$(env_value SMOKE_PASSWORD)}
+  if [ -z "$SMOKE_USERNAME" ] || [ -z "$SMOKE_PASSWORD" ]; then
+    die "в .env нет SMOKE_USERNAME/SMOKE_PASSWORD: заведите аналитика для smoke (docs/devops.md, раздел 7)"
+  fi
+  export SMOKE_USERNAME SMOKE_PASSWORD
+}
 set_state() { printf '%s\n' "$2" > "$STATE_DIR/$1"; }
 history() { printf '%s %s\n' "$(date -u +%FT%TZ)" "$*" >> "$STATE_DIR/history.log"; }
 
@@ -99,6 +114,7 @@ cmd_deploy() {
     die "использование: deploy.sh deploy <tag> <image-prefix> [<registry-user>]"
   fi
   [ -f .env ] || die "нет .env в $(pwd): создайте его по .env.example (docs/devops.md, раздел 7)"
+  smoke_credentials
   mkdir -p "$STATE_DIR"
   [ -n "$user" ] && registry_login "$user" "$prefix"
 
@@ -138,6 +154,7 @@ cmd_deploy() {
 
 cmd_rollback() {
   local cur prev prefix
+  smoke_credentials
   cur=$(state current_tag)
   prev=$(state previous_tag)
   prefix=$(state image_prefix)

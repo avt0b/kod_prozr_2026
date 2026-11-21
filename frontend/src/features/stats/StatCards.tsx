@@ -1,61 +1,61 @@
-import { Badge, Card, Group, SimpleGrid, Stack, Text } from '@mantine/core';
+import { Link } from 'react-router';
 import type { StatsOverview } from '@/shared/api';
-import {
-  APPEAL_STATUS_COLORS,
-  APPEAL_STATUS_LABELS,
-  SEVERITY_COLORS,
-  SEVERITY_LABELS,
-} from '@/shared/lib/labels';
+import { routes } from '@/shared/config/routes';
+import { APPEAL_STATUS_LABELS, SEVERITY_LABELS } from '@/shared/lib/labels';
+import { AnimatedNumber } from '@/shared/ui/AnimatedNumber';
 
 export function StatCards({ stats }: { stats: StatsOverview }) {
   const flagsTotal = Object.values(stats.flags_by_severity).reduce((a, b) => a + b, 0);
   return (
-    <SimpleGrid cols={{ base: 1, sm: 3 }}>
-      <Card>
-        <Text size="sm" c="dimmed">
-          Служащие
-        </Text>
-        <Text fz={32} fw={700}>
-          {stats.officials_total}
-        </Text>
-        <Text size="sm">
-          с флагами риска: <b>{stats.officials_with_flags}</b>
-        </Text>
-      </Card>
-
-      <Card>
-        <Text size="sm" c="dimmed">
-          Флаги риска
-        </Text>
-        <Text fz={32} fw={700}>
-          {flagsTotal}
-        </Text>
-        <Group gap={6}>
-          {(['high', 'medium', 'low'] as const).map((s) => (
-            <Badge key={s} color={SEVERITY_COLORS[s]} variant="light">
-              {SEVERITY_LABELS[s]}: {stats.flags_by_severity[s]}
-            </Badge>
+    <section className="stat-grid" aria-label="Сводная статистика">
+      <Link to={routes.officials()} className="stat-panel">
+        <span className="stat-label">Служащие в системе</span>
+        <strong>
+          <AnimatedNumber value={stats.officials_total} />
+        </strong>
+        <span className="stat-caption">{stats.officials_with_flags} с флагами риска</span>
+        <div className="stat-track" aria-hidden="true">
+          <span
+            style={{
+              width: `${stats.officials_total ? (stats.officials_with_flags / stats.officials_total) * 100 : 0}%`,
+            }}
+          />
+        </div>
+      </Link>
+      <Link to={routes.riskMap()} className="stat-panel">
+        <span className="stat-label">Флаги риска</span>
+        <strong>
+          <AnimatedNumber value={flagsTotal} />
+        </strong>
+        <div className="stat-severities">
+          {(['high', 'medium', 'low'] as const).map((severity) => (
+            <span key={severity}>
+              <i className={`severity-dot severity-${severity}`} />
+              {SEVERITY_LABELS[severity]} <b>{stats.flags_by_severity[severity]}</b>
+            </span>
           ))}
-        </Group>
-      </Card>
-
-      <Card>
-        <Text size="sm" c="dimmed">
-          Обращения граждан
-        </Text>
-        <Text fz={32} fw={700}>
-          {stats.appeals_total}
-        </Text>
-        <Stack gap={4}>
-          <Group gap={6}>
-            {(['new', 'analyzed', 'routed', 'closed'] as const).map((s) => (
-              <Badge key={s} color={APPEAL_STATUS_COLORS[s]} variant="light">
-                {APPEAL_STATUS_LABELS[s]}: {stats.appeals_by_status[s]}
-              </Badge>
-            ))}
-          </Group>
-        </Stack>
-      </Card>
-    </SimpleGrid>
+        </div>
+      </Link>
+      <Link to={routes.appeals()} className="stat-panel">
+        <span className="stat-label">Обращения граждан</span>
+        <strong>
+          <AnimatedNumber value={stats.appeals_total} />
+        </strong>
+        <div className="stat-severities">
+          {(['new', 'analyzed', 'routed', 'closed'] as const).map((status) => (
+            <span key={status}>
+              {APPEAL_STATUS_LABELS[status]} <b>{stats.appeals_by_status[status]}</b>
+            </span>
+          ))}
+        </div>
+        <div className="stat-track" aria-hidden="true">
+          <span
+            style={{
+              width: `${stats.appeals_total ? (stats.appeals_by_status.analyzed / stats.appeals_total) * 100 : 0}%`,
+            }}
+          />
+        </div>
+      </Link>
+    </section>
   );
 }

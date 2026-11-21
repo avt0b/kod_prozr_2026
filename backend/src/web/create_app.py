@@ -8,6 +8,7 @@ from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.core.config import Settings
+from src.core.infrastructure.auth import current_user
 from src.core.infrastructure.database.database import get_async_session_maker, get_engine
 from src.core.infrastructure.dependencies import get_session
 from src.core.infrastructure.events import InMemoryEventBus
@@ -15,6 +16,7 @@ from src.core.infrastructure.exception_handler import register_core_handlers
 from src.core.infrastructure.llm import OpenAICompatibleLLMClient
 from src.core.infrastructure.logger import configure_logging, get_logger
 from src.core.presentation.audit_router import router as audit_router
+from src.core.presentation.auth_router import router as auth_router
 from src.modules.appeals.infrastructure.exception_handler import register_appeals_handlers
 from src.modules.appeals.presentation.api.appeals_router import router as appeals_router
 from src.modules.assistant.infrastructure.exception_handler import register_assistant_handlers
@@ -22,6 +24,7 @@ from src.modules.assistant.presentation.api.assistant_router import router as as
 from src.modules.counterparties.infrastructure.exception_handler import (
     register_counterparties_handlers,
 )
+from src.modules.manual_graph.presentation.router import router as manual_graph_router
 from src.modules.officials.infrastructure.exception_handler import register_officials_handlers
 from src.modules.officials.presentation.api.officials_router import router as officials_router
 from src.modules.officials.presentation.api.organs_router import router as organs_router
@@ -99,8 +102,10 @@ def create_app(settings: Settings) -> FastAPI:
     register_reports_handlers(app)
     register_assistant_handlers(app)
 
-    api = APIRouter(prefix=API_PREFIX)
+    app.include_router(auth_router, prefix=API_PREFIX)
+    api = APIRouter(prefix=API_PREFIX, dependencies=[Depends(current_user)])
     api.include_router(audit_router)
+    api.include_router(manual_graph_router)
     api.include_router(stats_router)
     api.include_router(organs_router)
     api.include_router(officials_router)

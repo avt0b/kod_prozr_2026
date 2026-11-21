@@ -313,6 +313,9 @@ export interface OfficialProfile {
 export type GraphNodeType = 'person' | 'company' | 'organ' | 'contract' | 'appeal';
 
 export interface GraphNode {
+  manual?: boolean;
+  notes?: string;
+  source?: string;
   id: UUID;
   type: GraphNodeType;
   label: string;
@@ -321,6 +324,7 @@ export interface GraphNode {
 
 /** Значения edge.type. */
 export type GraphEdgeType =
+  | 'manual'
   | 'works_in'
   | 'kinship'
   | 'founder'
@@ -332,6 +336,10 @@ export type GraphEdgeType =
   | 'shared_contact';
 
 export interface GraphEdge {
+  id?: string;
+  manual?: boolean;
+  notes?: string;
+  sourceNote?: string;
   source: UUID;
   target: UUID;
   type: GraphEdgeType;
