@@ -26,7 +26,7 @@ kod_prozr_2026/
 | Переменная        | Где      | Пример                                                        |
 | ----------------- | -------- | ------------------------------------------------------------- |
 | `DATABASE_URL`    | backend  | `postgresql+asyncpg://kodprozr:kodprozr@postgres:5432/kodprozr` |
-| `CORS_ORIGINS`    | backend  | `http://localhost:5173,http://localhost:3000`                 |
+| `CORS_ORIGINS`    | backend  | `http://localhost:5173,http://localhost:3000,http://127.0.0.1:5173,http://127.0.0.1:3000` |
 | `LLM_BASE_URL`    | backend  | OpenAI-совместимый endpoint (vLLM / Ollama / облако)          |
 | `LLM_API_KEY`     | backend  | `sk-...`                                                      |
 | `LLM_MODEL`       | backend  | `qwen2.5:7b-instruct`                                         |
