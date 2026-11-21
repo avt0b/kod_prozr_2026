@@ -29,7 +29,12 @@ class Settings(BaseSettings):
     auth_cookie_secure: bool = True
 
     cors_origins: Annotated[list[str], NoDecode] = Field(
-        default_factory=lambda: ["http://localhost:5173", "http://localhost:3000"]
+        default_factory=lambda: [
+            "http://localhost:5173",
+            "http://localhost:3000",
+            "http://127.0.0.1:5173",
+            "http://127.0.0.1:3000",
+        ]
     )
 
     # Пустой LLM_BASE_URL => LLM выключена, работают фейковые адаптеры (правила/шаблоны).

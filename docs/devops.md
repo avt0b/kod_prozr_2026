@@ -13,7 +13,7 @@
 ```
                     браузер
              │                    │
-   :3000 (prod) / :5173 (dev)    :8000  VITE_API_URL=http://localhost:8000/api/v1
+   :3000 (prod) / :5173 (dev)    :8000  (браузер ходит на /api/v1 фронта, nginx → backend:8000)
              │                    │
    ┌─────────▼────────┐   ┌───────▼──────────┐        ┌──────────────────────┐
    │ frontend         │   │ backend          │ HTTP   │ ollama  (профиль llm)│
@@ -39,13 +39,15 @@
 
 Хост-порты по умолчанию из [contracts.md](contracts.md). Если на машине порт уже занят другим
 проектом, его можно сдвинуть в `.env` (`POSTGRES_PORT`, `BACKEND_PORT`, `FRONTEND_PORT`,
-`OLLAMA_PORT`); внутри сети compose порты не меняются. При смене `BACKEND_PORT` поменяйте и
-`VITE_API_URL` (`http://localhost:<порт>/api/v1`) и пересоберите фронт: `make build && make up`.
+`OLLAMA_PORT`); внутри сети compose порты не меняются. `VITE_API_URL=/api/v1` от хост-портов
+не зависит.
 `make smoke`, `make eval`, `make precompute` и `make video` берут порты из того же `.env`.
 
-Браузер обращается к API напрямую по `VITE_API_URL`, nginx фронта ничего не проксирует. Поэтому
-бэк должен разрешать origin фронта в `CORS_ORIGINS`. На VPS оба сервиса стоят за одним доменом
-(раздел 6), и CORS там не участвует.
+Браузер обращается к API по `VITE_API_URL=/api/v1`, то есть к тому же origin, что и фронт:
+nginx фронта (`frontend/nginx.conf`) проксирует `/api/` на `backend:8000`. Так refresh-cookie
+входа (`SameSite=Strict`, [auth.md](auth.md)) работает и на `localhost:3000`, и на
+`127.0.0.1:3000`. `CORS_ORIGINS` нужен для `npm run dev` и для проверки Origin в refresh/logout.
+На VPS оба сервиса стоят за одним доменом (раздел 6).
 
 ## 2. Переменные окружения
 
@@ -56,13 +58,16 @@
 | -------------------------------- | ----------------- | --------------------------------------------------------------- |
 | `POSTGRES_USER/PASSWORD/DB`      | postgres          | `kodprozr` / `kodprozr` / `kodprozr`                            |
 | `DATABASE_URL`                   | backend           | `postgresql+asyncpg://kodprozr:kodprozr@postgres:5432/kodprozr` |
-| `CORS_ORIGINS`                   | backend           | `http://localhost:5173,http://localhost:3000`                   |
+| `CORS_ORIGINS`                   | backend           | `http://localhost:5173,http://localhost:3000,http://127.0.0.1:5173,http://127.0.0.1:3000` |
 | `LLM_BASE_URL`                   | backend           | `http://ollama:11434/v1`                                        |
 | `LLM_API_KEY`                    | backend           | `ollama` (для Ollama — любая непустая строка)                   |
 | `LLM_MODEL`                      | backend, Makefile | `qwen2.5:7b-instruct`                                           |
 | `LLM_TIMEOUT_SECONDS`            | backend           | `90` — ожидание ответа (генерации) LLM                          |
 | `LLM_CONNECT_TIMEOUT_SECONDS`    | backend           | `5` — ожидание соединения; затем сразу фоллбэк, без повтора     |
-| `VITE_API_URL`                   | frontend (сборка) | `http://localhost:8000/api/v1`                                  |
+| `VITE_API_URL`                   | frontend (сборка) | `/api/v1` — через прокси nginx фронта                           |
+| `AUTH_SECRET`                    | backend           | ключ JWT ≥ 32 символов; пустой `make env` заполнит случайным     |
+| `AUTH_ACCESS_SECONDS` / `AUTH_REFRESH_DAYS` | backend | `900` / `7`                                                  |
+| `AUTH_COOKIE_SECURE`             | backend           | `false` локально по HTTP; `true` на VPS с HTTPS                  |
 | `BACKEND_APP`                    | compose           | `src.web.main:app` — путь к ASGI-приложению для uvicorn         |
 | `BIND_HOST`                      | compose           | `127.0.0.1`; `0.0.0.0` — показать демо по локальной сети        |
 | `POSTGRES_IMAGE`                 | compose           | `postgres:16.15-alpine`                                         |
@@ -336,9 +341,14 @@ cp .env.example .env
 POSTGRES_PASSWORD=<длинный случайный>
 DATABASE_URL=postgresql+asyncpg://kodprozr:<тот же пароль>@postgres:5432/kodprozr
 CORS_ORIGINS=https://demo.example.ru
-VITE_API_URL=https://demo.example.ru/api/v1
+VITE_API_URL=/api/v1
+AUTH_SECRET=<python -c "import secrets; print(secrets.token_urlsafe(48))">
+AUTH_COOKIE_SECURE=true
 BIND_HOST=127.0.0.1
 ```
+
+Пользователя создайте в контейнере бэка: `docker compose run --rm backend python -m
+src.core.infrastructure.create_user <логин>` ([auth.md](auth.md)).
 
 `BIND_HOST=127.0.0.1` обязателен: Docker публикует порты в обход ufw, и без этой настройки
 сервисы окажутся доступны из интернета напрямую.

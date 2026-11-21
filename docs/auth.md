@@ -71,7 +71,10 @@ Origin они не выполняются. Frontend отправляет cookie 
 Frontend по умолчанию использует `/api/v1`; Vite проксирует `/api` на 127.0.0.1:8000.
 Это позволяет одинаково работать на localhost и 127.0.0.1. При своём VITE_API_URL
 нужно сохранить совместимость cookie по site: не смешивать эти два имени хоста.
-Существующий nginx уже проксирует `/api/`. Моки бизнес-ответов не обходят вход:
+В Docker-стенде nginx фронта (`frontend/nginx.conf`) проксирует `/api/` на `backend:8000`,
+фронт собирается с `VITE_API_URL=/api/v1`. `make env` заполняет пустой `AUTH_SECRET`
+случайным значением, `make seed`/`make reset` создают учётку `demo`
+(отдельно — `make demo-user`), `make smoke` входит ею. Моки бизнес-ответов не обходят вход:
 для авторизации нужен backend.
 
 Параметры: AUTH_ACCESS_SECONDS (30–3600), AUTH_REFRESH_DAYS (1–30), AUTH_SECRET,
