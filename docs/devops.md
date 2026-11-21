@@ -344,11 +344,23 @@ CORS_ORIGINS=https://demo.example.ru
 VITE_API_URL=/api/v1
 AUTH_SECRET=<python -c "import secrets; print(secrets.token_urlsafe(48))">
 AUTH_COOKIE_SECURE=true
+SMOKE_USERNAME=smoke
+SMOKE_PASSWORD=<длинный случайный, не меньше 12 символов>
 BIND_HOST=127.0.0.1
 ```
 
-Пользователя создайте в контейнере бэка: `docker compose run --rm backend python -m
-src.core.infrastructure.create_user <логин>` ([auth.md](auth.md)).
+Пользователей создайте в контейнере бэка ([auth.md](auth.md)): рабочих —
+`docker compose run --rm backend python -m src.core.infrastructure.create_user <логин>`,
+учётку для smoke релизов — с паролем из `.env`:
+
+```bash
+# .env хоста попадает в контейнер через env_file, пароль не светится в аргументах.
+docker compose run --rm backend sh -c \
+  'python -m src.core.infrastructure.create_user "$SMOKE_USERNAME" --password-env SMOKE_PASSWORD'
+```
+
+Без `SMOKE_USERNAME`/`SMOKE_PASSWORD` в `.env` хоста `deploy.sh deploy` и `rollback`
+останавливаются до выкладки: бизнес-API требует входа, и smoke без учётки получил бы 401.
 
 `BIND_HOST=127.0.0.1` обязателен: Docker публикует порты в обход ufw, и без этой настройки
 сервисы окажутся доступны из интернета напрямую.
@@ -515,7 +527,8 @@ rm ./deploy_key
 2. Скачивает образы `<prefix>/{backend,frontend}:<tag>` и поднимает `postgres`.
 3. Снимает дамп `backups/pre-<tag>-<время>.sql.gz` и выполняет `alembic upgrade head`.
 4. Поднимает `backend` и `frontend` с `--wait` по healthcheck.
-5. Проверяет `GET /health` и запускает `python3 scripts/smoke.py --api http://127.0.0.1:8000 --keep-demo`.
+5. Проверяет `GET /health` и запускает `python3 scripts/smoke.py --api http://127.0.0.1:8000 --keep-demo`
+   под учёткой `SMOKE_USERNAME`/`SMOKE_PASSWORD` из `.env` хоста.
 
 Образы подставляет наложение `deploy/docker-compose.release.yml`, в него передаются
 `BACKEND_IMAGE` и `FRONTEND_IMAGE`. Локальный `make up` это наложение не использует и по-прежнему
