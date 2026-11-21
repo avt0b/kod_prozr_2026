@@ -11,59 +11,26 @@ test('отложенный поиск сохраняет быстро измен
   await expect(page.getByRole('textbox', { name: 'Мин. балл', exact: true })).toHaveValue('50');
 });
 
-test('анимации повторяются, счётчики завершаются, reduced motion показывает итог сразу', async ({
-  page,
-  request,
-}) => {
+test('счётчики завершаются, reduced motion показывает итог сразу', async ({ page, request }) => {
   const stats = await (await request.get(`${API}/stats/overview`)).json();
+  const total = stats.officials_total.toLocaleString('ru-RU');
   await page.goto('/');
   const counter = page
     .locator('.stat-panel')
     .first()
     .locator('.animated-number [aria-hidden="true"]');
   await counter.scrollIntoViewIfNeeded();
-  await expect(counter).toHaveText(stats.officials_total.toLocaleString('ru-RU'));
-  await page.getByRole('button', { name: 'Учётная запись', exact: true }).click();
-  await page.getByRole('menuitem', { name: 'Повторить анимации', exact: true }).click();
-  await expect
-    .poll(() => counter.textContent())
-    .not.toBe(stats.officials_total.toLocaleString('ru-RU'));
-  await expect(counter).toHaveText(stats.officials_total.toLocaleString('ru-RU'));
-  await page.getByRole('button', { name: 'Учётная запись', exact: true }).click();
-  await page.getByRole('menuitem', { name: 'Повторить анимации', exact: true }).click();
+  await expect(counter).toHaveText(total);
   await page.emulateMedia({ reducedMotion: 'reduce' });
-  await page.getByRole('button', { name: 'Учётная запись', exact: true }).click();
-  await expect(
-    page.getByRole('menuitem', { name: 'Повторить анимации', exact: true }),
-  ).toBeDisabled();
-  await expect(counter).toHaveText(stats.officials_total.toLocaleString('ru-RU'));
+  await page.reload();
+  await counter.scrollIntoViewIfNeeded();
+  await expect(counter).toHaveText(total);
   expect(
     await page
       .locator('.network-edge')
       .first()
       .evaluate((element) => getComputedStyle(element).animationName),
   ).toBe('none');
-});
-
-test('повтор анимаций сохраняет вопрос и выбранный флаг', async ({ page, request }) => {
-  await page.goto('/assistant');
-  await page.getByRole('textbox', { name: 'Вопрос ассистенту' }).fill('Мой вопрос для проверки');
-  await page.getByRole('button', { name: 'Учётная запись', exact: true }).click();
-  await page.getByRole('menuitem', { name: 'Повторить анимации', exact: true }).click();
-  await expect(page.getByRole('textbox', { name: 'Вопрос ассистенту' })).toHaveValue(
-    'Мой вопрос для проверки',
-  );
-  const top = await (
-    await request.get(`${API}/officials?sort=-risk_score&limit=1&offset=0`)
-  ).json();
-  await page.goto(`/officials/${top.items[0].id}`);
-  const flag = page.locator('.workspace-flag-trigger').first();
-  await flag.click();
-  await expect(flag).toHaveAttribute('aria-pressed', 'true');
-  await page.getByRole('button', { name: 'Учётная запись', exact: true }).click();
-  await page.getByRole('menuitem', { name: 'Повторить анимации', exact: true }).click();
-  await expect(flag).toHaveAttribute('aria-pressed', 'true');
-  await expect(page.locator('[data-testid="relation-graph"]')).toBeVisible();
 });
 
 test('обзор связывает сводку, реальный граф и профиль первого в рейтинге', async ({

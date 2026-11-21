@@ -1,4 +1,4 @@
-import { useEffect, useId, useMemo, useState, type CSSProperties } from 'react';
+import { useId, useMemo, type CSSProperties } from 'react';
 import type { GraphEdge, GraphNode, OfficialGraph } from '@/shared/api';
 import { NODE_TYPE_LABELS } from '@/shared/lib/labels';
 import {
@@ -116,12 +116,6 @@ export function GraphVisual({
   onNodeClick,
 }: Props) {
   const instance = useId().replaceAll(':', '');
-  const [replay, setReplay] = useState(0);
-  useEffect(() => {
-    const restart = () => setReplay((value) => value + 1);
-    document.addEventListener('workspace:replay-motion', restart);
-    return () => document.removeEventListener('workspace:replay-motion', restart);
-  }, []);
 
   const { positions, pan, zoom, width, height } = view;
   const { cards, active, muted, relationships } = useMemo(() => {
@@ -186,7 +180,6 @@ export function GraphVisual({
     <div className="graph-visual">
       <div
         className="graph-world"
-        key={replay}
         style={{ transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})` }}
       >
         <svg className="graph-link-layer" width={1} height={1} aria-hidden="true">
