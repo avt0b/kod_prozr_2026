@@ -1,36 +1,78 @@
 import { useEffect, useState, useSyncExternalStore, type FormEvent } from 'react';
-import { Alert, Button, Paper, PasswordInput, Stack, Text, TextInput, Title } from '@mantine/core';
+import {
+  Alert,
+  Anchor,
+  Button,
+  Group,
+  Paper,
+  PasswordInput,
+  SegmentedControl,
+  Stack,
+  Text,
+  TextInput,
+  Title,
+} from '@mantine/core';
 import { Navigate, useLocation } from 'react-router';
-import { getSnapshot, login, refreshSession, subscribe } from '@/shared/lib/authSession';
+import {
+  getSnapshot,
+  homeOf,
+  login,
+  refreshSession,
+  register,
+  ROLE_LABELS,
+  subscribe,
+  type Role,
+} from '@/shared/lib/authSession';
 import './auth.css';
-import { DEMO_ACCOUNT } from '@/shared/config/demoAccount';
+import { DEMO_ACCOUNTS } from '@/shared/config/demoAccount';
+
+type Mode = 'login' | 'register';
+
+/** Возврат на исходный маршрут, только если он доступен роли (#70). */
+function destinationFor(role: Role, from: unknown): string {
+  if (
+    typeof from !== 'string' ||
+    !from.startsWith('/') ||
+    from.startsWith('//') ||
+    from.startsWith('/login')
+  )
+    return homeOf(role);
+  const citizenPath = from === '/citizen' || from.startsWith('/citizen/');
+  if (role === 'citizen' ? !citizenPath : citizenPath) return homeOf(role);
+  if (role !== 'admin' && from.startsWith('/admin')) return homeOf(role);
+  return from;
+}
 
 export function LoginPage() {
   const { user, ready } = useSyncExternalStore(subscribe, getSnapshot);
   const location = useLocation();
+  const [mode, setMode] = useState<Mode>('login');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [confirm, setConfirm] = useState('');
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
   useEffect(() => {
     if (!ready) void refreshSession();
   }, [ready]);
-  const from: unknown = (location.state as { from?: unknown } | null)?.from;
-  const destination =
-    typeof from === 'string' &&
-    from.startsWith('/') &&
-    !from.startsWith('//') &&
-    !from.startsWith('/login')
-      ? from
-      : '/';
-  if (user) return <Navigate to={destination} replace />;
+  if (user) {
+    const from: unknown = (location.state as { from?: unknown } | null)?.from;
+    return <Navigate to={destinationFor(user.role, from)} replace />;
+  }
+  const registering = mode === 'register';
   async function submit(event: FormEvent) {
     event.preventDefault();
-    setBusy(true);
     setError('');
+    if (registering && password !== confirm) {
+      setError('Пароли не совпадают.');
+      return;
+    }
+    setBusy(true);
     try {
-      await login(username.trim(), password);
+      if (registering) await register(username.trim(), password);
+      else await login(username.trim(), password);
       setPassword('');
+      setConfirm('');
     } catch (problem) {
       setError(problem instanceof Error ? problem.message : 'Не удалось войти.');
     } finally {
@@ -43,12 +85,27 @@ export function LoginPage() {
         <Text className="auth-brand">Код прозрачности</Text>
         <Paper component="form" className="auth-form" onSubmit={submit}>
           <Stack gap="lg">
+            <SegmentedControl
+              fullWidth
+              value={mode}
+              onChange={(value) => {
+                setMode(value as Mode);
+                setError('');
+              }}
+              data={[
+                { value: 'login', label: 'Вход' },
+                { value: 'register', label: 'Регистрация' },
+              ]}
+              aria-label="Вход или регистрация"
+            />
             <div>
               <Title order={1} size="h2">
-                Вход в кабинет
+                {registering ? 'Регистрация гражданина' : 'Вход в кабинет'}
               </Title>
               <Text c="dimmed" mt="xs">
-                Используйте учётную запись, выданную администратором.
+                {registering
+                  ? 'Учётная запись нужна, чтобы подать обращение и следить за его статусом.'
+                  : 'Граждане входят в личный кабинет, сотрудники — в рабочее место.'}
               </Text>
             </div>
             {error && (
@@ -58,8 +115,10 @@ export function LoginPage() {
             )}
             <TextInput
               label="Логин"
+              description={registering ? 'Латинские буквы, цифры, «_», «.», «-»' : undefined}
               autoComplete="username"
               required
+              minLength={registering ? 3 : undefined}
               maxLength={64}
               value={username}
               onChange={(event) => setUsername(event.currentTarget.value)}
@@ -69,32 +128,67 @@ export function LoginPage() {
               classNames={{ input: 'workspace-field' }}
               visibilityToggleButtonProps={{ 'aria-label': 'Показать или скрыть пароль' }}
               label="Пароль"
-              autoComplete="current-password"
+              description={registering ? 'Не меньше 12 символов' : undefined}
+              autoComplete={registering ? 'new-password' : 'current-password'}
               required
+              minLength={registering ? 12 : undefined}
               maxLength={256}
               value={password}
               onChange={(event) => setPassword(event.currentTarget.value)}
             />
+            {registering && (
+              <PasswordInput
+                classNames={{ input: 'workspace-field' }}
+                visibilityToggleButtonProps={{ 'aria-label': 'Показать или скрыть пароль' }}
+                label="Повторите пароль"
+                autoComplete="new-password"
+                required
+                maxLength={256}
+                value={confirm}
+                onChange={(event) => setConfirm(event.currentTarget.value)}
+              />
+            )}
             <Button type="submit" loading={busy} disabled={!ready} fullWidth>
-              Войти
+              {registering ? 'Зарегистрироваться' : 'Войти'}
             </Button>
-            <Button
-              type="button"
-              variant="light"
-              disabled={busy}
-              fullWidth
-              onClick={() => {
-                setUsername(DEMO_ACCOUNT.username);
-                setPassword(DEMO_ACCOUNT.password);
-                setError('');
-              }}
-            >
-              Быстрый вход
-            </Button>
+            {!registering && (
+              <Stack gap={6}>
+                <Text size="sm" c="dimmed">
+                  Быстрый вход на тестовом стенде
+                </Text>
+                <Group grow gap="xs">
+                  {(Object.keys(DEMO_ACCOUNTS) as Role[]).map((role) => (
+                    <Button
+                      key={role}
+                      type="button"
+                      variant="light"
+                      size="xs"
+                      disabled={busy}
+                      onClick={() => {
+                        setUsername(DEMO_ACCOUNTS[role].username);
+                        setPassword(DEMO_ACCOUNTS[role].password);
+                        setError('');
+                      }}
+                    >
+                      {ROLE_LABELS[role]}
+                    </Button>
+                  ))}
+                </Group>
+              </Stack>
+            )}
           </Stack>
         </Paper>
         <Text size="sm" c="dimmed" mt="lg">
-          Доступ предоставляется сотрудникам, работающим с проверкой данных.
+          {registering ? (
+            <>
+              Уже есть учётная запись?{' '}
+              <Anchor component="button" type="button" onClick={() => setMode('login')}>
+                Войти
+              </Anchor>
+            </>
+          ) : (
+            'Учётные записи сотрудников выдаёт администратор.'
+          )}
         </Text>
       </div>
     </main>

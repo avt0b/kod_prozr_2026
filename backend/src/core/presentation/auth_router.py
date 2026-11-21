@@ -9,6 +9,7 @@ from uuid import UUID, uuid4
 from fastapi import APIRouter, Depends, HTTPException, Request, Response
 from pydantic import BaseModel, Field
 from sqlalchemy import or_, select, update
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql.elements import ColumnElement
 from starlette.concurrency import run_in_threadpool
@@ -26,7 +27,7 @@ from src.core.infrastructure.auth import (
     token_hash,
     unauthorized,
 )
-from src.core.infrastructure.database.models.auth import AuthSessionModel, UserModel
+from src.core.infrastructure.database.models.auth import AuthSessionModel, Role, UserModel
 from src.core.infrastructure.dependencies import get_session, get_settings
 
 router = APIRouter(prefix="/auth", tags=["Auth"])
@@ -41,9 +42,15 @@ class LoginRequest(BaseModel):
     password: str = Field(min_length=1, max_length=256)
 
 
+class RegisterRequest(BaseModel):
+    username: str = Field(min_length=3, max_length=64, pattern=r"^[a-zA-Z0-9_.-]+$")
+    password: str = Field(min_length=12, max_length=256)
+
+
 class UserResponse(BaseModel):
     id: UUID
     username: str
+    role: Role
 
 
 class TokenResponse(BaseModel):
@@ -78,9 +85,35 @@ def token_response(user: UserModel, session: AuthSessionModel, settings: Setting
     return TokenResponse(
         access_token=issue_access(user, session, settings),
         expires_in=settings.auth_access_seconds,
-        user=UserResponse(id=user.id, username=user.username),
+        user=user_response(user),
         session_id=session.id,
     )
+
+
+def user_response(user: UserModel) -> UserResponse:
+    return UserResponse(id=user.id, username=user.username, role=Role(user.role))
+
+
+async def open_session(
+    user: UserModel, db: AsyncSession, response: Response, settings: Settings
+) -> TokenResponse:
+    """Новая серверная сессия: access в ответе, refresh — в HttpOnly cookie."""
+    session_id, proof = uuid4(), secrets.token_urlsafe(32)
+    refresh = f"{session_id}.{proof}.{secrets.token_urlsafe(32)}"
+    session = AuthSessionModel(
+        id=session_id,
+        logout_hash=token_hash(proof),
+        user_id=user.id,
+        refresh_hash=token_hash(refresh),
+        expires_at=datetime.now(UTC) + timedelta(days=settings.auth_refresh_days),
+        revoked=False,
+    )
+    db.add(session)
+    await db.flush()
+    result = token_response(user, session, settings)
+    await db.commit()
+    set_refresh(response, refresh, settings)
+    return result
 
 
 def set_refresh(response: Response, token: str, settings: Settings) -> None:
@@ -111,22 +144,30 @@ async def login(
     )
     if not valid or user is None or not user.active:
         raise HTTPException(401, "Неверный логин или пароль.")
-    session_id, proof = uuid4(), secrets.token_urlsafe(32)
-    refresh = f"{session_id}.{proof}.{secrets.token_urlsafe(32)}"
-    session = AuthSessionModel(
-        id=session_id,
-        logout_hash=token_hash(proof),
-        user_id=user.id,
-        refresh_hash=token_hash(refresh),
-        expires_at=datetime.now(UTC) + timedelta(days=settings.auth_refresh_days),
-        revoked=False,
-    )
-    db.add(session)
-    await db.flush()
-    result = token_response(user, session, settings)
-    await db.commit()
-    set_refresh(response, refresh, settings)
-    return result
+    return await open_session(user, db, response, settings)
+
+
+@router.post("/register", response_model=TokenResponse, status_code=201)
+async def register(
+    body: RegisterRequest, request: Request, response: Response, db: DB, settings: Config
+) -> TokenResponse:
+    """Саморегистрация доступна только гражданам; аналитиков и админов заводит администратор."""
+    check_origin(request, settings)
+    throttle(request)
+    secret_key(settings)
+    username = body.username.lower()
+    taken = HTTPException(409, "Этот логин уже занят.")
+    if (await db.execute(select(UserModel.id).where(UserModel.username == username))).first():
+        raise taken
+    password_hash = await run_in_threadpool(password_hasher.hash, body.password)
+    user = UserModel(username=username, password_hash=password_hash, active=True, role=Role.CITIZEN)
+    db.add(user)
+    try:
+        await db.flush()
+    except IntegrityError:
+        await db.rollback()
+        raise taken from None
+    return await open_session(user, db, response, settings)
 
 
 @router.post("/refresh", response_model=TokenResponse)
@@ -205,4 +246,4 @@ async def logout(request: Request, response: Response, db: DB, settings: Config)
 @router.get("/me", response_model=UserResponse)
 async def me(user: Annotated[UserModel, Depends(current_user)], response: Response) -> UserResponse:
     response.headers["Cache-Control"] = "no-store"
-    return UserResponse(id=user.id, username=user.username)
+    return user_response(user)

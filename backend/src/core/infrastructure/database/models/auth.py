@@ -1,11 +1,20 @@
 from datetime import datetime
+from enum import StrEnum
 from uuid import UUID
 
-from sqlalchemy import DateTime, ForeignKey, String, Uuid
+from sqlalchemy import DateTime, ForeignKey, String, Uuid, func
 from sqlalchemy.orm import Mapped, mapped_column
 
 from src.core.infrastructure.database.base import Base
 from src.core.infrastructure.database.mixins import UUIDMixin
+
+
+class Role(StrEnum):
+    """Гражданин подаёт обращения, аналитик их рассматривает, администратор управляет учётками."""
+
+    CITIZEN = "citizen"
+    ANALYST = "analyst"
+    ADMIN = "admin"
 
 
 class UserModel(Base, UUIDMixin):
@@ -15,6 +24,7 @@ class UserModel(Base, UUIDMixin):
     username: Mapped[str] = mapped_column(String(64), unique=True)
     password_hash: Mapped[str] = mapped_column(String(512))
     active: Mapped[bool] = mapped_column(default=True)
+    role: Mapped[str] = mapped_column(String(16), default=Role.ANALYST, index=True)
 
 
 class AuthSessionModel(Base, UUIDMixin):
@@ -26,3 +36,16 @@ class AuthSessionModel(Base, UUIDMixin):
     logout_hash: Mapped[str] = mapped_column(String(64))
     expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     revoked: Mapped[bool] = mapped_column(default=False)
+
+
+class CitizenAppealModel(Base):
+    """Автор обращения из кабинета гражданина. Обращение живёт в контексте appeals, без FK."""
+
+    __tablename__ = "citizen_appeals"
+    __table_args__ = {"schema": "core"}
+
+    appeal_id: Mapped[UUID] = mapped_column(Uuid, primary_key=True)
+    user_id: Mapped[UUID] = mapped_column(
+        Uuid, ForeignKey("core.users.id", ondelete="CASCADE"), index=True
+    )
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())

@@ -43,3 +43,14 @@ export function useReanalyzeAppeal() {
     onSuccess: invalidate,
   });
 }
+
+/** Рассмотрение аналитиком: передать по подведомственности или закрыть (#70). */
+export function useSetAppealStatus() {
+  const invalidate = useInvalidateAfterAppealChange();
+  return useMutation({
+    mutationFn: ({ id, status }: { id: string; status: 'routed' | 'closed' }) =>
+      api.appeals.setStatus(id, status),
+    retry: false,
+    onSuccess: invalidate,
+  });
+}

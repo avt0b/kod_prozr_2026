@@ -8,7 +8,7 @@ from sqlalchemy import delete, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.core.infrastructure.auth import current_user
-from src.core.infrastructure.database.models.auth import UserModel
+from src.core.infrastructure.database.models.auth import Role, UserModel
 from src.core.infrastructure.dependencies import get_session
 from src.modules.manual_graph.application.reference_graph import ReferenceGraph
 from src.modules.manual_graph.domain.policy import EDGE_LIMIT, NODE_LIMIT, validate_edge
@@ -21,6 +21,8 @@ from src.modules.manual_graph.infrastructure.models import (
 from src.modules.manual_graph.presentation.dependencies import get_reference_graph
 
 router = APIRouter(prefix="/graph-workspaces", tags=["Analyst graph"])
+# Схемы видят только сотрудники: гражданам доступ к рабочему месту закрыт (#70).
+STAFF = (Role.ANALYST, Role.ADMIN)
 DB = Annotated[AsyncSession, Depends(get_session)]
 User = Annotated[UserModel, Depends(current_user)]
 Reference = Annotated[ReferenceGraph, Depends(get_reference_graph)]
@@ -152,7 +154,9 @@ async def serialize(
 async def users(
     user: User, db: DB, query: Annotated[str, Query(max_length=64)] = ""
 ) -> list[PersonResponse]:
-    statement = select(UserModel).where(UserModel.active.is_(True), UserModel.id != user.id)
+    statement = select(UserModel).where(
+        UserModel.active.is_(True), UserModel.role.in_(STAFF), UserModel.id != user.id
+    )
     if query.strip():
         statement = statement.where(
             UserModel.username.contains(query.strip().lower(), autoescape=True)
@@ -289,12 +293,16 @@ async def share_workspace(
     existing = set(
         (
             await db.scalars(
-                select(UserModel.id).where(UserModel.id.in_(recipients), UserModel.active.is_(True))
+                select(UserModel.id).where(
+                    UserModel.id.in_(recipients),
+                    UserModel.active.is_(True),
+                    UserModel.role.in_(STAFF),
+                )
             )
         ).all()
     )
     if recipients != existing:
-        raise HTTPException(422, "Один из получателей отсутствует или отключён.")
+        raise HTTPException(422, "Один из получателей отсутствует, отключён или не сотрудник.")
     await db.execute(delete(ShareModel).where(ShareModel.workspace_id == identifier))
     for recipient in recipients:
         db.add(ShareModel(workspace_id=identifier, user_id=recipient))

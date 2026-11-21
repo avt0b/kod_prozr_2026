@@ -8,13 +8,14 @@ from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.core.config import Settings
-from src.core.infrastructure.auth import current_user
+from src.core.infrastructure.auth import require_staff
 from src.core.infrastructure.database.database import get_async_session_maker, get_engine
 from src.core.infrastructure.dependencies import get_session
 from src.core.infrastructure.events import InMemoryEventBus
 from src.core.infrastructure.exception_handler import register_core_handlers
 from src.core.infrastructure.llm import OpenAICompatibleLLMClient
 from src.core.infrastructure.logger import configure_logging, get_logger
+from src.core.presentation.admin_router import router as admin_router
 from src.core.presentation.audit_router import router as audit_router
 from src.core.presentation.auth_router import router as auth_router
 from src.modules.appeals.infrastructure.exception_handler import register_appeals_handlers
@@ -33,6 +34,7 @@ from src.modules.reports.presentation.api.reports_router import router as report
 from src.modules.risk.infrastructure.exception_handler import register_risk_handlers
 from src.modules.risk.presentation.api.risk_router import router as risk_router
 from src.modules.stats.presentation.api.stats_router import router as stats_router
+from src.web.citizen_router import router as citizen_router
 from src.web.dependencies import DEPENDENCY_OVERRIDES
 from src.web.event_handlers import register_event_handlers
 
@@ -103,7 +105,10 @@ def create_app(settings: Settings) -> FastAPI:
     register_assistant_handlers(app)
 
     app.include_router(auth_router, prefix=API_PREFIX)
-    api = APIRouter(prefix=API_PREFIX, dependencies=[Depends(current_user)])
+    app.include_router(admin_router, prefix=API_PREFIX)
+    app.include_router(citizen_router, prefix=API_PREFIX)
+    # Рабочее место: аналитик и администратор; гражданину — 403 (#70).
+    api = APIRouter(prefix=API_PREFIX, dependencies=[Depends(require_staff)])
     api.include_router(audit_router)
     api.include_router(manual_graph_router)
     api.include_router(stats_router)

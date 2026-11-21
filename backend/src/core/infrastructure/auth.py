@@ -1,5 +1,6 @@
 import hashlib
 import secrets
+from collections.abc import Awaitable, Callable
 from datetime import UTC, datetime, timedelta
 from typing import Annotated, Any
 from uuid import UUID
@@ -12,7 +13,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.core.config import Settings
-from src.core.infrastructure.database.models.auth import AuthSessionModel, UserModel
+from src.core.infrastructure.database.models.auth import AuthSessionModel, Role, UserModel
 from src.core.infrastructure.dependencies import get_session, get_settings
 
 password_hasher = PasswordHash.recommended()
@@ -99,3 +100,25 @@ async def current_user(
     if user is None:
         raise unauthorized()
     return user
+
+
+def forbidden() -> HTTPException:
+    return HTTPException(403, "Недостаточно прав для этого действия.")
+
+
+def require_roles(*roles: Role) -> Callable[..., Awaitable[UserModel]]:
+    """Зависимость: активный пользователь с одной из ролей, иначе 403."""
+    allowed = frozenset(roles)
+
+    async def dependency(user: Annotated[UserModel, Depends(current_user)]) -> UserModel:
+        if user.role not in allowed:
+            raise forbidden()
+        return user
+
+    return dependency
+
+
+# Администратор видит всё, что видит аналитик (рабочее место) — плюс управление учётками.
+require_staff = require_roles(Role.ANALYST, Role.ADMIN)
+require_admin = require_roles(Role.ADMIN)
+require_citizen = require_roles(Role.CITIZEN)

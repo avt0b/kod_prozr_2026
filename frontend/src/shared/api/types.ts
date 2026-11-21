@@ -455,3 +455,31 @@ export interface RiskMapQuery {
   limit?: number;
   offset?: number;
 }
+
+/** Кабинет гражданина (#70): без анализа и привязанных служащих. */
+export interface CitizenAppeal {
+  id: UUID;
+  received_at: ISODate;
+  text: string;
+  status: AppealStatus;
+}
+
+/** Учётная запись в разделе администрирования (#70). */
+export interface AdminUser {
+  id: UUID;
+  username: string;
+  role: 'citizen' | 'analyst' | 'admin';
+  active: boolean;
+}
+
+export interface AdminUserCreate {
+  username: string;
+  password: string;
+  role: AdminUser['role'];
+}
+
+export interface AdminUserUpdate {
+  role?: AdminUser['role'];
+  active?: boolean;
+  password?: string;
+}

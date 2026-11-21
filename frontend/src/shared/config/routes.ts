@@ -9,4 +9,6 @@ export const routes = {
   appeal: (id: string) => `/appeals/${id}`,
   report: (id: string) => `/reports/${id}`,
   assistant: () => '/assistant',
+  adminUsers: () => '/admin/users',
+  citizen: () => '/citizen',
 } as const;

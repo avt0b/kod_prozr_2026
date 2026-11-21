@@ -19,8 +19,16 @@ import {
   IconMoon,
   IconShieldSearch,
   IconSun,
+  IconUsers,
 } from '@tabler/icons-react';
-import { useEffect, useId, useLayoutEffect, useState, type CSSProperties } from 'react';
+import {
+  useEffect,
+  useId,
+  useLayoutEffect,
+  useState,
+  useSyncExternalStore,
+  type CSSProperties,
+} from 'react';
 import { Link, NavLink as RouterNavLink, Outlet, useLocation, useMatch } from 'react-router';
 import { WorkbenchPanels } from '@/features/workbench/WorkbenchPanels';
 import { WorkbenchTools } from '@/features/workbench/WorkbenchTools';
@@ -29,6 +37,7 @@ import { routes } from '@/shared/config/routes';
 import { useLiquidGlass } from '@/shared/ui/useLiquidGlass';
 import { useControlGlint } from './useControlGlint';
 import { AccountMenu } from '@/features/auth/AccountMenu';
+import { getSnapshot, subscribe } from '@/shared/lib/authSession';
 import { WorkspaceSearch } from './WorkspaceSearch';
 
 const PROFILE_NAV_CAPTIONS = [
@@ -37,6 +46,7 @@ const PROFILE_NAV_CAPTIONS = [
   'Должности и ведомства',
   'Сигналы граждан',
   'Вопросы к данным',
+  'Учётные записи и роли',
 ];
 
 const NAV = [
@@ -59,6 +69,20 @@ const NAV = [
   },
 ];
 
+/** Раздел пользователей видит только администратор (#70). */
+const ADMIN_NAV = {
+  to: routes.adminUsers(),
+  label: 'Пользователи',
+  compact: 'Доступ',
+  icon: IconUsers,
+  end: true,
+};
+
+function useNav() {
+  const { user } = useSyncExternalStore(subscribe, getSnapshot);
+  return user?.role === 'admin' ? [...NAV, ADMIN_NAV] : NAV;
+}
+
 function ColorSchemeToggle() {
   const { setColorScheme } = useMantineColorScheme();
   const computed = useComputedColorScheme('light');
@@ -77,9 +101,10 @@ function ColorSchemeToggle() {
 }
 
 function MobileNavigation() {
+  const nav = useNav();
   return (
     <nav className="workspace-mobile-nav workspace-glass" aria-label="Разделы приложения">
-      {NAV.map((item) => (
+      {nav.map((item) => (
         <RouterNavLink to={item.to} end={item.end} key={item.to} aria-label={item.label}>
           <item.icon size={19} aria-hidden />
           <span>{item.compact}</span>
@@ -90,6 +115,7 @@ function MobileNavigation() {
 }
 
 function ProfileNavigation() {
+  const nav = useNav();
   const id = useId();
   const [open, setOpen] = useState(false);
   return (
@@ -114,7 +140,7 @@ function ProfileNavigation() {
       <div className="profile-navigation-reveal" aria-hidden={!open}>
         <div className="profile-navigation-clip">
           <nav id={id} className="profile-glass" aria-label="Разделы приложения">
-            {NAV.map((item, index) => (
+            {nav.map((item, index) => (
               <RouterNavLink
                 key={item.to}
                 to={item.to}
@@ -138,14 +164,15 @@ function ProfileNavigation() {
 }
 
 export function AppLayout() {
+  const nav = useNav();
   const { pathname } = useLocation();
   const profileCanvas = useMatch(routes.official(':id'));
   const headerGlass = useLiquidGlass<HTMLElement>();
   const navigationGlass = useLiquidGlass<HTMLElement>();
-  const activeSection = NAV.findIndex((item) =>
+  const activeSection = nav.findIndex((item) =>
     item.end ? pathname === item.to : pathname === item.to || pathname.startsWith(`${item.to}/`),
   );
-  const section = NAV[activeSection];
+  const section = nav[activeSection];
   const SectionIcon = section?.icon ?? IconShieldSearch;
   const sectionLabel =
     section?.label ?? (pathname.startsWith(routes.report('')) ? 'Докладная' : 'Код прозрачности');
@@ -249,7 +276,7 @@ export function AppLayout() {
             data-visible={activeSection >= 0 || undefined}
             aria-hidden
           />
-          {NAV.map((item, index) => (
+          {nav.map((item, index) => (
             <NavLink
               key={item.to}
               className="workspace-nav-item"

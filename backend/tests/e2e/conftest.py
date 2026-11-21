@@ -26,6 +26,7 @@ from src.core.infrastructure.auth import issue_access, password_hasher, token_ha
 from src.core.infrastructure.database.base import Base
 from src.core.infrastructure.database.database import get_async_session_maker
 from src.core.infrastructure.database.models.auth import AuthSessionModel, UserModel
+from src.core.presentation import auth_router
 from src.modules.appeals.infrastructure.database import models as appeals_models
 from src.modules.counterparties.infrastructure.database import models as counterparties_models
 from src.modules.officials.infrastructure.database import models as officials_models
@@ -64,6 +65,14 @@ async def engine(database_url: str) -> AsyncGenerator[AsyncEngine, None]:
         )
         await conn.execute(text(f"TRUNCATE {tables} CASCADE"))
     await engine.dispose()
+
+
+@pytest.fixture(autouse=True)
+def reset_login_throttle() -> Generator[None, None, None]:
+    """Лимит попыток входа общий на процесс: тесты не должны делить его между собой."""
+    auth_router._attempts.clear()
+    yield
+    auth_router._attempts.clear()
 
 
 @pytest.fixture

@@ -12,10 +12,14 @@ import {
   type WireProfile,
 } from './officialAdapters';
 import type {
+  AdminUser,
+  AdminUserCreate,
+  AdminUserUpdate,
   Appeal,
   AppealDetails,
   AppealsQuery,
   AssistantAnswer,
+  CitizenAppeal,
   CreateAppealPayload,
   OfficialGraph,
   OfficialsQuery,
@@ -74,6 +78,26 @@ export const api = {
       request<Appeal>('POST', '/appeals', { body: payload, timeoutMs: 150_000 }),
     reanalyze: (id: UUID) =>
       request<Appeal>('POST', `/appeals/${id}/reanalyze`, { timeoutMs: 150_000 }),
+    /** Рассмотрение аналитиком: analyzed → routed, любой незакрытый → closed. */
+    setStatus: (id: UUID, status: 'routed' | 'closed') =>
+      request<Appeal>('POST', `/appeals/${id}/status`, { body: { status } }),
+  },
+
+  citizen: {
+    appeals: (query: { limit?: number; offset?: number } = {}) =>
+      request<Paginated<CitizenAppeal>>('GET', '/citizen/appeals', { query: { ...query } }),
+    submit: (text: string) =>
+      request<CitizenAppeal>('POST', '/citizen/appeals', { body: { text }, timeoutMs: 150_000 }),
+  },
+
+  admin: {
+    users: (query: { role?: AdminUser['role']; query?: string; limit?: number } = {}) =>
+      request<Paginated<AdminUser>>('GET', '/admin/users', { query: { ...query } }),
+    create: (payload: AdminUserCreate) =>
+      request<AdminUser>('POST', '/admin/users', { body: payload }),
+    update: (id: UUID, payload: AdminUserUpdate) =>
+      request<AdminUser>('PATCH', `/admin/users/${id}`, { body: payload }),
+    remove: (id: UUID) => request<void>('DELETE', `/admin/users/${id}`),
   },
 
   reports: {

@@ -1,8 +1,12 @@
 import { env } from '@/shared/config/env';
 
+import type { Role } from './roles';
+export { homeOf, ROLE_LABELS, STAFF_ROLES, type Role } from './roles';
+
 export interface AuthUser {
   id: string;
   username: string;
+  role: Role;
 }
 interface Session {
   access_token: string;
@@ -63,15 +67,24 @@ export function refreshSession(): Promise<boolean> {
   })();
   return refreshing;
 }
-export async function login(username: string, password: string): Promise<void> {
+export function login(username: string, password: string): Promise<void> {
+  return openSession('login', { username, password });
+}
+/** Саморегистрация гражданина; аналитиков и администраторов заводит администратор. */
+export function register(username: string, password: string): Promise<void> {
+  return openSession('register', { username, password });
+}
+async function openSession(path: 'login' | 'register', body: unknown): Promise<void> {
   if (refreshing) await refreshing;
-  const response = await authRequest('login', { username, password });
+  const response = await authRequest(path, body);
   if (!response.ok) {
     const payload = (await response.json().catch(() => null)) as { detail?: string } | null;
     throw new Error(
       typeof payload?.detail === 'string'
         ? payload.detail
-        : 'Не удалось войти. Проверьте соединение.',
+        : path === 'register'
+          ? 'Не удалось зарегистрироваться. Проверьте данные.'
+          : 'Не удалось войти. Проверьте соединение.',
     );
   }
   update((await response.json()) as Session);

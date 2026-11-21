@@ -3,7 +3,7 @@ import { Button, Menu } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import { useQueryClient } from '@tanstack/react-query';
 import { IconLogout, IconUserCircle } from '@tabler/icons-react';
-import { getSnapshot, logout, subscribe } from '@/shared/lib/authSession';
+import { getSnapshot, logout, ROLE_LABELS, subscribe } from '@/shared/lib/authSession';
 
 export function AccountMenu() {
   const { user } = useSyncExternalStore(subscribe, getSnapshot);
@@ -42,7 +42,10 @@ export function AccountMenu() {
         </Button>
       </Menu.Target>
       <Menu.Dropdown>
-        <Menu.Label>{user?.username}</Menu.Label>
+        <Menu.Label>
+          {user?.username}
+          {user && ` · ${ROLE_LABELS[user.role]}`}
+        </Menu.Label>
         <Menu.Item
           disabled={busy}
           leftSection={<IconLogout size={17} />}
