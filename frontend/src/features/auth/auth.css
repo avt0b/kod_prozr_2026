@@ -10,7 +10,12 @@
   max-width: 420px;
 }
 .account-menu-trigger {
-  max-width: 140px;
+  max-width: 200px;
+}
+.auth-quick-login {
+  font-weight: 400;
+  font-size: var(--mantine-font-size-xs);
+  opacity: 0.75;
 }
 .account-menu-trigger .mantine-Button-label {
   overflow: hidden;

@@ -3,7 +3,6 @@ import {
   Alert,
   Anchor,
   Button,
-  Group,
   Paper,
   PasswordInput,
   SegmentedControl,
@@ -25,6 +24,7 @@ import {
 } from '@/shared/lib/authSession';
 import './auth.css';
 import { DEMO_ACCOUNTS } from '@/shared/config/demoAccount';
+import { usePageTitle } from '@/shared/lib/usePageTitle';
 
 type Mode = 'login' | 'register';
 
@@ -52,6 +52,7 @@ export function LoginPage() {
   const [confirm, setConfirm] = useState('');
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
+  usePageTitle(mode === 'register' ? 'Регистрация · Код прозрачности' : 'Вход · Код прозрачности');
   useEffect(() => {
     if (!ready) void refreshSession();
   }, [ready]);
@@ -156,13 +157,20 @@ export function LoginPage() {
                 <Text size="sm" c="dimmed">
                   Быстрый вход на тестовом стенде
                 </Text>
-                <Group grow gap="xs">
+                <Stack gap={6}>
                   {(Object.keys(DEMO_ACCOUNTS) as Role[]).map((role) => (
                     <Button
                       key={role}
                       type="button"
                       variant="light"
-                      size="xs"
+                      size="sm"
+                      fullWidth
+                      justify="space-between"
+                      rightSection={
+                        <span className="auth-quick-login" aria-hidden>
+                          {DEMO_ACCOUNTS[role].username}
+                        </span>
+                      }
                       disabled={busy}
                       onClick={() => {
                         setUsername(DEMO_ACCOUNTS[role].username);
@@ -173,7 +181,7 @@ export function LoginPage() {
                       {ROLE_LABELS[role]}
                     </Button>
                   ))}
-                </Group>
+                </Stack>
               </Stack>
             )}
           </Stack>
