@@ -13,6 +13,7 @@ import { cardLabel, evidenceEdge } from './graphModel';
 import './graphVisual.css';
 
 const tones = {
+  manual: 'blue',
   kinship: 'red',
   works_in: 'green',
   founder: 'amber',
@@ -231,7 +232,10 @@ export function GraphVisual({
                 }
               >
                 <i aria-hidden="true" />
-                <span>{route.lines.join('\n')}</span>
+                <span>
+                  {route.type === 'manual' ? '✎ ' : ''}
+                  {route.lines.join('\n')}
+                </span>
               </div>
             ),
         )}
@@ -260,6 +264,7 @@ export function GraphVisual({
               className="graph-card"
               key={node.id}
               data-graph-card={node.id}
+              data-manual={node.manual || undefined}
               data-type={node.type}
               data-root={isRoot || undefined}
               data-kin={relationship && !relationship.startsWith('Супруг') ? true : undefined}
@@ -295,7 +300,9 @@ export function GraphVisual({
                 </span>
                 <span className="graph-card-copy">
                   <span className="graph-card-meta">
-                    <span className="graph-card-type">{caption}</span>
+                    <span className="graph-card-type">
+                      {node.manual ? 'Внесено аналитиком' : caption}
+                    </span>
                     {isRoot && node.risk != null && (
                       <span className="graph-card-risk">Риск {node.risk}</span>
                     )}
