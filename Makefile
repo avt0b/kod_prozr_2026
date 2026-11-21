@@ -1,4 +1,4 @@
-.PHONY: help env up down build logs ps migrate seed reset data data-check precompute eval \
+.PHONY: help env up down build logs ps migrate seed demo-user reset data data-check precompute eval \
 	smoke test-back test-data lint-back lint-front llm-up llm-check \
 	dump restore offline-bundle offline-load video
 
@@ -59,6 +59,8 @@ DEMO_SLOWMO ?= 400
 MIGRATE_CMD ?= alembic upgrade head
 # data/generated монтируется в /app/data/generated (docker-compose.yml): сиды с предрасчётом.
 SEED_CMD ?= python -m src.seed --dir data/generated
+# Публичная учётка тестового стенда demo (docs/auth.md); при APP_ENV=prod команда откажет.
+DEMO_USER_CMD ?= python -m src.core.infrastructure.create_demo_user
 
 PYTHON ?= python3
 API_URL ?= http://localhost:$(BACKEND_PORT)
@@ -81,8 +83,13 @@ FRONT_LINT_CMD ?= npm run lint
 help: ## Показать список команд
 	@awk 'BEGIN {FS = ":.*## "} /^[a-zA-Z_-]+:.*## / {printf "  make %-15s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 
-env: ## Создать .env из .env.example (существующий не трогает)
+env: ## Создать .env из .env.example; пустой AUTH_SECRET заполнить случайным
 	@test -f .env || (cp .env.example .env && echo "Создан .env из .env.example")
+	@grep -q '^AUTH_SECRET=.\{32,\}' .env || { \
+		secret=$$($(PYTHON) -c 'import secrets; print(secrets.token_urlsafe(48))') && \
+		{ grep -q '^AUTH_SECRET=' .env && sed -i.bak "s|^AUTH_SECRET=.*|AUTH_SECRET=$$secret|" .env && rm -f .env.bak \
+		  || printf '\nAUTH_SECRET=%s\n' "$$secret" >>.env; } && \
+		echo "В .env записан новый AUTH_SECRET"; }
 
 up: env $(BUILD_DEP) ## Собрать и поднять весь стек в фоне (OFFLINE=1 — без сборки и сети)
 	$(COMPOSE) up -d $(UP_FLAGS)
@@ -110,8 +117,11 @@ ps: ## Состояние контейнеров
 migrate: env ## Применить миграции БД (в контейнере backend)
 	$(COMPOSE) run --rm backend sh -c "$(MIGRATE_CMD)"
 
-seed: env ## Залить синтетику с предрасчётом и пересчитать риск (в контейнере backend)
-	$(COMPOSE) run --rm backend sh -c "$(SEED_CMD)"
+seed: env ## Залить синтетику с предрасчётом, пересчитать риск, создать учётку demo
+	$(COMPOSE) run --rm backend sh -c "$(SEED_CMD) && $(DEMO_USER_CMD)"
+
+demo-user: env ## Создать учётку demo / Demo-2026-Access! (без пересева данных)
+	$(COMPOSE) run --rm backend sh -c "$(DEMO_USER_CMD)"
 
 # Без --profile llm: down -v снёс бы и том ollama_models со скачанной моделью,
 # а работающую ollama reset не трогает (модель остаётся прогретой).
@@ -119,7 +129,7 @@ reset: env $(BUILD_DEP) ## Снести БД, поднять стек, мигр�
 	$(COMPOSE) down --volumes --remove-orphans
 	$(COMPOSE) up -d $(UP_FLAGS) --wait
 	$(MAKE) seed
-	@echo "Стенд готов: $(FRONT_URL)"
+	@echo "Стенд готов: $(FRONT_URL)  вход: demo / Demo-2026-Access! (кнопка «Быстрый вход»)"
 
 dump: ## Дамп БД стенда в dist/db/kodprozr-<дата>.sql.gz
 	@mkdir -p $(DB_DIR)
@@ -155,8 +165,13 @@ eval: ## Метрики качества после make seed; с LLM: make eval
 	cd backend && DATABASE_URL=$(HOST_DB) $(UV) python -m src.eval --dir $(CURDIR)/$(DATA_DIR) \
 		--out $(CURDIR)/eval/report.json $(EVAL_ARGS)
 
+# Бизнес-API требует входа (#62): по умолчанию smoke логинится учёткой demo.
+SMOKE_USERNAME ?= demo
+SMOKE_PASSWORD ?= Demo-2026-Access!
+
 smoke: ## Smoke всех эндпоинтов + демо-обращение (меняет данные: потом make reset)
-	$(PYTHON) scripts/smoke.py --api $(API_URL)
+	SMOKE_USERNAME='$(SMOKE_USERNAME)' SMOKE_PASSWORD='$(SMOKE_PASSWORD)' \
+		$(PYTHON) scripts/smoke.py --api $(API_URL)
 
 # --- Демо: резервный ноутбук и видео ----------------------------------------
 
