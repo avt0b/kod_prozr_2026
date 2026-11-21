@@ -22,12 +22,6 @@
 .workspace-page {
   animation: motion-page-arrive 340ms var(--motion-arrive) both;
 }
-.workspace-page[data-motion-reset],
-.workspace-page[data-motion-reset] *,
-.workspace-page[data-motion-reset] *::before,
-.workspace-page[data-motion-reset] *::after {
-  animation: none !important;
-}
 :root[data-motion-paused] .workspace-page,
 :root[data-motion-paused] .workspace-page *,
 :root[data-motion-paused] .workspace-page *::after {

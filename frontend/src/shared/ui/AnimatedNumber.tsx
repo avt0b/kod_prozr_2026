@@ -8,7 +8,7 @@ export function AnimatedNumber({ value }: { value: number }) {
     const element = ref.current;
     if (!element) return;
     const motion = matchMedia('(prefers-reduced-motion: reduce)');
-    let from = previous.current;
+    const from = previous.current;
     let frame = 0;
     const finish = () => {
       cancelAnimationFrame(frame);
@@ -43,12 +43,6 @@ export function AnimatedNumber({ value }: { value: number }) {
       { threshold: 0.35 },
     );
     observer.observe(element);
-    const replay = () => {
-      cancelAnimationFrame(frame);
-      from = 0;
-      observer.observe(element);
-    };
-    document.addEventListener('workspace:replay-motion', replay);
     motion.addEventListener('change', onPreference);
     document.addEventListener('visibilitychange', onVisibility);
     return () => {
@@ -56,7 +50,6 @@ export function AnimatedNumber({ value }: { value: number }) {
       cancelAnimationFrame(frame);
       motion.removeEventListener('change', onPreference);
       document.removeEventListener('visibilitychange', onVisibility);
-      document.removeEventListener('workspace:replay-motion', replay);
     };
   }, [value]);
   return (
