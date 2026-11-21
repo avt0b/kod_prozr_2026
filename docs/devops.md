@@ -56,7 +56,7 @@
 | -------------------------------- | ----------------- | --------------------------------------------------------------- |
 | `POSTGRES_USER/PASSWORD/DB`      | postgres          | `kodprozr` / `kodprozr` / `kodprozr`                            |
 | `DATABASE_URL`                   | backend           | `postgresql+asyncpg://kodprozr:kodprozr@postgres:5432/kodprozr` |
-| `CORS_ORIGINS`                   | backend           | `http://localhost:5173,http://localhost:3000`                   |
+| `CORS_ORIGINS`                   | backend           | `http://localhost:5173,http://localhost:3000,http://127.0.0.1:5173,http://127.0.0.1:3000` |
 | `LLM_BASE_URL`                   | backend           | `http://ollama:11434/v1`                                        |
 | `LLM_API_KEY`                    | backend           | `ollama` (для Ollama — любая непустая строка)                   |
 | `LLM_MODEL`                      | backend, Makefile | `qwen2.5:7b-instruct`                                           |
