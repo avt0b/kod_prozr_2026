@@ -19,6 +19,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { AccountMenu } from '@/features/auth/AccountMenu';
 import { api, type AppealStatus } from '@/shared/api';
 import { formatDateTime } from '@/shared/lib/format';
+import { usePageTitle } from '@/shared/lib/usePageTitle';
 import { QueryState } from '@/shared/ui';
 import './citizen.css';
 
@@ -172,14 +173,15 @@ function MyAppeals() {
 }
 
 export function CitizenPage() {
+  usePageTitle('Кабинет гражданина · Код прозрачности');
   return (
     <div className="citizen-page">
       <header className="citizen-header">
-        <Group gap="sm" wrap="nowrap">
+        <Group gap="sm" wrap="nowrap" className="citizen-brand">
           <span className="workspace-brand-mark">
             <IconShieldSearch size={21} aria-hidden />
           </span>
-          <div>
+          <div className="citizen-brand-text">
             <Text fw={600}>Код прозрачности</Text>
             <Text size="xs" c="dimmed">
               Кабинет гражданина
