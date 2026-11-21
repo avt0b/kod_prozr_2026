@@ -143,6 +143,26 @@ export function compactPositions(
   return levelPositions(graph, rootId);
 }
 
+/** Two columns use the height of a phone instead of compressing a horizontal graph. */
+export function mobilePositions(
+  graph: OfficialGraph,
+  rootId?: string,
+): Record<string, { x: number; y: number }> {
+  const levels = levelPositions(graph, rootId);
+  const nodes = [...graph.nodes].sort((a, b) =>
+    a.id === rootId ? -1 : b.id === rootId ? 1 : (levels[a.id]?.x ?? 0) - (levels[b.id]?.x ?? 0),
+  );
+  return Object.fromEntries(
+    nodes.map((node, index) => [
+      node.id,
+      {
+        x: (index % 2) * (GRAPH_ROOT_WIDTH + 36),
+        y: Math.floor(index / 2) * 118,
+      },
+    ]),
+  );
+}
+
 function levelPositions(
   graph: OfficialGraph,
   rootId?: string,

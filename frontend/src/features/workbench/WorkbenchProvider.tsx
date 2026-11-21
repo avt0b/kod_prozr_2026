@@ -12,9 +12,9 @@ import {
   type WorkbenchState,
 } from './model';
 
-export function WorkbenchProvider({ children }: { children: ReactNode }) {
+export function WorkbenchProvider({ children, userId }: { children: ReactNode; userId: string }) {
   const [state, setState] = useLocalStorage<WorkbenchState>({
-    key: 'kod-prozr:workbench:v1',
+    key: `kod-prozr:workbench:v1:${userId}`,
     defaultValue: EMPTY_WORKBENCH,
     getInitialValueInEffect: false,
     deserialize: decodeWorkbench,

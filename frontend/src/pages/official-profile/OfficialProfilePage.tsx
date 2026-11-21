@@ -353,11 +353,14 @@ function ProfileCanvas({
           <Text size="xs" className="profile-case-count" c="dimmed">
             Граф связей{graph && ` · ${graph.nodes.length} узлов · ${graph.edges.length} связей`}
           </Text>
-          {flag && (
-            <Badge color="brand" variant="light">
-              подсвечена цепочка {flag.rule_code}
-            </Badge>
-          )}
+          <Badge
+            color="brand"
+            variant="light"
+            aria-hidden={!flag}
+            style={{ visibility: flag ? 'visible' : 'hidden' }}
+          >
+            подсвечена цепочка {flag?.rule_code ?? 'R01'}
+          </Badge>
           {!inspectorOpen && (
             <Button
               ref={reopenRef}

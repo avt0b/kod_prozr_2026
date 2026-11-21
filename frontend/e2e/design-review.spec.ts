@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './fixtures';
 
 const API = process.env.API_URL ?? 'http://localhost:8000/api/v1';
 

@@ -1,4 +1,4 @@
-import { Group, NumberInput, Select, TextInput } from '@mantine/core';
+import { NumberInput, Select, TextInput } from '@mantine/core';
 import { useDebouncedCallback } from '@mantine/hooks';
 import { IconSearch } from '@tabler/icons-react';
 import { useState } from 'react';
@@ -29,7 +29,7 @@ export function OfficialsFilters({ value, onChange }: Props) {
   const pushQuery = useDebouncedCallback((q: string) => onChange({ query: q }), 300);
 
   return (
-    <Group align="flex-end" gap="md" wrap="wrap">
+    <div className="officials-filter-grid">
       <TextInput
         className="officials-filter"
         data-active={Boolean(value.query) || undefined}
@@ -41,14 +41,12 @@ export function OfficialsFilters({ value, onChange }: Props) {
           setQuery(e.currentTarget.value);
           pushQuery(e.currentTarget.value);
         }}
-        w={280}
       />
       <OrganSelect
         className="officials-filter"
         data-active={Boolean(value.organId) || undefined}
         value={value.organId}
         onChange={(organId) => onChange({ organId })}
-        w={360}
       />
       <NumberInput
         className="officials-filter"
@@ -60,7 +58,6 @@ export function OfficialsFilters({ value, onChange }: Props) {
         step={10}
         value={value.minScore ?? ''}
         onChange={(v) => onChange({ minScore: v === '' ? null : Number(v) })}
-        w={120}
       />
       <Select
         className="officials-filter"
@@ -71,8 +68,7 @@ export function OfficialsFilters({ value, onChange }: Props) {
         value={value.ruleCode}
         onChange={(v) => onChange({ ruleCode: (v as RuleCode | null) ?? null })}
         clearable
-        w={340}
       />
-    </Group>
+    </div>
   );
 }

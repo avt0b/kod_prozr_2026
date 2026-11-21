@@ -5,7 +5,6 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import type { ReactNode } from 'react';
 import { ApiError } from '@/shared/api';
 import { theme, workspaceVariables } from './theme';
-import { WorkbenchProvider } from '@/features/workbench/WorkbenchProvider';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -28,7 +27,7 @@ export function Providers({ children }: { children: ReactNode }) {
     >
       <Notifications position="top-right" />
       <QueryClientProvider client={queryClient}>
-        <WorkbenchProvider>{children}</WorkbenchProvider>
+        {children}
         {import.meta.env.DEV && import.meta.env.VITE_QUERY_DEVTOOLS === 'true' && (
           <ReactQueryDevtools initialIsOpen={false} buttonPosition="bottom-left" />
         )}

@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { mkdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { expect, test, type APIRequestContext, type Locator, type Page } from '@playwright/test';
+import { expect, test, type APIRequestContext, type Locator, type Page } from './fixtures';
 
 /**
  * Сценарий демо из docs/demo.md на реальном стенде (без моков), 1920×1080.
@@ -459,7 +459,7 @@ test('состояния экранов: пусто, ошибка API с пов�
 
   // 5xx от бэка: понятная ошибка и «Повторить», после восстановления — данные
   let failing = true;
-  await page.route(`${API}/officials?*`, (route) =>
+  await page.route('**/api/v1/officials?*', (route) =>
     failing
       ? route.fulfill({
           status: 503,
@@ -475,13 +475,13 @@ test('состояния экранов: пусто, ошибка API с пов�
   failing = false;
   await page.getByRole('button', { name: 'Повторить', exact: true }).click();
   await expect(tableRows(page)).toHaveCount(20);
-  await page.unroute(`${API}/officials?*`);
+  await page.unroute('**/api/v1/officials?*');
 
   // 404 профиля: ошибка без повторных запросов
   const missing = `${API}/officials/00000000-0000-4000-8000-000000000000`;
   let profileRequests = 0;
   page.on('request', (req) => {
-    if (req.url() === missing) profileRequests += 1;
+    if (new URL(req.url()).pathname === new URL(missing).pathname) profileRequests += 1;
   });
   await page.goto('/officials/00000000-0000-4000-8000-000000000000');
   await expect(page.getByText('Служащий не найден').first()).toBeVisible();

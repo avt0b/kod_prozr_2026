@@ -6,7 +6,13 @@ import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import type { GraphNode, OfficialGraph } from '@/shared/api';
 import { graphHitAreas } from './graphStyle';
 import { GraphVisual, type GraphView } from './GraphVisual';
-import { compactPositions, evidenceEdge, graphElements, orbitPositions } from './graphModel';
+import {
+  compactPositions,
+  evidenceEdge,
+  graphElements,
+  orbitPositions,
+  mobilePositions,
+} from './graphModel';
 import { GraphLegend } from './GraphLegend';
 
 /** Самый крупный масштаб при вписывании: короткая цепочка (R07 из 3 узлов) не раздувается на весь экран. */
@@ -75,9 +81,11 @@ export function RelationGraph({
           ? {
               name: 'preset',
               positions:
-                !highlight?.length && !narrow && rootId && graph.nodes.length <= 14
-                  ? orbitPositions(graph, rootId)
-                  : compactPositions(graph, rootId, highlight, columns),
+                !highlight?.length && narrow
+                  ? mobilePositions(graph, rootId)
+                  : !highlight?.length && rootId && graph.nodes.length <= 14
+                    ? orbitPositions(graph, rootId)
+                    : compactPositions(graph, rootId, highlight, columns),
               fit: false,
             }
           : layout === 'breadthfirst'
@@ -184,20 +192,21 @@ export function RelationGraph({
     >
       <Group className="profile-graph-toolbar" gap="xs">
         {signalPicker}
-        {!highlight?.length && (
-          <Select
-            aria-label="Раскладка графа"
-            value={layout}
-            onChange={(value) => value && setLayout(value)}
-            allowDeselect={false}
-            data={[
-              { value: 'breadthfirst', label: 'По уровням' },
-              { value: 'cose', label: 'Силовая' },
-            ]}
-            className="profile-graph-layout"
-            size="xs"
-          />
-        )}
+        <Select
+          aria-label="Раскладка графа"
+          value={highlight?.length ? 'evidence' : layout}
+          disabled={Boolean(highlight?.length)}
+          title={highlight?.length ? 'При выбранном флаге показана его цепочка связей' : undefined}
+          onChange={(value) => value && value !== 'evidence' && setLayout(value)}
+          allowDeselect={false}
+          data={[
+            ...(highlight?.length ? [{ value: 'evidence', label: 'По цепочке' }] : []),
+            { value: 'breadthfirst', label: 'По уровням' },
+            { value: 'cose', label: 'Силовая' },
+          ]}
+          className="profile-graph-layout"
+          size="xs"
+        />
       </Group>
       {graph.nodes.length === 0 && <Alert>Связи не найдены</Alert>}
       {graph.truncated && (

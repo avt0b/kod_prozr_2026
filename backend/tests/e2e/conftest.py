@@ -8,19 +8,24 @@ Postgres берётся так (по приоритету):
 """
 
 import os
+import secrets
 from collections.abc import AsyncGenerator, Generator
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 import pytest
 from httpx import ASGITransport, AsyncClient
+from pydantic import SecretStr
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine
 from sqlalchemy.pool import NullPool
 from testcontainers.community.postgres import PostgresContainer
 
 from src.core.config import Settings
+from src.core.infrastructure.auth import issue_access, password_hasher, token_hash
 from src.core.infrastructure.database.base import Base
 from src.core.infrastructure.database.database import get_async_session_maker
+from src.core.infrastructure.database.models.auth import AuthSessionModel, UserModel
 from src.modules.appeals.infrastructure.database import models as appeals_models
 from src.modules.counterparties.infrastructure.database import models as counterparties_models
 from src.modules.officials.infrastructure.database import models as officials_models
@@ -68,6 +73,8 @@ def test_settings(database_url: str) -> Settings:
         database_url=database_url,
         llm_base_url=None,
         cors_origins=["http://localhost:5173"],
+        auth_secret=SecretStr("test-only-signing-key-never-use-in-production-123"),
+        auth_cookie_secure=False,
     )
 
 
@@ -79,6 +86,25 @@ async def client(engine: AsyncEngine, test_settings: Settings) -> AsyncGenerator
     app.state.session_maker = get_async_session_maker(engine)
     register_event_handlers(app.state.event_bus, app.state.session_maker)
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
+        async with app.state.session_maker() as db:
+            user = UserModel(
+                username="test-analyst",
+                password_hash=password_hasher.hash("test-password-long"),
+                active=True,
+            )
+            db.add(user)
+            await db.flush()
+            session = AuthSessionModel(
+                logout_hash=token_hash(secrets.token_urlsafe(32)),
+                user_id=user.id,
+                refresh_hash=token_hash(secrets.token_urlsafe(48)),
+                expires_at=datetime.now(UTC) + timedelta(days=1),
+                revoked=False,
+            )
+            db.add(session)
+            await db.flush()
+            ac.headers["Authorization"] = "Bearer " + issue_access(user, session, test_settings)
+            await db.commit()
         yield ac
 
 

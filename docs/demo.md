@@ -47,7 +47,8 @@
 - [ ] `curl -fsS localhost:8000/health` отвечает `{"status":"ok"}`, фронт открывается на `http://localhost:3000`.
 - [ ] `make smoke` зелёный (50 проверок). Smoke **отправляет демо-обращение** и поднимает Соколова на
       1-е место, поэтому после него снова `make reset`. Проверить стенд, не меняя данные, можно командой
-      `python3 scripts/smoke.py --keep-demo`.
+      `SMOKE_USERNAME=demo SMOKE_PASSWORD='Demo-2026-Access!' python3 scripts/smoke.py --keep-demo`
+      (бизнес-API требует входа, `make smoke` подставляет учётку `demo` сам).
 - [ ] Исходное состояние: Соколов в рейтинге **не на 1-м месте**
       (`curl -s 'localhost:8000/api/v1/officials?limit=5'`). Баллы (15.11, полный объём, фоллбэк без LLM,
       веса ADR-16): **73 (3-е место) → 88 (1-е, отрыв 8)**. Выше H1 до обращения — два кейса по 80
