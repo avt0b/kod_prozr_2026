@@ -67,6 +67,7 @@ nginx фронта (`frontend/nginx.conf`) проксирует `/api/` на `ba
 | `VITE_API_URL`                   | frontend (сборка) | `/api/v1` — через прокси nginx фронта                           |
 | `AUTH_SECRET`                    | backend           | ключ JWT ≥ 32 символов; пустой `make env` заполнит случайным     |
 | `AUTH_ACCESS_SECONDS` / `AUTH_REFRESH_DAYS` | backend | `900` / `7`                                                  |
+| `FORWARDED_ALLOW_IPS`            | backend (compose) | частные сети: от них uvicorn берёт IP клиента из `X-Forwarded-For` (лимит входа) |
 | `AUTH_COOKIE_SECURE`             | backend           | `false` локально по HTTP; `true` на VPS с HTTPS                  |
 | `BACKEND_APP`                    | compose           | `src.web.main:app` — путь к ASGI-приложению для uvicorn         |
 | `BIND_HOST`                      | compose           | `127.0.0.1`; `0.0.0.0` — показать демо по локальной сети        |

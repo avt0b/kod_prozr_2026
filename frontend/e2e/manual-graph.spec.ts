@@ -94,7 +94,7 @@ test('схема доступна выбранному пользователю 
     await editor.getByRole('button', { name: 'Сохранить доступ', exact: true }).click();
     await expect(editor.getByRole('status')).toContainText('Доступ сохранён');
     await viewer.goto('/login');
-    await viewer.getByRole('button', { name: 'Быстрый вход', exact: true }).click();
+    await viewer.getByRole('button', { name: 'Аналитик', exact: true }).click();
     await viewer.getByRole('button', { name: 'Войти', exact: true }).click();
     await expect(viewer.getByRole('heading', { name: 'Обзор', exact: true })).toBeVisible();
     await viewer.goto(`/officials/${root}?scheme=${workspace.id}`);

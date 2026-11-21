@@ -23,6 +23,9 @@ from src.modules.appeals.application.interfaces.appeal_repository import (
 from src.modules.appeals.application.interfaces.person_directory import PersonDirectoryInterface
 from src.modules.appeals.application.interfaces.person_matcher import PersonMatcherInterface
 from src.modules.appeals.application.services.appeal_analysis import AppealAnalysisService
+from src.modules.appeals.application.use_cases.change_appeal_status import (
+    ChangeAppealStatusUseCase,
+)
 from src.modules.appeals.application.use_cases.create_appeal import CreateAppealUseCase
 from src.modules.appeals.application.use_cases.get_appeal import GetAppealUseCase
 from src.modules.appeals.application.use_cases.list_appeals import ListAppealsUseCase
@@ -116,3 +119,11 @@ def get_list_appeals_use_case(
     directory: Annotated[PersonDirectoryInterface, Depends(get_person_directory)],
 ) -> ListAppealsUseCase:
     return ListAppealsUseCase(repository, directory)
+
+
+def get_change_appeal_status_use_case(
+    repository: Annotated[AppealRepositoryInterface, Depends(get_appeal_repository)],
+    directory: Annotated[PersonDirectoryInterface, Depends(get_person_directory)],
+    unit_of_work: Annotated[UnitOfWorkInterface, Depends(get_unit_of_work)],
+) -> ChangeAppealStatusUseCase:
+    return ChangeAppealStatusUseCase(repository, directory, unit_of_work)

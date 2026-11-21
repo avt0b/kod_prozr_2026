@@ -115,6 +115,10 @@ Healthcheck бэка: `GET /health` → `200 {"status": "ok"}`.
 
 ## API (`/api/v1`)
 
+Доступ по ролям (#70, [auth.md](auth.md#роли)): таблица ниже — рабочее место, открыто
+аналитику и администратору; гражданину — 403. Кабинет гражданина и администрирование —
+в разделе «Роли» ниже.
+
 | Метод | Путь | Назначение |
 | ----- | ---- | ---------- |
 | GET  | `/audit?object_id=&limit=20&offset=0` | Журнал действий аналитика `{items, total}`, новые сверху |
@@ -130,6 +134,7 @@ Healthcheck бэка: `GET /health` → `200 {"status": "ok"}`.
 | POST | `/appeals` | `{text, channel}` → создать и проанализировать, вернуть `Appeal` |
 | GET  | `/appeals/{id}` | Обращение с анализом и связанными служащими |
 | POST | `/appeals/{id}/reanalyze` | Повторный анализ |
+| POST | `/appeals/{id}/status` | Рассмотрение: `{status: "routed" \| "closed"}`; analyzed → routed, незакрытое → closed, иначе 409 |
 | POST | `/reports` | `{person_id}` → черновик докладной записки |
 | GET  | `/reports/{id}` | Черновик |
 | POST | `/assistant/ask` | `{question}` → `{answer, sources: [{type, id, label}]}` |
@@ -271,3 +276,21 @@ ID: `uuid5(NAMESPACE_URL, f"kodprozr:contracts:{company_id}:{organ_id}")`.
 Владелец изменяет схему, выбранные пользователи только читают. Права привязаны
 к JWT-сессии; исходный граф, правила риска и доказательства не меняются.
 Полный контракт и ограничения: [manual-graph.md](manual-graph.md).
+
+### Роли (#70)
+
+`role` пользователя: `citizen` | `analyst` | `admin`; приходит в `user` ответов
+`/auth/login`, `/auth/refresh`, `/auth/register` и в `/auth/me`. Роль проверяется по БД
+на каждом запросе, поэтому смена роли или блокировка действуют сразу.
+
+| Метод | Путь | Роль | Назначение |
+| ----- | ---- | ---- | ---------- |
+| POST | `/auth/register` | — | `{username, password}` → гражданин и сессия (как login); 409, если логин занят |
+| POST | `/citizen/appeals` | citizen | `{text}` (20–20 000 символов) → `{id, received_at, text, status}`; анализ как у `POST /appeals` |
+| GET  | `/citizen/appeals?limit=&offset=` | citizen | Свои обращения `{items, total}`, новые сверху; без анализа и служащих |
+| GET  | `/admin/users?role=&query=&limit=&offset=` | admin | `{items: [{id, username, role, active}], total}` |
+| POST | `/admin/users` | admin | `{username, password, role}` → пользователь; 409, если логин занят |
+| PATCH | `/admin/users/{id}` | admin | `{role?, active?, password?}`; любое изменение отзывает сессии пользователя |
+| DELETE | `/admin/users/{id}` | admin | 204; 409, если у пользователя есть данные (схемы графа) — тогда блокировать |
+
+Последнего активного администратора нельзя разжаловать, заблокировать или удалить (409).

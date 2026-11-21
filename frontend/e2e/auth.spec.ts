@@ -2,9 +2,9 @@ import { expect, test } from '@playwright/test';
 import { credentials } from './fixtures';
 import { DEMO_ACCOUNT } from '../src/shared/config/demoAccount';
 
-test('быстрый вход подставляет публичную демо-учётку', async ({ page }) => {
+test('быстрый вход аналитика подставляет публичную демо-учётку', async ({ page }) => {
   await page.goto('/login');
-  await page.getByRole('button', { name: 'Быстрый вход', exact: true }).click();
+  await page.getByRole('button', { name: 'Аналитик', exact: true }).click();
   await expect(page.getByLabel(/^Логин/)).toHaveValue(DEMO_ACCOUNT.username);
   await expect(page.getByLabel(/^Пароль/)).toHaveValue(DEMO_ACCOUNT.password);
   await expect(page).toHaveURL(/\/login$/);

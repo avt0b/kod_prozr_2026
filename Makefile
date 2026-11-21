@@ -117,10 +117,10 @@ ps: ## Состояние контейнеров
 migrate: env ## Применить миграции БД (в контейнере backend)
 	$(COMPOSE) run --rm backend sh -c "$(MIGRATE_CMD)"
 
-seed: env ## Залить синтетику с предрасчётом, пересчитать риск, создать учётку demo
+seed: env ## Залить синтетику с предрасчётом, пересчитать риск, создать демо-учётки ролей
 	$(COMPOSE) run --rm backend sh -c "$(SEED_CMD) && $(DEMO_USER_CMD)"
 
-demo-user: env ## Создать учётку demo / Demo-2026-Access! (без пересева данных)
+demo-user: env ## Демо-учётки demo, demo-citizen, demo-admin / Demo-2026-Access!
 	$(COMPOSE) run --rm backend sh -c "$(DEMO_USER_CMD)"
 
 # Без --profile llm: down -v снёс бы и том ollama_models со скачанной моделью,
@@ -129,7 +129,7 @@ reset: env $(BUILD_DEP) ## Снести БД, поднять стек, мигр�
 	$(COMPOSE) down --volumes --remove-orphans
 	$(COMPOSE) up -d $(UP_FLAGS) --wait
 	$(MAKE) seed
-	@echo "Стенд готов: $(FRONT_URL)  вход: demo / Demo-2026-Access! (кнопка «Быстрый вход»)"
+	@echo "Стенд готов: $(FRONT_URL)  вход: demo | demo-citizen | demo-admin / Demo-2026-Access!"
 
 dump: ## Дамп БД стенда в dist/db/kodprozr-<дата>.sql.gz
 	@mkdir -p $(DB_DIR)

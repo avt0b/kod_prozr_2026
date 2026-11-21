@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Literal
 from uuid import UUID
 
 from pydantic import Field
@@ -10,6 +11,11 @@ class AppealCreateRequest(APIModel):
     text: SafeString = Field(min_length=1, max_length=20_000)
     # Контракт: web | email | letter | hotline | personal.
     channel: SafeString = Field(default="web", min_length=1, max_length=32)
+
+
+class AppealStatusRequest(APIModel):
+    # new/analyzed выставляет анализ; аналитик только передаёт или закрывает.
+    status: Literal["routed", "closed"]
 
 
 class EntityResponse(APIModel):

@@ -1,11 +1,11 @@
 import { Alert, Anchor, Button, Card, Grid, Group, Stack, Text, Title } from '@mantine/core';
-import { IconRefresh } from '@tabler/icons-react';
+import { IconCircleCheck, IconRefresh, IconSend } from '@tabler/icons-react';
 import { Link, useParams } from 'react-router';
 import { AppealAnalysisPanel } from '@/features/appeals/AppealAnalysisPanel';
 import { AppealStatusBadge } from '@/features/appeals/AppealBadges';
 import { EntityLegend } from '@/features/appeals/EntityLegend';
 import { HighlightedText } from '@/features/appeals/HighlightedText';
-import { useAppeal, useReanalyzeAppeal } from '@/features/appeals/api';
+import { useAppeal, useReanalyzeAppeal, useSetAppealStatus } from '@/features/appeals/api';
 import { LinkedOfficialPreview } from '@/features/appeals/LinkedOfficialPreview';
 import { routes } from '@/shared/config/routes';
 import { formatDateTime } from '@/shared/lib/format';
@@ -63,6 +63,7 @@ export function AppealPage() {
   const { id = '' } = useParams();
   const appeal = useAppeal(id);
   const reanalyze = useReanalyzeAppeal();
+  const setStatus = useSetAppealStatus();
 
   return (
     <>
@@ -82,15 +83,47 @@ export function AppealPage() {
                   </Text>
                 </Group>
               </Stack>
-              <Button
-                variant="light"
-                leftSection={<IconRefresh size={16} />}
-                loading={reanalyze.isPending}
-                onClick={() => reanalyze.mutate(a.id)}
-              >
-                {a.analysis ? 'Повторить анализ' : 'Запустить анализ'}
-              </Button>
+              <Group gap="xs">
+                {a.status === 'analyzed' && (
+                  <Button
+                    variant="light"
+                    leftSection={<IconSend size={16} />}
+                    loading={setStatus.isPending && setStatus.variables?.status === 'routed'}
+                    disabled={setStatus.isPending}
+                    onClick={() => setStatus.mutate({ id: a.id, status: 'routed' })}
+                  >
+                    Передать по подведомственности
+                  </Button>
+                )}
+                {a.status !== 'closed' && (
+                  <Button
+                    variant="light"
+                    color="gray"
+                    leftSection={<IconCircleCheck size={16} />}
+                    loading={setStatus.isPending && setStatus.variables?.status === 'closed'}
+                    disabled={setStatus.isPending}
+                    onClick={() => setStatus.mutate({ id: a.id, status: 'closed' })}
+                  >
+                    Закрыть
+                  </Button>
+                )}
+                {a.status !== 'closed' && (
+                  <Button
+                    variant="light"
+                    leftSection={<IconRefresh size={16} />}
+                    loading={reanalyze.isPending}
+                    onClick={() => reanalyze.mutate(a.id)}
+                  >
+                    {a.analysis ? 'Повторить анализ' : 'Запустить анализ'}
+                  </Button>
+                )}
+              </Group>
             </Group>
+            {setStatus.isError && (
+              <Alert color="red" mb="md" title="Не удалось сменить статус">
+                {setStatus.error.message}
+              </Alert>
+            )}
             {reanalyze.isError && (
               <Alert color="red" mb="md" title="Не удалось повторить анализ">
                 {reanalyze.error.message}
