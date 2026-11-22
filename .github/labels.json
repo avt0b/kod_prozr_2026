@@ -1,6 +1,6 @@
 [
   {"name":"back","color":"1D76DB","description":"Бэкенд, БД и API — Роман, Миша"},
-  {"name":"front","color":"5319E7","description":"Интерфейс — Влад Гуселетов, Егор"},
+  {"name":"front","color":"5319E7","description":"Интерфейс — Егор"},
   {"name":"devops","color":"D93F0B","description":"Инфраструктура, CI/CD и релизы — Кирилл"},
   {"name":"ai","color":"0E8A16","description":"LLM, ML и оценка качества — Влад Остриков"},
   {"name":"data","color":"006B75","description":"Данные и генератор синтетики — Влад Остриков"},

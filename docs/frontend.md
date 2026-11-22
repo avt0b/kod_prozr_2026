@@ -1,6 +1,6 @@
 # Фронтенд
 
-Ведут: Влад Гуселетов, Егор. Код лежит в `frontend/`, команды запуска описаны в [frontend/README.md](../frontend/README.md).
+Ведут: Егор. Код лежит в `frontend/`, команды запуска описаны в [frontend/README.md](../frontend/README.md).
 Источник правды по API и модели данных — [contracts.md](contracts.md). Если этот документ с ним расходится, прав контракт.
 
 ## 1. Стек и почему он
@@ -194,18 +194,19 @@ BASE_URL=http://localhost:3000 API_URL=http://localhost:8000/api/v1 npm run e2e:
 
 ## 8. Что делать в первую очередь и как поделить работу
 
-Разделение повторяет [plan.md](plan.md). Каталоги у двух человек почти не пересекаются, поэтому конфликтов слияния мало.
+Весь фронтенд ведёт один исполнитель — Егор (Атаманчук Егор Игоревич), поэтому конфликтов
+слияния внутри зоны нет. Порядок работ повторяет [plan.md](plan.md) и разбит на два блока.
 
-**Влад Гуселетов** — `app/`, `shared/`, `features/{stats,organs,officials,risk-flags,reports,assistant}`, `pages/{overview,officials,official-profile,report,assistant}`:
+**Блок 1. Основа и экраны служащего** — `app/`, `shared/`, `features/{stats,organs,officials,risk-flags,reports,assistant}`, `pages/{overview,officials,official-profile,report,assistant}`:
 1. Согласовать с бэком раздел 7, прежде всего форму `/officials`, `/officials/{id}` и `evidence`. Это нужно к КТ1 (11.11, 14:00).
 2. К КТ2 перевести рейтинг и профиль на реальный API и проверить состояния загрузки и ошибок.
 3. Экран докладной: печать (`window.print()` и print-стили), при необходимости редактирование текста перед копированием.
 4. Полировка: пустые состояния, фильтр рейтинга по правилу, единый стиль уровней риска. Если останется время, UI ассистента на реальном `/assistant/ask`.
 
-**Егор** — `features/{relation-graph,appeals}`, `pages/{appeals,appeal-new,appeal}`:
+**Блок 2. Граф и обращения** — `features/{relation-graph,appeals}`, `pages/{appeals,appeal-new,appeal}`:
 1. Граф: подобрать раскладку под реальный объём (сейчас `cose`), проверить подсветку `evidence` на данных бэка, добавить подсказку по узлу. К КТ2 подключить `/officials/{id}/graph`.
 2. Обращения на реальном API: `POST /appeals` с ожиданием LLM (лоадер, таймаут), повторный анализ.
 3. Сквозной переход «обращение → профиль → граф» для демо ([demo.md](demo.md)).
 4. Скриншоты для слайдов снимать с реального стенда.
 
-Общие файлы `shared/api/types.ts`, `endpoints.ts`, `mocks/*` и `app/router.tsx` имеют одного владельца на этап по [workflow.md](workflow.md). Правки оформляем небольшими PR в `dev`; зависимые задачи начинают реализацию после их приёмки. Если меняется тип из контракта, в том же PR обновляем `contracts.md`.
+Общие файлы `shared/api/types.ts`, `endpoints.ts`, `mocks/*` и `app/router.tsx` имеют одного владельца на этап по [workflow.md](workflow.md) — это Егор; при передаче задачи другому исполнителю через `/task-handoff` владелец назначается явно. Правки оформляем небольшими PR в `dev`; зависимые задачи начинают реализацию после их приёмки. Если меняется тип из контракта, в том же PR обновляем `contracts.md`.

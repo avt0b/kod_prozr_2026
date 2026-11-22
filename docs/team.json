@@ -1,28 +1,31 @@
 {
   "roman": {
     "name": "Роман",
+    "full_name": "Паршиков Роман Евгеньевич",
     "github": "avt0b",
+    "role": "backend",
     "areas": [
       "back"
     ]
   },
   "misha": {
     "name": "Миша",
+    "full_name": "Пиминов Михаил Артёмович",
     "github": "1nsanexeEZ",
+    "role": "backend",
+    "contact": {
+      "email": "mokopoko321@gmail.com",
+      "phone": "+7 910 356-82-52"
+    },
     "areas": [
       "back"
     ]
   },
-  "vlad-g": {
-    "name": "Влад Гуселетов",
-    "github": "Soerxq",
-    "areas": [
-      "front"
-    ]
-  },
   "egor": {
     "name": "Егор",
+    "full_name": "Атаманчук Егор Игоревич",
     "github": "durnoi-chel",
+    "role": "frontend",
     "areas": [
       "front",
       "docs"
@@ -30,7 +33,9 @@
   },
   "vlad-o": {
     "name": "Влад Остриков",
+    "full_name": "Остриков Владислав Витальевич",
     "github": "ostrix05",
+    "role": "backend",
     "areas": [
       "ai",
       "data"
@@ -38,7 +43,9 @@
   },
   "kirill": {
     "name": "Кирилл",
+    "full_name": "Шварц Кирилл Денисович",
     "github": "Shvarts999",
+    "role": "devops",
     "areas": [
       "devops"
     ]
