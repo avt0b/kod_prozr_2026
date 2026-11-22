@@ -1,17 +1,14 @@
-import { Card } from '@mantine/core';
+import { useLocation } from 'react-router';
 import { AssistantChat } from '@/features/assistant/AssistantChat';
 import { PageHeader } from '@/shared/ui';
 
 export function AssistantPage() {
+  const { state } = useLocation();
+  const initialDraft = typeof state?.draft === 'string' ? (state.draft as string) : '';
   return (
     <>
-      <PageHeader
-        title="Ассистент аналитика"
-        description="Вопросы на естественном языке к данным о служащих, связях и обращениях. Ответ содержит ссылки на источники."
-      />
-      <Card maw={960}>
-        <AssistantChat />
-      </Card>
+      <PageHeader title="Ассистент аналитика" description="Поиск по данным и связям" />
+      <AssistantChat initialDraft={initialDraft} />
     </>
   );
 }

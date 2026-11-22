@@ -5,6 +5,7 @@ export const officialsKeys = {
   all: ['officials'] as const,
   list: (q: OfficialsQuery) => ['officials', 'list', q] as const,
   detail: (id: string) => ['officials', 'detail', id] as const,
+  flags: (id: string) => ['officials', 'flags', id] as const,
   graph: (id: string, depth: number) => ['officials', 'graph', id, depth] as const,
 };
 
@@ -17,6 +18,9 @@ export const useOfficials = (q: OfficialsQuery) =>
 
 export const useOfficial = (id: string) =>
   useQuery({ queryKey: officialsKeys.detail(id), queryFn: () => api.officials.get(id) });
+
+export const useOfficialFlags = (id: string) =>
+  useQuery({ queryKey: officialsKeys.flags(id), queryFn: () => api.officials.flags(id) });
 
 export const useOfficialGraph = (id: string, depth = 2) =>
   useQuery({

@@ -10,11 +10,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from src.core.infrastructure.dependencies import get_session
 from src.modules.appeals.presentation import dependencies as appeals_deps
 from src.modules.assistant.presentation import dependencies as assistant_deps
+from src.modules.manual_graph.presentation.dependencies import get_reference_graph
 from src.modules.officials.presentation import dependencies as officials_deps
 from src.modules.reports.presentation import dependencies as reports_deps
 from src.modules.risk.presentation import dependencies as risk_deps
 from src.modules.stats.presentation import dependencies as stats_deps
 from src.web import wiring
+from src.web.manual_graph_reference import reference_graph
 
 
 def _on_session[T](builder: Callable[[AsyncSession], T]) -> Callable[..., T]:
@@ -28,6 +30,7 @@ def _on_session[T](builder: Callable[[AsyncSession], T]) -> Callable[..., T]:
 
 # заглушка модуля -> реализация из composition root
 DEPENDENCY_OVERRIDES: dict[Callable[..., Any], Callable[..., Any]] = {
+    get_reference_graph: reference_graph,
     assistant_deps.get_assistant_tools: _on_session(wiring.assistant_tools),
     officials_deps.get_risk_source: _on_session(wiring.officials_risk_source),
     officials_deps.get_company_links_source: _on_session(wiring.officials_company_links),

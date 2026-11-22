@@ -31,18 +31,15 @@ export function metricIntensity(agg: Pick<RiskAggregate, RiskMetric>, metric: Ri
   return Number.isFinite(raw) ? Math.min(1, Math.max(0, raw)) : 0;
 }
 
-/**
- * Фон ячейки: красный с непрозрачностью по интенсивности. color-mix одинаково работает
- * в светлой и тёмной теме, потому что подмешивает прозрачность, а не белый.
- */
+/** В обеих темах интенсивность смешивает спокойную заливку с нейтральным фоном. */
 export function heatBackground(intensity: number): string {
   if (intensity <= 0) return 'transparent';
-  const percent = Math.round(12 + Math.min(1, intensity) * 73);
-  return `color-mix(in srgb, var(--mantine-color-red-7) ${percent}%, transparent)`;
+  const percent = Math.round(Math.min(1, intensity) * 100);
+  return `color-mix(in srgb, var(--workspace-heat-tint) ${percent}%, var(--workspace-neutral))`;
 }
 
-/** На насыщенном фоне текст белый, иначе — цвет темы. */
-export const heatTextColor = (intensity: number) => (intensity >= 0.55 ? 'white' : undefined);
+export const heatTextColor = (intensity: number) =>
+  intensity > 0 ? 'var(--workspace-heat-ink)' : undefined;
 
 /** Ячейка «вид полномочия × орган»: сводка по служащим всех должностей с этим полномочием. */
 export interface HeatCell {

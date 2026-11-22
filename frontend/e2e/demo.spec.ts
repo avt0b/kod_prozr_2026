@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { mkdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { expect, test, type APIRequestContext, type Locator, type Page } from '@playwright/test';
+import { expect, test, type APIRequestContext, type Locator, type Page } from './fixtures';
 
 /**
  * Сценарий демо из docs/demo.md на реальном стенде (без моков), 1920×1080.
@@ -100,7 +100,9 @@ async function graphState(graph: Locator) {
 }
 
 async function clickGraphNode(page: Page, graph: Locator, nodeId: string) {
-  const pos = await graph.evaluate((el, id) => {
+  const pos = await graph.evaluate(async (el, id) => {
+    el.scrollIntoView({ block: 'center', behavior: 'instant' });
+    await Promise.allSettled(el.getAnimations().map((animation) => animation.finished));
     const cy = (el as unknown as { _cyreg: { cy: CyLike } })._cyreg.cy;
     const node = cy.getElementById(id);
     return node.renderedPosition();
@@ -169,12 +171,14 @@ test('сценарий демо docs/demo.md проходит на реальн�
     await page.goto('/');
     await expect(page.getByRole('heading', { name: 'Обзор', level: 2 })).toBeVisible();
     await expect(page.getByText('Баллы риска рассчитаны:')).toBeVisible();
-    const officialsCard = page.locator('.mantine-Card-root', { hasText: 'Служащие' }).first();
+    const officialsCard = page.getByRole('link', { name: /Служащие в системе/ });
     await expect(officialsCard).toContainText(String(stats.officials_total));
-    await expect(page.getByText(`высокий: ${stats.flags_by_severity.high}`)).toBeVisible();
-    await expect(
-      page.locator('.mantine-Card-root', { hasText: 'Обращения граждан' }).first(),
-    ).toContainText(String(stats.appeals_total));
+    await expect(page.getByRole('link', { name: /Флаги риска/ })).toContainText(
+      `высокий ${stats.flags_by_severity.high}`,
+    );
+    await expect(page.getByRole('link', { name: /Обращения граждан/ })).toContainText(
+      String(stats.appeals_total),
+    );
     const top = page.locator('.mantine-Card-root', { hasText: 'Топ-10 по риску' });
     await expect(tableRows(top)).toHaveCount(10);
     await expect(tableRows(top).filter({ hasText: SOKOLOV })).toBeVisible();
@@ -281,15 +285,16 @@ test('сценарий демо docs/demo.md проходит на реальн�
     await expect(page).toHaveURL(new RegExp(`/officials/${before.id}$`));
     await expect(page.getByRole('heading', { name: SOKOLOV, level: 2 })).toBeVisible();
     await expect(page.getByText(/ОКПД2: .*42\.11/)).toBeVisible();
-    await expect(page.getByText(/Соколова Марина Олеговна/).first()).toBeVisible();
+    const relatives = page.locator('section').filter({
+      has: page.getByRole('heading', { name: 'Родственники', exact: true }),
+    });
+    await expect(relatives.getByText(/Соколова Марина Олеговна/)).toBeVisible();
     for (const code of ['R01', 'R05', 'R06', 'R07', 'R08']) {
       await expect(
         page.locator('.mantine-Badge-label', { hasText: new RegExp(`^${code}$`) }),
       ).toBeVisible();
     }
     await expect(page.getByText(/ДорСтройРесурс/).first()).toBeVisible();
-    await expect(page.getByText(/273-ФЗ ст\. 10/).first()).toBeVisible();
-    await expect(page.getByText('Цепочка:').first()).toBeVisible();
     await expectNoHorizontalScroll(page);
     await shot(page, '07-profile');
     await shot(page, '07-profile-full', true);
@@ -308,6 +313,8 @@ test('сценарий демо docs/demo.md проходит на реальн�
 
     await page.getByText('Родственник — поставщик органа', { exact: true }).click();
     await expect(page.getByText('подсвечена цепочка R01')).toBeVisible();
+    await expect(page.getByText(/273-ФЗ ст\. 10/).first()).toBeVisible();
+    await expect(page.getByText('Записи-источники').first()).toBeVisible();
     await expect
       .poll(async () => (await graphState(graph)).highlighted.length)
       .toBeGreaterThanOrEqual(4);
@@ -320,15 +327,15 @@ test('сценарий демо docs/demo.md проходит на реальн�
     expect(state.highlightedLabels.join(' | ')).toMatch(/контракт/);
     await shot(page, '08-graph');
 
-    // Клик по узлу компании: подпись в строке статуса
+    // Клик по узлу компании открывает инспектор сущности.
     const company = state.nodes.find(
       (n) => n.type === 'company' && state.highlighted.includes(n.id),
     );
     expect(company).toBeTruthy();
     await clickGraphNode(page, graph, company!.id);
-    await expect(
-      page.getByRole('status').filter({ hasText: /Компания: .*ДорСтройРесурс/ }),
-    ).toBeVisible();
+    const inspector = page.getByRole('complementary', { name: 'Инспектор графа' });
+    await expect(inspector.getByRole('heading', { name: /ДорСтройРесурс/ })).toBeVisible();
+    await inspector.getByRole('button', { name: 'К данным служащего' }).click();
 
     // Общий телефон с братом супруги — R05
     await page.getByText('Общие контакты с подрядчиком', { exact: true }).click();
@@ -348,6 +355,7 @@ test('сценарий демо docs/demo.md проходит на реальн�
     await expect.poll(async () => (await graphState(graph)).highlighted).toContain(appealId);
     await shot(page, '09-graph-r07');
     await clickGraphNode(page, graph, appealId);
+    await page.getByRole('link', { name: 'Открыть обращение' }).click();
     await expect(page).toHaveURL(new RegExp(`/appeals/${appealId}$`));
     await page
       .locator('.mantine-Card-root', { hasText: 'Связанные служащие' })
@@ -388,7 +396,7 @@ test('сценарий демо docs/demo.md проходит на реальн�
         `/officials?rule_code=${rule}&sort=-risk_score&limit=20&offset=0`,
       );
       await expect
-        .poll(() => tableRows(page).locator('td:nth-child(3)').allInnerTexts())
+        .poll(() => tableRows(page).getByRole('link').allInnerTexts())
         .toEqual(api.items.map((i) => i.full_name));
       const top3 = api.items.slice(0, 3).map((i) => i.full_name);
       expect(top3, `${rule}: ${name} в первой тройке`).toContain(name);
@@ -451,7 +459,7 @@ test('состояния экранов: пусто, ошибка API с пов�
 
   // 5xx от бэка: понятная ошибка и «Повторить», после восстановления — данные
   let failing = true;
-  await page.route(`${API}/officials?*`, (route) =>
+  await page.route('**/api/v1/officials?*', (route) =>
     failing
       ? route.fulfill({
           status: 503,
@@ -465,15 +473,15 @@ test('состояния экранов: пусто, ошибка API с пов�
   await expect(page.getByText('База данных недоступна')).toBeVisible();
   await shot(page, '90-state-error');
   failing = false;
-  await page.getByRole('button', { name: 'Повторить' }).click();
+  await page.getByRole('button', { name: 'Повторить', exact: true }).click();
   await expect(tableRows(page)).toHaveCount(20);
-  await page.unroute(`${API}/officials?*`);
+  await page.unroute('**/api/v1/officials?*');
 
   // 404 профиля: ошибка без повторных запросов
   const missing = `${API}/officials/00000000-0000-4000-8000-000000000000`;
   let profileRequests = 0;
   page.on('request', (req) => {
-    if (req.url() === missing) profileRequests += 1;
+    if (new URL(req.url()).pathname === new URL(missing).pathname) profileRequests += 1;
   });
   await page.goto('/officials/00000000-0000-4000-8000-000000000000');
   await expect(page.getByText('Служащий не найден').first()).toBeVisible();

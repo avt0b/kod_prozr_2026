@@ -1,0 +1,53 @@
+.auth-page {
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: 32px 20px;
+  background: var(--mantine-color-body);
+}
+.auth-container {
+  width: 100%;
+  max-width: 420px;
+}
+.account-menu-trigger {
+  max-width: 200px;
+}
+.auth-quick-login {
+  font-weight: 400;
+  font-size: var(--mantine-font-size-xs);
+  opacity: 0.75;
+}
+.account-menu-trigger .mantine-Button-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+@media (max-width: 35.99em) {
+  .account-menu-trigger {
+    max-width: 110px;
+  }
+}
+.auth-brand {
+  margin-bottom: 28px;
+  font-weight: 600;
+  font-size: 20px;
+  color: var(--workspace-ink);
+}
+.auth-form {
+  padding: 28px;
+  background: var(--workspace-surface);
+  border: 1px solid var(--workspace-edge);
+  border-radius: 16px;
+}
+.auth-form .workspace-field,
+.auth-form .mantine-PasswordInput-innerInput {
+  min-height: 44px;
+}
+.auth-form .mantine-PasswordInput-input:focus-within {
+  outline: 2px solid var(--workspace-focus);
+  outline-offset: 2px;
+}
+@media (max-width: 30em) {
+  .auth-form {
+    padding: 22px 18px;
+  }
+}

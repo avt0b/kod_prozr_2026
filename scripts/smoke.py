@@ -9,6 +9,7 @@
 
 import argparse
 import json
+import os
 import sys
 import time
 import urllib.error
@@ -26,6 +27,13 @@ class Smoke:
         self.base = base.rstrip("/")
         self.failures: list[str] = []
         self.checks = 0
+        self.token = os.environ.get("SMOKE_ACCESS_TOKEN", "")
+        if not self.token and os.environ.get("SMOKE_USERNAME") and os.environ.get("SMOKE_PASSWORD"):
+            auth = self.call("POST", "/api/v1/auth/login", {
+                "username": os.environ["SMOKE_USERNAME"],
+                "password": os.environ["SMOKE_PASSWORD"],
+            })
+            self.token = auth.get("access_token", "") if isinstance(auth, dict) else ""
 
     def call(
         self, method: str, path: str, body: Any = None, expect: int = 200, timeout: float = 60
@@ -33,7 +41,10 @@ class Smoke:
         url = self.base + urllib.parse.quote(path, safe="/?&=:-_.")
         data = json.dumps(body).encode() if body is not None else None
         request = urllib.request.Request(
-            url, data=data, method=method, headers={"Content-Type": "application/json"}
+            url, data=data, method=method, headers={
+                "Content-Type": "application/json",
+                **({"Authorization": f"Bearer {self.token}"} if self.token else {}),
+            }
         )
         started = time.perf_counter()
         try:

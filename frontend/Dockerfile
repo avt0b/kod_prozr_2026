@@ -10,7 +10,7 @@ RUN npm ci
 COPY . .
 
 # Переменные VITE_* вшиваются в бандл на этапе сборки
-ARG VITE_API_URL=http://localhost:8000/api/v1
+ARG VITE_API_URL=/api/v1
 ARG VITE_USE_MOCKS=false
 ENV VITE_API_URL=$VITE_API_URL \
     VITE_USE_MOCKS=$VITE_USE_MOCKS

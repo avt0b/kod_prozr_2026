@@ -50,11 +50,14 @@ services:
       # и здесь, чтобы стек поднимался даже без .env.
       DATABASE_URL: ${DATABASE_URL:-postgresql+asyncpg://kodprozr:kodprozr@postgres:5432/kodprozr}
     # Миграции перед стартом, затем uvicorn (venv образа в PATH, uv в рантайме не нужен).
+    # --proxy-headers: за nginx фронта клиентский IP берётся из X-Forwarded-For, иначе лимит
+    # попыток входа (10/мин на IP) становится общим для всех пользователей (#70). Доверяем
+    # заголовку только от частных сетей (мост Docker, reverse proxy на хосте).
     command:
       [
         "sh",
         "-c",
-        "alembic upgrade head && exec uvicorn ${BACKEND_APP:-src.web.main:app} --host 0.0.0.0 --port 8000",
+        "alembic upgrade head && exec uvicorn ${BACKEND_APP:-src.web.main:app} --host 0.0.0.0 --port 8000 --proxy-headers --forwarded-allow-ips '${FORWARDED_ALLOW_IPS:-127.0.0.1,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16}'",
       ]
     ports:
       - "${BIND_HOST:-127.0.0.1}:${BACKEND_PORT:-8000}:8000"
@@ -92,7 +95,7 @@ services:
       args:
         # Vite вшивает адрес API в бандл на этапе сборки — после смены нужен `make build`.
         # В frontend/Dockerfile должен быть `ARG VITE_API_URL`.
-        VITE_API_URL: ${VITE_API_URL:-http://localhost:8000/api/v1}
+        VITE_API_URL: ${VITE_API_URL:-/api/v1}
     image: kodprozr-frontend:local
     container_name: kodprozr_frontend
     ports:

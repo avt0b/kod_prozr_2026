@@ -15,15 +15,19 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 from src.core.config import get_settings_from_env
 from src.core.infrastructure.database.base import Base
 from src.core.infrastructure.database.models import audit_log
+from src.core.infrastructure.database.models import auth as auth_models
 
 # Импорт всех моделей, чтобы они попали в Base.metadata.
 from src.modules.appeals.infrastructure.database import models as appeals_models
 from src.modules.counterparties.infrastructure.database import models as counterparties_models
+from src.modules.manual_graph.infrastructure import models as manual_graph_models
 from src.modules.officials.infrastructure.database import models as officials_models
 from src.modules.reports.infrastructure.database import models as reports_models
 from src.modules.risk.infrastructure.database import models as risk_models
 
 _ = (
+    manual_graph_models,
+    auth_models,
     audit_log,
     appeals_models,
     counterparties_models,
