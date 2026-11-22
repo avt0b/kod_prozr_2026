@@ -2,7 +2,7 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Annotated, Literal
 
-from pydantic import Field, SecretStr, field_validator
+from pydantic import Field, SecretStr, field_validator, model_validator
 from pydantic_settings import BaseSettings, NoDecode, SettingsConfigDict
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
@@ -23,9 +23,18 @@ class Settings(BaseSettings):
 
     database_url: str = "postgresql+asyncpg://kodprozr:kodprozr@localhost:5432/kodprozr"
     db_echo: bool = False
+    auth_secret: SecretStr | None = None
+    auth_access_seconds: int = Field(default=900, ge=30, le=3600)
+    auth_refresh_days: int = Field(default=7, ge=1, le=30)
+    auth_cookie_secure: bool = True
 
     cors_origins: Annotated[list[str], NoDecode] = Field(
-        default_factory=lambda: ["http://localhost:5173", "http://localhost:3000"]
+        default_factory=lambda: [
+            "http://localhost:5173",
+            "http://localhost:3000",
+            "http://127.0.0.1:5173",
+            "http://127.0.0.1:3000",
+        ]
     )
 
     # Пустой LLM_BASE_URL => LLM выключена, работают фейковые адаптеры (правила/шаблоны).
@@ -65,6 +74,15 @@ class Settings(BaseSettings):
     @property
     def llm_enabled(self) -> bool:
         return self.llm_base_url is not None
+
+    @model_validator(mode="after")
+    def production_auth(self) -> "Settings":
+        if self.app_env == "prod":
+            if not self.auth_secret or len(self.auth_secret.get_secret_value()) < 32:
+                raise ValueError("AUTH_SECRET must contain at least 32 characters in production")
+            if not self.auth_cookie_secure or "*" in self.cors_origins:
+                raise ValueError("Production requires secure cookies and explicit CORS origins")
+        return self
 
 
 @lru_cache

@@ -6,18 +6,26 @@ from fastapi import APIRouter, Depends, Query, status
 from src.core.dto import PageRequest
 from src.core.dto.page import MAX_PAGE_LIMIT
 from src.core.schemas import PageResponse
+from src.modules.appeals.application.use_cases.change_appeal_status import (
+    ChangeAppealStatusUseCase,
+)
 from src.modules.appeals.application.use_cases.create_appeal import CreateAppealUseCase
 from src.modules.appeals.application.use_cases.get_appeal import GetAppealUseCase
 from src.modules.appeals.application.use_cases.list_appeals import ListAppealsUseCase
 from src.modules.appeals.application.use_cases.reanalyze_appeal import ReanalyzeAppealUseCase
 from src.modules.appeals.domain.enums import AppealCategory, AppealStatus
 from src.modules.appeals.presentation.dependencies import (
+    get_change_appeal_status_use_case,
     get_create_appeal_use_case,
     get_get_appeal_use_case,
     get_list_appeals_use_case,
     get_reanalyze_appeal_use_case,
 )
-from src.modules.appeals.presentation.schemas.appeals import AppealCreateRequest, AppealResponse
+from src.modules.appeals.presentation.schemas.appeals import (
+    AppealCreateRequest,
+    AppealResponse,
+    AppealStatusRequest,
+)
 
 router = APIRouter(tags=["Appeals"])
 
@@ -63,3 +71,15 @@ async def reanalyze_appeal(
 ) -> AppealResponse:
     """Повторный анализ (например, после смены модели или промпта)."""
     return AppealResponse.model_validate(await use_case.execute(appeal_id))
+
+
+@router.post("/appeals/{appeal_id}/status", response_model=AppealResponse)
+async def change_appeal_status(
+    appeal_id: UUID,
+    body: AppealStatusRequest,
+    use_case: Annotated[ChangeAppealStatusUseCase, Depends(get_change_appeal_status_use_case)],
+) -> AppealResponse:
+    """Рассмотрение: передать по подведомственности (analyzed → routed) или закрыть."""
+    return AppealResponse.model_validate(
+        await use_case.execute(appeal_id, AppealStatus(body.status))
+    )

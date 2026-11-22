@@ -19,7 +19,7 @@ export function AppealNewPage() {
         title="Новое обращение"
         description="Регистрация обращения гражданина и автоматический анализ текста"
       />
-      <Card maw={860}>
+      <Card>
         <AppealForm
           submitting={create.isPending}
           onSubmit={(payload) =>

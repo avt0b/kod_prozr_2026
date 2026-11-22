@@ -1,38 +1,32 @@
-import { Group, Text } from '@mantine/core';
 import type { GraphNodeType } from '@/shared/api';
 import { NODE_TYPE_LABELS } from '@/shared/lib/labels';
-import { NODE_STYLES } from './graphStyle';
+import { GRAPH_APPEARANCE } from './graphAppearance';
 
-const SHAPE_RADIUS: Record<string, string> = { ellipse: '50%', 'round-rectangle': '3px' };
+export function GraphEntityIcon({ type, size = 18 }: { type: GraphNodeType; size?: number }) {
+  return (
+    <span className="graph-entity-icon" data-type={type} aria-hidden="true">
+      <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+        <path
+          d={GRAPH_APPEARANCE[type].path}
+          stroke="currentColor"
+          strokeWidth={1.65}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    </span>
+  );
+}
 
 export function GraphLegend() {
   return (
-    <Group gap="md">
-      {(Object.keys(NODE_STYLES) as GraphNodeType[]).map((type) => (
-        <Group key={type} gap={6}>
-          <span
-            style={{
-              width: 12,
-              height: 12,
-              display: 'inline-block',
-              background: NODE_STYLES[type].color,
-              borderRadius: SHAPE_RADIUS[NODE_STYLES[type].shape] ?? 0,
-              clipPath:
-                type === 'organ'
-                  ? 'polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%)'
-                  : type === 'appeal'
-                    ? 'polygon(0 0,70% 0,100% 50%,70% 100%,0 100%)'
-                    : undefined,
-              transform:
-                NODE_STYLES[type].shape === 'diamond' ? 'rotate(45deg) scale(0.8)' : undefined,
-            }}
-          />
-          <Text size="xs">{NODE_TYPE_LABELS[type]}</Text>
-        </Group>
+    <ul className="profile-graph-legend" aria-label="Типы узлов">
+      {(Object.keys(GRAPH_APPEARANCE) as GraphNodeType[]).map((type) => (
+        <li key={type}>
+          <GraphEntityIcon type={type} size={14} />
+          {NODE_TYPE_LABELS[type]}
+        </li>
       ))}
-      <Text size="xs" c="dimmed">
-        Рамка: красная — высокий риск, оранжевая — средний, зелёная — низкий. Пунктир — родство.
-      </Text>
-    </Group>
+    </ul>
   );
 }

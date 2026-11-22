@@ -1,0 +1,45 @@
+.citizen-page {
+  min-height: 100dvh;
+  background: var(--mantine-color-body);
+}
+.citizen-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 16px;
+}
+.citizen-brand {
+  min-width: 0;
+}
+.citizen-brand-text {
+  white-space: nowrap;
+}
+.citizen-header .account-menu-trigger {
+  max-width: 220px;
+}
+/* На узком экране остаётся знак: название есть в заголовке вкладки, место — логину. */
+@media (max-width: 30em) {
+  .citizen-brand-text {
+    display: none;
+  }
+  .citizen-header .account-menu-trigger {
+    max-width: 180px;
+  }
+}
+.citizen-main {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 8px 16px 48px;
+}
+.citizen-card {
+  background: var(--workspace-surface);
+  border: 1px solid var(--workspace-edge);
+  border-radius: 16px;
+}
+.citizen-appeal-text {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}

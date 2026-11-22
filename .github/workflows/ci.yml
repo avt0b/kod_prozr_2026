@@ -60,6 +60,9 @@ jobs:
       LLM_BASE_URL: http://localhost:11434/v1
       LLM_API_KEY: ci-dummy
       LLM_MODEL: qwen2.5:7b-instruct
+      AUTH_SECRET: ci-only-test-signing-key-not-for-production-123456
+      SMOKE_USERNAME: ci-analyst
+      SMOKE_PASSWORD: ci-only-analyst-password-not-production
     steps:
       - uses: actions/checkout@v5
 
@@ -103,6 +106,7 @@ jobs:
           export DATABASE_URL=postgresql+asyncpg://kodprozr:kodprozr@localhost:5432/kodprozr_smoke
           uv run alembic upgrade head
           uv run python -m src.seed --dir ../data/generated
+          uv run python -m src.core.infrastructure.create_user "$SMOKE_USERNAME" --password-env SMOKE_PASSWORD
 
       - name: Smoke
         env:

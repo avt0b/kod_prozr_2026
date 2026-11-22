@@ -78,7 +78,10 @@ async def handle_http_exception(request: Request, exc: Exception) -> JSONRespons
     if not isinstance(exc, StarletteHTTPException):
         return await handle_generic_exception(request, exc)
     title = "NotFound" if exc.status_code == 404 else "HTTPError"
-    return problem_response(request, exc.status_code, title, str(exc.detail))
+    response = problem_response(request, exc.status_code, title, str(exc.detail))
+    if exc.headers:
+        response.headers.update(exc.headers)
+    return response
 
 
 async def handle_generic_exception(request: Request, exc: Exception) -> JSONResponse:

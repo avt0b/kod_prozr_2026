@@ -9,7 +9,13 @@ interface Props {
 
 export function PageHeader({ title, description, actions }: Props) {
   return (
-    <Group justify="space-between" align="flex-start" mb="lg" wrap="wrap">
+    <Group
+      className="workspace-page-heading"
+      justify="space-between"
+      align="flex-start"
+      mb="lg"
+      wrap="wrap"
+    >
       <Stack gap={4}>
         <Title order={2}>{title}</Title>
         {description && (

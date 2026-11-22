@@ -48,7 +48,7 @@ export function groupContracts(graph: OfficialGraph, highlight: string[] = []) {
       target: aliases.get(edge.target) ?? edge.target,
     }))
     .filter((edge) => {
-      const key = `${edge.source}:${edge.target}:${edge.type}`;
+      const key = `${edge.source}:${edge.target}:${edge.type}${edge.manual ? `:${edge.id}` : ''}`;
       if (seen.has(key)) return false;
       seen.add(key);
       return true;

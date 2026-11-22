@@ -1,0 +1,12 @@
+.manual-record {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--workspace-edge);
+  overflow-wrap: anywhere;
+}
+.manual-graph-launcher {
+  flex-shrink: 0;
+  min-height: 38px;
+}
+.graph-card[data-manual] .graph-card-face {
+  border-style: dashed;
+}

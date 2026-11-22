@@ -313,6 +313,9 @@ export interface OfficialProfile {
 export type GraphNodeType = 'person' | 'company' | 'organ' | 'contract' | 'appeal';
 
 export interface GraphNode {
+  manual?: boolean;
+  notes?: string;
+  source?: string;
   id: UUID;
   type: GraphNodeType;
   label: string;
@@ -321,6 +324,7 @@ export interface GraphNode {
 
 /** Значения edge.type. */
 export type GraphEdgeType =
+  | 'manual'
   | 'works_in'
   | 'kinship'
   | 'founder'
@@ -332,6 +336,10 @@ export type GraphEdgeType =
   | 'shared_contact';
 
 export interface GraphEdge {
+  id?: string;
+  manual?: boolean;
+  notes?: string;
+  sourceNote?: string;
   source: UUID;
   target: UUID;
   type: GraphEdgeType;
@@ -446,4 +454,32 @@ export interface RiskMapQuery {
   organ_id?: UUID;
   limit?: number;
   offset?: number;
+}
+
+/** Кабинет гражданина (#70): без анализа и привязанных служащих. */
+export interface CitizenAppeal {
+  id: UUID;
+  received_at: ISODate;
+  text: string;
+  status: AppealStatus;
+}
+
+/** Учётная запись в разделе администрирования (#70). */
+export interface AdminUser {
+  id: UUID;
+  username: string;
+  role: 'citizen' | 'analyst' | 'admin';
+  active: boolean;
+}
+
+export interface AdminUserCreate {
+  username: string;
+  password: string;
+  role: AdminUser['role'];
+}
+
+export interface AdminUserUpdate {
+  role?: AdminUser['role'];
+  active?: boolean;
+  password?: string;
 }
